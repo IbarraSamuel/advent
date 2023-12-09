@@ -14,7 +14,7 @@ pub fn run<S: AdventSolution>(
     let input_1 = read_input(part_1)?;
     let input_2 = read_input(part_2)?;
     println!(
-        "Part 1: {} Part 2: {}",
+        "Part 1: {} | Part 2: {}",
         S::part1(input_1)?,
         S::part2(input_2).unwrap_or("NOT IMPLEMENTED".to_string())
     );

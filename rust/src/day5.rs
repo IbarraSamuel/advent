@@ -76,50 +76,6 @@ impl AdventSolution for Solution {
             }
         }
 
-        impl RangeMap {
-            fn split_range(
-                &self,
-                other: &RangeMap,
-            ) -> Option<(Option<RangeMap>, RangeMap, Option<RangeMap>)> {
-                let Some((left, overlap, right)) = self.range.split_range(&other.range) else {
-                    return None;
-                };
-                println!("  Sections are: {:?}", (&left, &overlap, &right));
-                let overlap = RangeMap {
-                    range: overlap,
-                    jump: self.jump,
-                };
-
-                let left_map = left.map(|left| {
-                    if left.init == self.range.init {
-                        RangeMap {
-                            range: left,
-                            jump: self.jump,
-                        }
-                    } else {
-                        RangeMap {
-                            range: left,
-                            jump: other.jump,
-                        }
-                    }
-                });
-                let right_map = right.map(|right| {
-                    if right.end == self.range.end {
-                        RangeMap {
-                            range: right,
-                            jump: self.jump,
-                        }
-                    } else {
-                        RangeMap {
-                            range: right,
-                            jump: other.jump,
-                        }
-                    }
-                });
-                Some((left_map, overlap, right_map))
-            }
-        }
-
         impl Range {
             fn overlap(&self, other: &Range) -> Option<Range> {
                 let init = self.init.max(other.init);
@@ -131,8 +87,17 @@ impl AdventSolution for Solution {
                 }
             }
 
-            fn split_range(&self, other: &Range) -> Option<(Option<Range>, Range, Option<Range>)> {
-                let Some(overlap) = self.overlap(other) else {
+            fn apply_jump(&self, jump: i64) -> Range {
+                let init = (self.init as i64 + jump) as usize;
+                let end = (self.end as i64 + jump) as usize;
+                (init, end).into()
+            }
+
+            fn split_range(
+                &self,
+                other: &RangeMap,
+            ) -> Option<(Option<Range>, Range, Option<Range>)> {
+                let Some(overlap) = self.overlap(&other.range) else {
                     return None;
                 };
 
@@ -162,6 +127,42 @@ impl AdventSolution for Solution {
                     jump,
                 }
             }
+        }
+
+        fn apply_stage_transformation(
+            mappers: &Vec<RangeMap>,
+            ranges: HashSet<Range>,
+        ) -> HashSet<Range> {
+            let mut new_ranges = vec![];
+            let modified_ranges = mappers.iter().fold(ranges, |rng, mapper| {
+                apply_range_map(mapper, rng, &mut new_ranges)
+            });
+            new_ranges.into_iter().chain(modified_ranges).collect()
+        }
+
+        fn apply_range_map(
+            mapper: &RangeMap,
+            ranges: HashSet<Range>,
+            new_ranges: &mut Vec<Range>,
+        ) -> HashSet<Range> {
+            let mut modified: Vec<Range> = vec![];
+            for range in ranges {
+                if let Some((left, overlap, right)) = range.split_range(&mapper) {
+                    if let Some(left) = left {
+                        modified.push(left);
+                    }
+
+                    if let Some(right) = right {
+                        modified.push(right);
+                    }
+
+                    new_ranges.push(overlap.apply_jump(mapper.jump));
+                } else {
+                    modified.push(range);
+                }
+            }
+
+            modified.into_iter().collect()
         }
 
         let seeds = input[0]
@@ -220,52 +221,10 @@ impl AdventSolution for Solution {
             })
             .collect::<HashMap<_, _>>();
 
-        println!("modifiers: {:#?}", modifiers);
-
         let mut step = "seed";
         while let Some(next) = stages.get(&step) {
             step = next;
-            println!("==================Step: {:?} ================", step);
-            let mut new_ranges = HashSet::with_capacity(ranges.len());
-            let mut banned = HashSet::new();
-            for input_range @ Range { init, end } in ranges {
-                println!("\nChecking range: {:?} ====>>", input_range);
-                if banned.contains(&input_range) {
-                    println!("Range banned, skipping");
-                    continue;
-                }
-                for range_map in modifiers[step].iter() {
-                    print!(
-                        "Checking {:?} against {:?} with jump {}\t|| ",
-                        input_range, range_map.range, range_map.jump
-                    );
-                    let Some((left, overlap, right)) = input_range.split_range(&range_map.range)
-                    else {
-                        println!("No overlap, pushing {:?}\t", input_range);
-                        new_ranges.insert((init, end).into());
-                        continue;
-                    };
-                    print!("Overlap found: ({:?})\t", overlap);
-
-                    new_ranges.remove(&input_range);
-                    banned.insert(input_range);
-
-                    if let Some(left) = left {
-                        print!("Left: {:?}\t", left);
-                        new_ranges.insert(left);
-                    }
-                    if let Some(right) = right {
-                        print!("Right: {:?}\t", right);
-                        new_ranges.insert(right);
-                    }
-                    let init = overlap.init as i64 + range_map.jump;
-                    let end = overlap.end as i64 + range_map.jump;
-                    println!("New range: {:?}\n", (init, end));
-                    new_ranges.insert((init as usize, end as usize).into());
-                    break;
-                }
-            }
-            ranges = new_ranges;
+            ranges = apply_stage_transformation(&modifiers[next], ranges);
         }
 
         Ok(ranges
