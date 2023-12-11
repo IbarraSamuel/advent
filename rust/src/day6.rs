@@ -71,10 +71,10 @@ impl AdventSolution for Solution {
             .collect::<Vec<_>>()
             .as_slice()
         {
-            return Ok(Race { duration, record }.races_winning().to_string());
+            Ok(Race { duration, record }.races_winning().to_string())
         } else {
             panic!("could not happen")
-        };
+        }
     }
 }
 

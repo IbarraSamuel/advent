@@ -130,7 +130,7 @@ impl AdventSolution for Solution {
         }
 
         fn apply_stage_transformation(
-            mappers: &Vec<RangeMap>,
+            mappers: &[RangeMap],
             ranges: HashSet<Range>,
         ) -> HashSet<Range> {
             let mut new_ranges = vec![];
@@ -147,7 +147,7 @@ impl AdventSolution for Solution {
         ) -> HashSet<Range> {
             let mut modified: Vec<Range> = vec![];
             for range in ranges {
-                if let Some((left, overlap, right)) = range.split_range(&mapper) {
+                if let Some((left, overlap, right)) = range.split_range(mapper) {
                     if let Some(left) = left {
                         modified.push(left);
                     }

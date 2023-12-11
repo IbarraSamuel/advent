@@ -122,6 +122,7 @@ impl AdventSolution for Solution {
             })
             .collect::<Vec<_>>();
 
+        // Using value 2 instead of value to have the second version.
         hands.sort_by_key(|(hand, _)| hand.value_2());
 
         let result: usize = hands

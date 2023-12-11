@@ -38,7 +38,7 @@ impl AdventSolution for Solution {
         let values: usize = input
             .iter()
             .enumerate()
-            .map(|(y, line)| {
+            .flat_map(|(y, line)| {
                 line.chars()
                     .enumerate()
                     .fold::<(Option<String>, Vec<Option<usize>>), _>(
@@ -76,13 +76,12 @@ impl AdventSolution for Solution {
                     .1
             })
             .flatten()
-            .filter_map(|v| v)
             .sum::<usize>();
         Ok(values.to_string())
     }
 
     fn part2(input: Vec<String>) -> GenericResult<String> {
-        fn get_num(pos: (usize, usize), input: &Vec<String>) -> usize {
+        fn get_num(pos: (usize, usize), input: &[String]) -> usize {
             assert!(input[pos.1].chars().nth(pos.0).unwrap().is_ascii_digit());
 
             input[pos.1]
@@ -94,7 +93,7 @@ impl AdventSolution for Solution {
                 .unwrap()
         }
 
-        fn find_init_number((mut x, y): (usize, usize), input: &Vec<String>) -> (usize, usize) {
+        fn find_init_number((mut x, y): (usize, usize), input: &[String]) -> (usize, usize) {
             assert!(input[y].chars().nth(x).unwrap().is_ascii_digit());
 
             if x == 0 {
@@ -120,22 +119,20 @@ impl AdventSolution for Solution {
 
             let num_pos = input[lower][left..=right]
                 .char_indices()
-                .filter_map(|(x, c)| {
-                    c.is_ascii_digit()
-                        .then(|| find_init_number((left + x, lower), input))
-                })
+                .filter(|&(_, c)| c.is_ascii_digit())
+                .map(|(x, _)| find_init_number((left + x, lower), input))
                 .chain(
                     input[upper][left..=right]
                         .char_indices()
-                        .filter_map(|(x, c)| {
-                            c.is_ascii_digit()
-                                .then(|| find_init_number((left + x, upper), input))
-                        }),
+                        .filter(|&(_, c)| c.is_ascii_digit())
+                        .map(|(x, _)| find_init_number((left + x, upper), input)),
                 )
-                .chain(input[y][left..=right].char_indices().filter_map(|(x, c)| {
-                    c.is_ascii_digit()
-                        .then(|| find_init_number((left + x, y), input))
-                }))
+                .chain(
+                    input[y][left..=right]
+                        .char_indices()
+                        .filter(|&(_, c)| c.is_ascii_digit())
+                        .map(|(x, _)| find_init_number((left + x, y), input)),
+                )
                 .collect::<HashSet<_>>();
 
             if num_pos.len() == 2 {
