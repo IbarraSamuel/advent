@@ -4,6 +4,8 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
+mod day6;
+mod day7;
 
 use advent_utils::run;
 
@@ -13,5 +15,7 @@ fn main() -> advent_utils::GenericResult<()> {
     run::<day3::Solution>("../inputs/day3_1.txt", "../inputs/day3_1.txt")?;
     run::<day4::Solution>("../inputs/day4_1.txt", "../inputs/day4_1.txt")?;
     run::<day5::Solution>("../inputs/day5_1.txt", "../inputs/day5_1.txt")?;
+    run::<day6::Solution>("../inputs/day6.txt", "../inputs/day6.txt")?;
+    run::<day7::Solution>("../inputs/day7.txt", "../inputs/day7.txt")?;
     Ok(())
 }
