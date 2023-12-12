@@ -1,28 +1,9 @@
 use std::collections::HashMap;
 
-use rayon::iter::{
-    IntoParallelIterator, IntoParallelRefIterator, ParallelBridge, ParallelIterator,
-};
-use rayon::vec;
-
 use crate::advent_test;
 use crate::advent_utils::{AdventSolution, GenericResult};
 
 pub struct Solution;
-
-struct Graph {
-    nodes: HashMap<Box<str>, Node>,
-}
-
-struct Node {
-    left_edge: Option<Box<Edge>>,
-    right_edge: Option<Box<Edge>>,
-}
-
-struct Edge {
-    from: Box<str>,
-    to: Box<str>,
-}
 
 enum Direction {
     Left,
@@ -57,27 +38,13 @@ impl Iterator for Direction {
 }
 
 fn lcm(first: usize, second: usize) -> usize {
-    first * second / gcd(first, second)
-}
+    let (mut max, mut min) = (first.max(second), first.min(second));
 
-fn gcd(first: usize, second: usize) -> usize {
-    let mut max = first;
-    let mut min = second;
-    if min > max {
-        let val = max;
-        max = min;
-        min = val;
+    while max % min != 0 {
+        (max, min) = (min, max % min);
     }
 
-    loop {
-        let res = max % min;
-        if res == 0 {
-            return min;
-        }
-
-        max = min;
-        min = res;
-    }
+    first * second / min
 }
 
 impl AdventSolution for Solution {
@@ -139,7 +106,6 @@ impl AdventSolution for Solution {
         let init_nodes = nodes
             .keys()
             .cloned()
-            .par_bridge()
             .filter(|&k| k.ends_with('A'))
             .collect::<Vec<_>>();
 
