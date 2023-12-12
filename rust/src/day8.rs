@@ -20,23 +20,6 @@ impl From<char> for Direction {
     }
 }
 
-impl Iterator for Direction {
-    type Item = Self;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self {
-            Self::Left => {
-                *self = Self::Right;
-                Some(Self::Left)
-            }
-            Self::Right => {
-                *self = Self::Left;
-                Some(Self::Right)
-            }
-        }
-    }
-}
-
 fn lcm(first: usize, second: usize) -> usize {
     let (mut max, mut min) = (first.max(second), first.min(second));
 
