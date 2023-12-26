@@ -2,12 +2,12 @@ use std::path::Path;
 
 pub type GenericResult<T> = Result<T, Box<dyn std::error::Error>>;
 
-pub trait AdventSolution {
-    fn part1(input: Vec<String>) -> GenericResult<String>;
-    fn part2(input: Vec<String>) -> GenericResult<String>;
+pub trait AdventSolution<T: std::fmt::Display> {
+    fn part1(input: Vec<String>) -> GenericResult<T>;
+    fn part2(input: Vec<String>) -> GenericResult<T>;
 }
 
-pub fn run<S: AdventSolution>(
+pub fn run<S: AdventSolution<T>, T: std::fmt::Display>(
     part_1: impl AsRef<Path>,
     part_2: impl AsRef<Path>,
 ) -> GenericResult<()> {
@@ -16,7 +16,9 @@ pub fn run<S: AdventSolution>(
     println!(
         "Part 1: {} | Part 2: {}",
         S::part1(input_1)?,
-        S::part2(input_2).unwrap_or("NOT IMPLEMENTED".to_string())
+        S::part2(input_2)
+            .map(|v| v.to_string())
+            .unwrap_or("NOT IMPLEMENTED".to_string())
     );
     Ok(())
 }

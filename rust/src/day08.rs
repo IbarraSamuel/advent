@@ -30,7 +30,7 @@ fn lcm(first: usize, second: usize) -> usize {
     first * second / min
 }
 
-impl AdventSolution for Solution {
+impl AdventSolution<String> for Solution {
     fn part1(input: Vec<String>) -> GenericResult<String> {
         let pattern = input[0].chars().map(Direction::from).collect::<Vec<_>>();
 

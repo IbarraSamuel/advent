@@ -4,7 +4,7 @@ pub struct Solution;
 
 type HashMapper<'t> = HashMap<&'t str, (&'t str, Vec<(usize, usize, usize)>)>;
 
-impl AdventSolution for Solution {
+impl AdventSolution<String> for Solution {
     fn part1(input: Vec<String>) -> GenericResult<String> {
         let seeds = input[0]
             .strip_prefix("seeds: ")

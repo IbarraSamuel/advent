@@ -22,7 +22,7 @@ fn calc_prev_and_next(values: &[i64]) -> (i64, i64) {
     (prev, next)
 }
 
-impl AdventSolution for Solution {
+impl AdventSolution<String> for Solution {
     fn part1(input: Vec<String>) -> GenericResult<String> {
         let last_values = input
             .iter()
