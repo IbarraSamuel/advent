@@ -7,7 +7,7 @@ use crate::{
 
 pub struct Solution {}
 
-impl AdventSolution<String> for Solution {
+impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<String> {
         fn inp_to_values((left, right): (&str, &str)) -> usize {
             let pow = left

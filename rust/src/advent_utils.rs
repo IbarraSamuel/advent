@@ -2,12 +2,12 @@ use std::path::Path;
 
 pub type GenericResult<T> = Result<T, Box<dyn std::error::Error>>;
 
-pub trait AdventSolution<T: std::fmt::Display> {
-    fn part1(input: Vec<String>) -> GenericResult<T>;
-    fn part2(input: Vec<String>) -> GenericResult<T>;
+pub trait AdventSolution {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display>;
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display>;
 }
 
-pub fn run<S: AdventSolution<T>, T: std::fmt::Display>(
+pub fn run<S: AdventSolution>(
     part_1: impl AsRef<Path>,
     part_2: impl AsRef<Path>,
 ) -> GenericResult<()> {
@@ -23,8 +23,10 @@ pub fn run<S: AdventSolution<T>, T: std::fmt::Display>(
     Ok(())
 }
 
-pub fn read_input(path: impl AsRef<Path>) -> Result<Vec<String>, std::io::Error> {
-    std::fs::read_to_string(path).map(|s| s.lines().map(String::from).collect())
+pub fn read_input<'t>(path: impl AsRef<Path>) -> Result<Vec<String>, std::io::Error> {
+    let stream = std::fs::read_to_string(path)?;
+    let lines = stream.lines().map(String::from).collect::<Vec<_>>();
+    Ok(lines)
 }
 
 #[macro_export]

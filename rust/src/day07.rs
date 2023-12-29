@@ -89,7 +89,7 @@ impl Hand {
     }
 }
 
-impl AdventSolution<String> for Solution {
+impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<String> {
         let mut hands = input
             .iter()

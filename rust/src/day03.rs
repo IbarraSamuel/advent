@@ -33,7 +33,7 @@ impl Number {
     }
 }
 
-impl AdventSolution<String> for Solution {
+impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<String> {
         let values: usize = input
             .iter()

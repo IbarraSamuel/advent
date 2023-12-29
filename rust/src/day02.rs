@@ -31,7 +31,7 @@ impl Bag {
     }
 }
 
-impl AdventSolution<String> for Solution {
+impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<String> {
         let result = input
             .into_iter()

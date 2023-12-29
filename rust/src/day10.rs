@@ -116,7 +116,7 @@ fn get_inners_count(map: &[Vec<Pipe>]) -> usize {
         .sum()
 }
 
-impl AdventSolution<String> for Solution {
+impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<String> {
         let mut map = input
             .iter()

@@ -34,7 +34,7 @@ impl Race {
     }
 }
 
-impl AdventSolution<String> for Solution {
+impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<String> {
         let total_races = input[0].split_whitespace().count() - 1;
         let lines = input
