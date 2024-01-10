@@ -23,7 +23,7 @@ pub fn run<S: AdventSolution>(
     Ok(())
 }
 
-pub fn read_input<'t>(path: impl AsRef<Path>) -> Result<Vec<String>, std::io::Error> {
+pub fn read_input(path: impl AsRef<Path>) -> Result<Vec<String>, std::io::Error> {
     let stream = std::fs::read_to_string(path)?;
     let lines = stream.lines().map(String::from).collect::<Vec<_>>();
     Ok(lines)
