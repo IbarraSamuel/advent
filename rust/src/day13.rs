@@ -4,39 +4,84 @@ use crate::advent_utils::{AdventSolution, GenericResult};
 
 pub struct Solution;
 
+fn is_mirror(values: &[String]) -> Option<usize> {
+    (1..values.len()).find(|&idx| {
+        values[idx..values.len()]
+            .iter()
+            .zip(values[0..idx].iter().rev())
+            .all(|(a, b)| a == b)
+    })
+}
+
+fn almost_a_mirror(values: &[String]) -> Option<usize> {
+    (1..values.len()).find(|&idx| {
+        values[idx..values.len()]
+            .iter()
+            .zip(values[0..idx].iter().rev())
+            .map(|(a, b)| {
+                a.chars()
+                    .zip(b.chars())
+                    .map(|x| (x.0 != x.1) as usize)
+                    .sum::<usize>()
+            })
+            .sum::<usize>()
+            == 1
+    })
+}
+
 impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<usize> {
-        let mut secuence = vec![];
-        let horizontal_values = input
-            .iter()
-            .map(|line| {
-                line.char_indices()
-                    .map(|(idx, c)| idx * 10 + c.to_digit(10).unwrap() as usize)
-                    .sum::<usize>()
+        let total = input
+            .split(|s| s.is_empty())
+            .map(|h| {
+                is_mirror(h)
+                    .map(|x| x * 100)
+                    .or_else(|| {
+                        is_mirror(
+                            &(0..h[0].len())
+                                .map(|col| {
+                                    h.iter()
+                                        .filter_map(|s| s.chars().nth(col))
+                                        .collect::<String>()
+                                })
+                                .collect::<Vec<_>>(),
+                        )
+                    })
+                    .expect("No mirror found!")
             })
-            .collect::<Vec<_>>();
+            .sum::<usize>();
 
-        for v in horizontal_values {
-            if !secuence.contains(&v) {
-                secuence.push(v);
-            }
-            else if {}
-            
-        }
-        
-        let vertical_values = (0..input[0].len())
-            .map(|idx| {
-                input
-                    .iter()
-                    .map(|line| line.chars().nth(idx).unwrap())
-                    .enumerate()
-                    .map(|(idx, c)| idx * 10 + c.to_digit(10).unwrap() as usize)
-                    .sum::<usize>()
-            })
-            .collect::<Vec<_>>();
+        Ok(total)
     }
 
     fn part2(input: Vec<String>) -> GenericResult<usize> {
-        todo!()
+        let total = input
+            .split(|s| s.is_empty())
+            .map(|h| {
+                almost_a_mirror(h)
+                    .map(|x| x * 100)
+                    .or_else(|| {
+                        almost_a_mirror(
+                            &(0..h[0].len())
+                                .map(|col| {
+                                    h.iter()
+                                        .filter_map(|s| s.chars().nth(col))
+                                        .collect::<String>()
+                                })
+                                .collect::<Vec<_>>(),
+                        )
+                    })
+                    .expect("No mirror found!")
+            })
+            .sum::<usize>();
+
+        Ok(total)
     }
 }
+
+advent_test!(
+    "../inputs/tests/day13.txt",
+    405,
+    "../inputs/tests/day13.txt",
+    400
+);
