@@ -1,4 +1,4 @@
-from python.advent_utils import read_input
+from advent_utils import read_input
 
 
 def keep_numbers(line: str) -> str:
@@ -6,7 +6,7 @@ def keep_numbers(line: str) -> str:
 
 
 def part_1() -> str:
-    inp = read_input("inputs/day01.txt")
+    inp = read_input("../inputs/day01.txt")
     only_numbers = [keep_numbers(line) for line in inp]
     total = sum(int(n[0] + n[-1]) for n in only_numbers)
     print(total)
