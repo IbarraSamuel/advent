@@ -1,18 +1,63 @@
-fn main() raises -> None:
-    var value: String = ""
-    var pos = 0
-    var accum = 0
-    with open("../inputs/day1_1.txt", "r") as f:
-        value = f.read()
+from advent_utils import read_input
+from builtin.string import atol
 
-    var only_numbers: String = ""
-    for loc in range(0, len(value)):
-        if value[loc] == "\n" or value[loc] == "1" or value[loc] == "2" or value[loc] == "3" or value[loc] == "4" or value[loc] == "5" or value[loc] == "6" or value[loc] == "7" or value[loc] == "8" or value[loc] == "9":
-            only_numbers += value[loc]
+
+fn calc(line: String) -> UInt32:
+    let numbers = [1,2,3,4,5,6,7,8,9]
+
+    var first = -1
+    var pos = 0
+    while first == -1:
+        try:
+            first = atol(line[pos])
+        except:
+            pos += 1
+
+    var last = -1
+    pos = len(line) - 1
+    while last == -1:
+        try:
+            last = atol(line[pos])
+        except:
+            pos -= 1
     
-    for loc in range(0, len(only_numbers)):
-        if only_numbers[loc] == "\n":
-            accum += atol(only_numbers[pos] + only_numbers[loc - 1])
-            pos = loc + 1
-            
-    print(accum)
+    return first * 10 + last
+
+
+fn part_1(values: DynamicVector[String]) -> UInt32:
+    var total: UInt32 = 0
+    for i in range(0, values.size):
+        total += calc(values[i])
+
+    return total
+
+
+fn calc_2(line: String) -> UInt32:
+    let numbers = [1,2,3,4,5,6,7,8,9]
+
+    var first = -1
+    var pos = 0
+    while first == -1:
+        try:
+            first = atol(line[pos])
+        except:
+            pos += 1
+
+    
+    var last = -1
+    pos = len(line) - 1
+    while last == -1:
+        try:
+            last = atol(line[pos])
+        except:
+            pos -= 1
+    
+    return first * 10 + last
+
+
+fn part_2(values: DynamicVector[String]) -> UInt32:
+    var total: UInt32 = 0
+    for i in range(0, values.size):
+        total += calc_2(values[i])
+    
+    return total
