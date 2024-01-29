@@ -1,10 +1,10 @@
-use crate::advent_test;
 use crate::advent_utils::{AdventSolution, GenericResult};
+use crate::{advent_test, advent_tests};
 
 pub struct Solution;
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<isize> {
         let empty_rows = input
             .iter()
             .enumerate()
@@ -36,10 +36,10 @@ impl AdventSolution for Solution {
             }
         }
 
-        Ok((steps / 2).to_string())
+        Ok((steps / 2))
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<isize> {
         let empty_rows = input
             .iter()
             .enumerate()
@@ -80,13 +80,15 @@ impl AdventSolution for Solution {
                     + y_expand * (1000000 - 1);
             }
         }
-        Ok((steps / 2).to_string())
+        Ok((steps / 2))
     }
 }
 
-advent_test!(
-    "../inputs/tests/day11.txt",
-    "374",
-    "../inputs/tests/day11.txt",
-    "82000210"
+advent_tests!(
+    part 1 => (
+        "../inputs/tests/day11.txt" => 374
+    ),
+    part 2 => (
+        "../inputs/tests/day11.txt" => 82000210
+    )
 );

@@ -1,5 +1,5 @@
-use crate::advent_test;
 use crate::advent_utils::{AdventSolution, GenericResult};
+use crate::{advent_test, advent_tests};
 
 pub struct Solution;
 
@@ -82,9 +82,11 @@ impl AdventSolution for Solution {
     }
 }
 
-advent_test!(
-    "../inputs/tests/day12.txt",
-    21,
-    "../inputs/tests/day12.txt",
-    525152
+advent_tests!(
+    part 1 => (
+        "../inputs/tests/day12.txt" => 21
+    ),
+    part 2 => (
+        "../inputs/tests/day12.txt" => 525152
+    )
 );

@@ -6,20 +6,19 @@ use crate::advent_utils::{AdventSolution, GenericResult};
 pub struct Solution;
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<u32> {
         let result = input
             .into_iter()
-            .filter_map(|line| {
+            .map(|line| {
                 let values = line.chars().filter(|c| c.is_ascii_digit());
-                format!("{}{}", values.clone().next()?, values.last()?)
-                    .parse::<u32>()
-                    .ok()
+                values.clone().next().unwrap().to_digit(10).unwrap() * 10
+                    + values.last().unwrap().to_digit(10).unwrap()
             })
             .sum::<u32>();
-        Ok(result.to_string())
+        Ok(result)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<u32> {
         let to_check: HashMap<&str, u32> = HashMap::from_iter(vec![
             ("one", 1),
             ("two", 2),
@@ -57,13 +56,15 @@ impl AdventSolution for Solution {
             })
             .sum::<u32>();
 
-        Ok(result.to_string())
+        Ok(result)
     }
 }
 
-crate::advent_test! {
-    "../inputs/tests/day1_1.txt",
-    "142",
-    "./../inputs/tests/day1_2.txt",
-    "281"
-}
+crate::advent_tests!(
+    part 1 => (
+        "../inputs/tests/day1_1.txt" => 142
+    ),
+    part 2 => (
+        "../inputs/tests/day1_2.txt" => 281
+    )
+);

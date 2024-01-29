@@ -32,7 +32,7 @@ impl Bag {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<usize> {
         let result = input
             .into_iter()
             .filter_map(|line| {
@@ -57,10 +57,10 @@ impl AdventSolution for Solution {
             })
             .sum::<usize>();
 
-        Ok(result.to_string())
+        Ok(result)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<usize> {
         let result = input
             .into_iter()
             .map(|line| {
@@ -82,13 +82,15 @@ impl AdventSolution for Solution {
             })
             .sum::<usize>();
 
-        Ok(result.to_string())
+        Ok(result)
     }
 }
 
-crate::advent_test! {
-    "../inputs/tests/day2_1.txt",
-    "8",
-    "../inputs/tests/day2_1.txt",
-    "2286"
-}
+crate::advent_tests!(
+    part 1 => (
+        "../inputs/tests/day2_1.txt" => 8
+    ),
+    part 2 => (
+        "../inputs/tests/day2_1.txt" => 2286
+    )
+);

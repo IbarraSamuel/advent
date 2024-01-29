@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use crate::advent_test;
 use crate::advent_utils::{AdventSolution, GenericResult};
+use crate::{advent_test, advent_tests};
 
 pub struct Solution;
 
@@ -31,7 +31,7 @@ fn lcm(first: usize, second: usize) -> usize {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<usize> {
         let pattern = input[0].chars().map(Direction::from).collect::<Vec<_>>();
 
         let nodes = input
@@ -64,10 +64,10 @@ impl AdventSolution for Solution {
             }
         }
 
-        Ok(iterations.to_string())
+        Ok(iterations)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<usize> {
         let pattern = input[0].chars().map(Direction::from).collect::<Vec<_>>();
 
         let nodes = input
@@ -114,13 +114,15 @@ impl AdventSolution for Solution {
 
         let final_prod = cycles.into_iter().reduce(lcm).unwrap();
 
-        Ok(final_prod.to_string())
+        Ok(final_prod)
     }
 }
 
-advent_test! {
-    "../inputs/tests/day8_1.txt",
-    "2",
-    "../inputs/tests/day8_2.txt",
-    "6"
-}
+advent_tests!(
+    part 1 => (
+        "../inputs/tests/day8_1.txt" => 2
+    ),
+    part 2 => (
+        "../inputs/tests/day8_2.txt" => 6
+    )
+);

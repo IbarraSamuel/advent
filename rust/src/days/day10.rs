@@ -117,7 +117,7 @@ fn get_inners_count(map: &[Vec<Pipe>]) -> usize {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<usize> {
         let mut map = input
             .iter()
             .enumerate()
@@ -146,10 +146,10 @@ impl AdventSolution for Solution {
             }
         }
 
-        Ok((count / 2).to_string())
+        Ok((count / 2))
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<usize> {
         let mut map = input
             .iter()
             .enumerate()
@@ -192,17 +192,17 @@ impl AdventSolution for Solution {
         // let maze_pos = maze.into_iter().map(|p| p.position).collect::<Vec<_>>();
         let inners = get_inners_count(&map);
 
-        Ok(inners.to_string())
+        Ok(inners)
     }
 }
 
 advent_tests!(
     part 1 => (
-        "../inputs/tests/day10.txt" => "8"
+        "../inputs/tests/day10.txt" => 8
     ),
     part 2 => (
-        "../inputs/tests/day10_2.txt" => "4",
-        "../inputs/tests/day10_3.txt" => "8",
-        "../inputs/tests/day10_4.txt" => "10"
+        "../inputs/tests/day10_2.txt" => 4,
+        "../inputs/tests/day10_3.txt" => 8,
+        "../inputs/tests/day10_4.txt" => 10
     )
 );

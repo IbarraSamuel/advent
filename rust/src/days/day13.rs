@@ -1,4 +1,4 @@
-use crate::advent_test;
+use crate::{advent_test, advent_tests};
 
 use crate::advent_utils::{AdventSolution, GenericResult};
 
@@ -79,9 +79,11 @@ impl AdventSolution for Solution {
     }
 }
 
-advent_test!(
-    "../inputs/tests/day13.txt",
-    405,
-    "../inputs/tests/day13.txt",
-    400
+advent_tests!(
+    part 1 => (
+        "../inputs/tests/day13.txt" => 405
+    ),
+    part 2 => (
+        "../inputs/tests/day13.txt" => 400
+    )
 );

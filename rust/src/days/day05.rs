@@ -5,7 +5,7 @@ pub struct Solution;
 type HashMapper<'t> = HashMap<&'t str, (&'t str, Vec<(usize, usize, usize)>)>;
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<usize> {
         let seeds = input[0]
             .strip_prefix("seeds: ")
             .unwrap()
@@ -61,10 +61,10 @@ impl AdventSolution for Solution {
             })
             .min()
             .unwrap();
-        Ok(final_values.to_string())
+        Ok(final_values)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<usize> {
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct Range {
             init: usize,
@@ -231,14 +231,15 @@ impl AdventSolution for Solution {
             .iter()
             .min_by_key(|Range { init, .. }| init)
             .unwrap()
-            .init
-            .to_string())
+            .init)
     }
 }
 
-crate::advent_test! {
-    "../inputs/tests/day5_1.txt",
-    "35",
-    "../inputs/tests/day5_1.txt",
-    "46"
-}
+crate::advent_tests!(
+    part 1 => (
+        "../inputs/tests/day5_1.txt" => 35
+    ),
+    part 2 => (
+        "../inputs/tests/day5_1.txt" => 46
+    )
+);

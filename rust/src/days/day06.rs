@@ -1,5 +1,5 @@
-use crate::advent_test;
 use crate::advent_utils::{AdventSolution, GenericResult};
+use crate::{advent_test, advent_tests};
 
 pub struct Solution;
 
@@ -35,7 +35,7 @@ impl Race {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<usize> {
         let total_races = input[0].split_whitespace().count() - 1;
         let lines = input
             .iter()
@@ -55,10 +55,10 @@ impl AdventSolution for Solution {
                 .races_winning()
             })
             .product();
-        Ok(result.to_string())
+        Ok(result)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<usize> {
         if let &[duration, record] = input
             .iter()
             .filter_map(|l| {
@@ -71,16 +71,18 @@ impl AdventSolution for Solution {
             .collect::<Vec<_>>()
             .as_slice()
         {
-            Ok(Race { duration, record }.races_winning().to_string())
+            Ok(Race { duration, record }.races_winning())
         } else {
             panic!("could not happen")
         }
     }
 }
 
-advent_test! {
-    "../inputs/tests/day6.txt",
-    "288",
-    "../inputs/tests/day6.txt",
-    "71503"
-}
+advent_tests!(
+    part 1 => (
+        "../inputs/tests/day6.txt" => 288
+    ),
+    part 2 => (
+        "../inputs/tests/day6.txt" => 71503
+    )
+);

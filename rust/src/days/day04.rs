@@ -1,14 +1,14 @@
 use std::collections::{BTreeMap, HashSet};
 
 use crate::{
-    advent_test,
+    advent_test, advent_tests,
     advent_utils::{AdventSolution, GenericResult},
 };
 
 pub struct Solution {}
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<usize> {
         fn inp_to_values((left, right): (&str, &str)) -> usize {
             let pow = left
                 .split_whitespace()
@@ -34,10 +34,10 @@ impl AdventSolution for Solution {
             .map(|line| inp_to_values(line.split_once(": ").unwrap().1.split_once(" | ").unwrap()))
             .sum::<usize>();
 
-        Ok(out.to_string())
+        Ok(out)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<usize> {
         fn inp_to_values((left, right): (&str, &str)) -> usize {
             left.split_whitespace()
                 .filter_map(|v| v.parse::<usize>().ok())
@@ -75,8 +75,15 @@ impl AdventSolution for Solution {
                 *vl += v;
             }
         }
-        Ok(tot.to_string())
+        Ok(tot)
     }
 }
 
-advent_test! {"../inputs/tests/day4_1.txt", "13", "../inputs/tests/day4_1.txt", "30"}
+advent_tests!(
+    part 1 => (
+        "../inputs/tests/day4_1.txt" => 13
+    ),
+    part 2 => (
+        "../inputs/tests/day4_1.txt" => 30
+    )
+);

@@ -1,5 +1,5 @@
-use crate::advent_test;
 use crate::advent_utils::{AdventSolution, GenericResult};
+use crate::{advent_test, advent_tests};
 
 pub struct Solution;
 
@@ -23,7 +23,7 @@ fn calc_prev_and_next(values: &[i64]) -> (i64, i64) {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<i64> {
         let last_values = input
             .iter()
             .map(|s| {
@@ -35,10 +35,10 @@ impl AdventSolution for Solution {
             })
             .collect::<Vec<i64>>();
 
-        Ok(last_values.iter().sum::<i64>().to_string())
+        Ok(last_values.iter().sum::<i64>())
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<i64> {
         let last_values = input
             .iter()
             .map(|s| {
@@ -50,14 +50,16 @@ impl AdventSolution for Solution {
             })
             .collect::<Vec<i64>>();
 
-        Ok(last_values.iter().sum::<i64>().to_string())
+        Ok(last_values.iter().sum::<i64>())
         // Ok("".to_string())
     }
 }
 
-advent_test!(
-    "../inputs/tests/day9.txt",
-    "114",
-    "../inputs/tests/day9.txt",
-    "2"
+advent_tests!(
+    part 1 => (
+        "../inputs/tests/day9.txt" => 114
+    ),
+    part 2 => (
+        "../inputs/tests/day9.txt" => 2
+    )
 );

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use crate::advent_test;
 use crate::advent_utils::{AdventSolution, GenericResult};
+use crate::{advent_test, advent_tests};
 
 pub struct Solution;
 
@@ -90,7 +90,7 @@ impl Hand {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<usize> {
         let mut hands = input
             .iter()
             .map(|s| {
@@ -108,10 +108,10 @@ impl AdventSolution for Solution {
             .enumerate()
             .map(|(pos, (_, bid))| (pos + 1) * bid)
             .sum();
-        Ok(result.to_string())
+        Ok(result)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<usize> {
         let mut hands = input
             .iter()
             .map(|s| {
@@ -130,13 +130,15 @@ impl AdventSolution for Solution {
             .enumerate()
             .map(|(pos, (_, bid))| (pos + 1) * bid)
             .sum();
-        Ok(result.to_string())
+        Ok(result)
     }
 }
 
-advent_test!(
-    "../inputs/tests/day7.txt",
-    "6440",
-    "../inputs/tests/day7.txt",
-    "5905"
+advent_tests!(
+    part 1 => (
+        "../inputs/tests/day7.txt" => 6440
+    ),
+    part 2 => (
+        "../inputs/tests/day7.txt" => 5905
+    )
 );

@@ -34,7 +34,7 @@ impl Number {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<String> {
+    fn part1(input: Vec<String>) -> GenericResult<usize> {
         let values: usize = input
             .iter()
             .enumerate()
@@ -77,10 +77,10 @@ impl AdventSolution for Solution {
             })
             .flatten()
             .sum::<usize>();
-        Ok(values.to_string())
+        Ok(values)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<String> {
+    fn part2(input: Vec<String>) -> GenericResult<usize> {
         fn get_num(pos: (usize, usize), input: &[String]) -> usize {
             assert!(input[pos.1].chars().nth(pos.0).unwrap().is_ascii_digit());
 
@@ -153,13 +153,15 @@ impl AdventSolution for Solution {
             })
             .sum::<usize>();
 
-        Ok(total_value.to_string())
+        Ok(total_value)
     }
 }
 
-crate::advent_test! {
-    "../inputs/tests/day3_1.txt",
-    "4361",
-    "../inputs/tests/day3_1.txt",
-    "467835"
-}
+crate::advent_tests!(
+    part 1 => (
+        "../inputs/tests/day3_1.txt" => 4361
+    ),
+    part 2 => (
+        "../inputs/tests/day3_1.txt" => 467835
+    )
+);
