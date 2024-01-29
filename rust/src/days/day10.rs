@@ -146,7 +146,7 @@ impl AdventSolution for Solution {
             }
         }
 
-        Ok((count / 2))
+        Ok(count / 2)
     }
 
     fn part2(input: Vec<String>) -> GenericResult<usize> {

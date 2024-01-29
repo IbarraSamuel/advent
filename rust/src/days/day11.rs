@@ -1,5 +1,5 @@
 use crate::advent_utils::{AdventSolution, GenericResult};
-use crate::{advent_test, advent_tests};
+use crate::{advent_tests};
 
 pub struct Solution;
 
@@ -36,7 +36,7 @@ impl AdventSolution for Solution {
             }
         }
 
-        Ok((steps / 2))
+        Ok(steps / 2)
     }
 
     fn part2(input: Vec<String>) -> GenericResult<isize> {
@@ -80,7 +80,7 @@ impl AdventSolution for Solution {
                     + y_expand * (1000000 - 1);
             }
         }
-        Ok((steps / 2))
+        Ok(steps / 2)
     }
 }
 

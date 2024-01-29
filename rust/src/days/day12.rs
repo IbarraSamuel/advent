@@ -1,5 +1,5 @@
 use crate::advent_utils::{AdventSolution, GenericResult};
-use crate::{advent_test, advent_tests};
+use crate::{advent_tests};
 
 pub struct Solution;
 

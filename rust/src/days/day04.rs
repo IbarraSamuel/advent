@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, HashSet};
 
 use crate::{
-    advent_test, advent_tests,
+    advent_tests,
     advent_utils::{AdventSolution, GenericResult},
 };
 
