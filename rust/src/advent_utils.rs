@@ -7,19 +7,17 @@ pub trait AdventSolution {
     fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display>;
 }
 
-pub fn run<S: AdventSolution>(
-    part_1: impl AsRef<Path>,
-    part_2: impl AsRef<Path>,
-) -> GenericResult<()> {
-    let input_1 = read_input(part_1)?;
-    let input_2 = read_input(part_2)?;
-    println!(
-        "Part 1: {} | Part 2: {}",
-        S::part1(input_1)?,
-        S::part2(input_2)
-            .map(|v| v.to_string())
-            .unwrap_or("NOT IMPLEMENTED".to_string())
-    );
+pub fn run<S: AdventSolution>(path: impl AsRef<Path>) -> GenericResult<()> {
+    println!("From {:?} =>", &path.as_ref());
+    let input = read_input(path)?;
+
+    let result_1 = S::part1(input.clone())?;
+    println!("\tPart 1: {result_1}");
+
+    match S::part2(input) {
+        Ok(result_2) => println!("\tPart 2: {result_2}\n"),
+        _ => println!("NOT IMPLEMENTED!\n"),
+    }
     Ok(())
 }
 
@@ -48,6 +46,36 @@ macro_rules! advent_test {
             fn part_2() -> GenericResult<()> {
                 let inp = read_input($input2)?;
                 assert_eq!(Solution::part2(inp)?, $output2);
+                Ok(())
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! advent_tests {
+    (part 1 => ($($input1:literal => $output1:literal),+), part 2 => ($($input2:literal => $output2:literal),+)) => {
+        #[cfg(test)]
+        mod test_solution {
+            use super::Solution;
+            use $crate::advent_utils::{read_input, AdventSolution, GenericResult};
+
+            #[test]
+            fn part_1() -> GenericResult<()> {
+                $(
+                    let inp = read_input($input1)?;
+                    assert_eq!(Solution::part1(inp)?, $output1);
+                )+
+
+                Ok(())
+            }
+
+            #[test]
+            fn part_2() -> GenericResult<()> {
+                $(
+                    let inp = read_input($input2)?;
+                    assert_eq!(Solution::part2(inp)?, $output2);
+                )+
                 Ok(())
             }
         }

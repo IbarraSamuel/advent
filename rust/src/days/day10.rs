@@ -3,7 +3,7 @@ use std::ops::Not;
 
 use crate::advent_utils::{AdventSolution, GenericResult};
 
-use crate::advent_test;
+use crate::advent_tests;
 
 pub struct Solution;
 
@@ -196,33 +196,13 @@ impl AdventSolution for Solution {
     }
 }
 
-advent_test!(
-    "../inputs/tests/day10.txt",
-    "8",
-    "../inputs/tests/day10_2.txt",
-    "4"
+advent_tests!(
+    part 1 => (
+        "../inputs/tests/day10.txt" => "8"
+    ),
+    part 2 => (
+        "../inputs/tests/day10_2.txt" => "4",
+        "../inputs/tests/day10_3.txt" => "8",
+        "../inputs/tests/day10_4.txt" => "10"
+    )
 );
-
-#[cfg(test)]
-mod test2 {
-    use super::*;
-    use crate::advent_utils::read_input;
-
-    // advent_test!(
-    //     "../inputs/tests/day10_3.txt",
-    //     "8",
-    //     "../inputs/tests/day10_4.txt",
-    //     "10"
-    // );
-    #[test]
-    fn test_solution_3() {
-        let input = read_input("../inputs/tests/day10_3.txt").unwrap();
-        assert_eq!(Solution::part2(input).unwrap(), "8");
-    }
-
-    #[test]
-    fn test_solution_4() {
-        let input = read_input("../inputs/tests/day10_4.txt").unwrap();
-        assert_eq!(Solution::part2(input).unwrap(), "10");
-    }
-}
