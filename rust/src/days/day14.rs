@@ -24,11 +24,10 @@ impl Maze {
         Maze(
             (0..self.0[0].len())
                 .map(|col| {
-                    self.0
-                        .iter()
-                        .rev()
-                        .map(|row| row.chars().nth(col).unwrap())
-                        .collect::<String>()
+                    self.0.iter().rev().fold(String::new(), |mut acc, row| {
+                        acc.push_str(&row[col..col + 1]);
+                        acc
+                    })
                 })
                 .collect::<_>(),
         )
@@ -41,12 +40,9 @@ impl Maze {
                 .map(|line| {
                     let mut new_line = line.split('#').fold(String::new(), |mut acc, rng| {
                         let count = rng.chars().filter(|&c| c == 'O').count();
-
-                        acc.push_str(&format!(
-                            "{}{}#",
-                            ".".repeat(rng.len() - count),
-                            "O".repeat(count)
-                        ));
+                        acc.push_str(&".".repeat(rng.len() - count));
+                        acc.push_str(&"O".repeat(count));
+                        acc.push('#');
                         acc
                     });
                     new_line.pop();
