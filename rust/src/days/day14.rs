@@ -9,9 +9,9 @@ pub struct Solution;
 pub struct Maze(Vec<String>);
 
 impl Maze {
-    fn calculate(self) -> usize {
+    fn calculate(&self) -> usize {
         self.0
-            .into_iter()
+            .iter()
             .map(|line| {
                 line.char_indices()
                     .filter_map(|(idx, v)| if v == 'O' { Some(idx + 1) } else { None })
@@ -20,7 +20,7 @@ impl Maze {
             .sum::<usize>()
     }
 
-    fn rotate(self) -> Self {
+    fn rotate(&self) -> Self {
         Maze(
             (0..self.0[0].len())
                 .map(|col| {
@@ -33,10 +33,10 @@ impl Maze {
         )
     }
 
-    fn tilt_right(self) -> Self {
+    fn tilt_right(&self) -> Self {
         Maze(
             self.0
-                .into_iter()
+                .iter()
                 .map(|line| {
                     let mut new_line = line.split('#').fold(String::new(), |mut acc, rng| {
                         let count = rng.chars().filter(|&c| c == 'O').count();
@@ -59,19 +59,14 @@ impl AdventSolution for Solution {
     }
 
     fn part2(input: Vec<String>) -> GenericResult<usize> {
-        let mut maze = Maze(input);
-        let mut positions: HashMap<Maze, usize> = HashMap::new();
-        let mut iteration = 0;
-        let cycles;
+        let mut positions: Vec<Maze> = Vec::with_capacity(1000);
+        let (cycles, iteration);
+        positions.push(Maze(input));
 
         loop {
-            let stored_pos = positions.entry(maze.clone()).or_insert(iteration);
-            if *stored_pos != iteration {
-                cycles = iteration - *stored_pos;
-                break;
-            }
-            iteration += 1;
-            maze = maze
+            let new_maze = positions
+                .last()
+                .unwrap()
                 .rotate()
                 .tilt_right()
                 .rotate()
@@ -80,14 +75,16 @@ impl AdventSolution for Solution {
                 .tilt_right()
                 .rotate()
                 .tilt_right();
+            if let Some((index, _)) = positions.iter().enumerate().find(|(_, a)| a == &&new_maze) {
+                iteration = positions.len();
+                cycles = iteration - index;
+                break;
+            }
+
+            positions.push(new_maze);
         }
         let valid_idx = (1e9 as usize - iteration) % cycles + (iteration - cycles);
-
-        let final_position = positions
-            .into_iter()
-            .find_map(|(a, b)| if b == valid_idx { Some(a) } else { None })
-            .unwrap();
-
+        let final_position = &positions[valid_idx];
         Ok(final_position.rotate().calculate())
     }
 }
