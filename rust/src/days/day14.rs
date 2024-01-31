@@ -10,21 +10,11 @@ pub struct Maze(Vec<String>);
 
 impl Maze {
     fn calculate(self) -> usize {
-        self.rotate()
-            .0
+        self.0
             .into_iter()
-            .map(|mut line| {
-                line.insert(0, '#');
-                let indices = &line
-                    .char_indices()
-                    .filter_map(|(a, b)| if b == '#' { Some(a) } else { None })
-                    .collect::<Vec<usize>>();
-                line.split_inclusive('#')
-                    .zip(indices)
-                    .map(|(rng, &idx)| {
-                        let count = rng.chars().filter(|&c| c == 'O').count();
-                        (idx - count..idx).sum::<usize>()
-                    })
+            .map(|line| {
+                line.char_indices()
+                    .filter_map(|(idx, v)| if v == 'O' { Some(idx + 1) } else { None })
                     .sum::<usize>()
             })
             .sum::<usize>()
@@ -48,15 +38,19 @@ impl Maze {
         Maze(
             self.0
                 .into_iter()
-                .map(|mut line| {
-                    line.split_inclusive('#')
-                        .map(|rng| {
-                            let hash = if rng.contains('#') { "#" } else { "" };
-                            let len = rng.len();
-                            let count = rng.chars().filter(|&c| c == 'O').count();
-                            format!("{}{}{hash}", ".".repeat(len - count), "O".repeat(count))
-                        })
-                        .collect::<String>()
+                .map(|line| {
+                    let mut new_line = line.split('#').fold(String::new(), |mut acc, rng| {
+                        let count = rng.chars().filter(|&c| c == 'O').count();
+
+                        acc.push_str(&format!(
+                            "{}{}#",
+                            ".".repeat(rng.len() - count),
+                            "O".repeat(count)
+                        ));
+                        acc
+                    });
+                    new_line.pop();
+                    new_line
                 })
                 .collect::<Vec<_>>(),
         )
@@ -65,39 +59,12 @@ impl Maze {
 
 impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<usize> {
-        fn calc_weight(column: String) -> usize {
-            column
-                .split('#')
-                .zip(format!("#{column}").char_indices().filter_map(|(idx, c)| {
-                    if c == '#' {
-                        Some(column.len() + 1 - idx)
-                    } else {
-                        None
-                    }
-                }))
-                .map(|(v, idx)| {
-                    let amount = v.chars().filter(|&c| c == 'O').count();
-                    (idx - amount..idx).sum::<usize>()
-                })
-                .sum::<usize>()
-        }
-
-        let val = (0..input[0].len())
-            .map(|col| {
-                calc_weight(
-                    input
-                        .iter()
-                        .map(|row| row.chars().nth(col).unwrap())
-                        .collect::<String>(),
-                )
-            })
-            .sum::<usize>();
-        Ok(val)
+        Ok(Maze(input).rotate().tilt_right().calculate())
     }
 
     fn part2(input: Vec<String>) -> GenericResult<usize> {
-        let mut maze = Maze(input).rotate();
-        let mut positions: HashMap<Maze, usize> = HashMap::with_capacity(1000000000);
+        let mut maze = Maze(input);
+        let mut positions: HashMap<Maze, usize> = HashMap::new();
         let mut iteration = 0;
         let cycles;
 
@@ -108,7 +75,7 @@ impl AdventSolution for Solution {
                 break;
             }
             iteration += 1;
-            maze = dbg!(maze
+            maze = maze
                 .rotate()
                 .tilt_right()
                 .rotate()
@@ -116,17 +83,16 @@ impl AdventSolution for Solution {
                 .rotate()
                 .tilt_right()
                 .rotate()
-                .tilt_right());
+                .tilt_right();
         }
         let valid_idx = (1e9 as usize - iteration) % cycles + (iteration - cycles);
-        println!("{}", valid_idx);
+
         let final_position = positions
             .into_iter()
-            .find(|(_, b)| *b == valid_idx)
-            .unwrap()
-            .0
-            .calculate();
-        Ok(final_position)
+            .find_map(|(a, b)| if b == valid_idx { Some(a) } else { None })
+            .unwrap();
+
+        Ok(final_position.rotate().calculate())
     }
 }
 
@@ -135,6 +101,6 @@ advent_tests!(
         "../inputs/tests/day14.txt" => 136
     ),
     part 2 => (
-        "../inputs/tests/day14.txt" => 0
+        "../inputs/tests/day14.txt" => 64
     )
 );
