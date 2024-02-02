@@ -28,8 +28,8 @@ pub fn read_input(path: impl AsRef<Path>) -> Result<Vec<String>, std::io::Error>
 }
 
 #[macro_export]
-macro_rules! advent_test {
-    ($input1: literal, $output1: literal, $input2: literal, $output2: literal) => {
+macro_rules! advent_tests {
+    (part 1 => ($($input1:literal => $output1:literal),+)) => {
         #[cfg(test)]
         mod test_solution {
             use super::Solution;
@@ -37,23 +37,15 @@ macro_rules! advent_test {
 
             #[test]
             fn part_1() -> GenericResult<()> {
-                let inp = read_input($input1)?;
-                assert_eq!(Solution::part1(inp)?, $output1);
-                Ok(())
-            }
+                $(
+                    let inp = read_input($input1)?;
+                    assert_eq!(Solution::part1(inp)?, $output1);
+                )+
 
-            #[test]
-            fn part_2() -> GenericResult<()> {
-                let inp = read_input($input2)?;
-                assert_eq!(Solution::part2(inp)?, $output2);
                 Ok(())
             }
         }
     };
-}
-
-#[macro_export]
-macro_rules! advent_tests {
     (part 1 => ($($input1:literal => $output1:literal),+), part 2 => ($($input2:literal => $output2:literal),+)) => {
         #[cfg(test)]
         mod test_solution {
@@ -79,5 +71,5 @@ macro_rules! advent_tests {
                 Ok(())
             }
         }
-    };
+    }
 }

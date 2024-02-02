@@ -18,5 +18,6 @@ fn main() -> advent_utils::GenericResult<()> {
     run::<days::day12::Solution>("../inputs/day12.txt")?;
     run::<days::day13::Solution>("../inputs/day13.txt")?;
     run::<days::day14::Solution>("../inputs/day14.txt")?;
+    run::<days::day15::Solution>("../inputs/day15.txt")?;
     Ok(())
 }
