@@ -27,7 +27,7 @@ type Boxes<'t> = HashMap<u8, Box<'t>>;
 
 impl<'t> From<&'t str> for Operation<'t> {
     fn from(s: &'t str) -> Self {
-        let (label, number) = s.split_once(&['-', '=']).unwrap();
+        let (label, number) = s.split_once(['-', '=']).unwrap();
         let should_add = s.contains('=');
         Self {
             box_no: label
@@ -71,7 +71,7 @@ const fn final_val(line: &str) -> usize {
     let len = line.len();
     let line_bytes = line.as_bytes();
     while i < len {
-        if line_bytes[i] == ',' as u8 {
+        if line_bytes[i] == b',' {
             total += accum;
             accum = 0;
         } else {
