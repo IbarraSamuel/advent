@@ -1,5 +1,3 @@
-
-
 use crate::advent_tests;
 use crate::advent_utils::{AdventSolution, GenericResult};
 
