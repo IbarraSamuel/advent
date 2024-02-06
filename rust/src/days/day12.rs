@@ -38,8 +38,8 @@ const fn should_insert_it(
             && footprint[current_position + group_size] != b'#'))
 }
 
-fn solve(input: Vec<String>) -> io::Result<usize> {
-    let ways = input
+fn solve(input: Vec<String>) -> usize {
+    input
         .iter()
         .map(|line| {
             let (footprint, raw_groups) = line.split_once(' ').unwrap();
@@ -99,14 +99,12 @@ fn solve(input: Vec<String>) -> io::Result<usize> {
                 .map(|(_, v)| v)
                 .sum::<usize>()
         })
-        .sum::<usize>();
-
-    Ok(ways)
+        .sum::<usize>()
 }
 
 impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<usize> {
-        let combinations = solve(input)?;
+        let combinations = solve(input);
         Ok(combinations)
     }
 
@@ -121,7 +119,7 @@ impl AdventSolution for Solution {
                 [new_footprint, new_groups].join(" ")
             })
             .collect::<Vec<_>>();
-        let combinations = solve(new_input)?;
+        let combinations = solve(new_input);
         Ok(combinations)
     }
 }
