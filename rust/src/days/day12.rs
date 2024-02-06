@@ -3,7 +3,6 @@ use crate::advent_utils::{AdventSolution, GenericResult};
 
 pub struct Solution;
 
-
 use std::io::{self};
 
 const fn should_insert_it(
