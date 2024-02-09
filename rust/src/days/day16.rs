@@ -155,7 +155,7 @@ impl AdventSolution for Solution {
         Ok(result)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(_input: Vec<String>) -> GenericResult<usize> {
         todo!()
     }
 }
