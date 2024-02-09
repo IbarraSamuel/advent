@@ -36,6 +36,8 @@ fn check_next(
     }
 
     let Position(x, y) = position;
+    used.push(position);
+
     let new_position = match direction {
         Direction::Right => input[y]
             .iter()
@@ -60,8 +62,9 @@ fn check_next(
             .map(|(idx, _)| (x, idx)),
     };
 
+    dbg!(&new_position);
+
     if let Some((xf, yf)) = new_position {
-        used.push(Position(xf, yf));
         match (input[yf][xf], direction) {
             (b'|', Direction::Left) | (b'|', Direction::Right) => {
                 check_next(
@@ -148,7 +151,7 @@ impl AdventSolution for Solution {
             position: Position(0, 0),
         };
         let new_input = input.iter().map(|s| s.as_bytes()).collect::<Vec<_>>();
-        let result = check_next(movement, &new_input, vec![Position(0, 0)]);
+        let result = check_next(movement, &new_input, vec![]);
         Ok(result)
     }
 
