@@ -12,7 +12,7 @@ struct Number {
 }
 
 impl Number {
-    fn validate(&self, input: &Vec<String>) -> Option<usize> {
+    fn validate(&self, input: &[String]) -> Option<usize> {
         let &Self { x, y, len, val } = self;
 
         let upper = if y == 0 { 0 } else { y - 1 };
@@ -111,7 +111,7 @@ impl AdventSolution for Solution {
             (x, y)
         }
 
-        fn gear_value((x, y): (usize, usize), input: &Vec<String>) -> Option<usize> {
+        fn gear_value((x, y): (usize, usize), input: &[String]) -> Option<usize> {
             let lower = y.max(1) - 1;
             let upper = y.min(input.len() - 2) + 1;
             let left = x.max(1) - 1;
