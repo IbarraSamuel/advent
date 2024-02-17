@@ -1,4 +1,4 @@
-use std::{borrow::BorrowMut, collections::HashSet, io::Write};
+use std::{collections::HashSet, hash::Hash, io::Write};
 
 use crate::{
     advent_tests,
@@ -8,6 +8,7 @@ use crate::{
 const MIRRORS: [u8; 4] = [b'/', b'\\', b'|', b'-'];
 
 enum Mirror {
+    None,
     Zero,
     FortyFive,
     Ninety,
@@ -21,7 +22,8 @@ impl From<&u8> for Mirror {
             b'\\' => Mirror::OneThirtyFive,
             b'|' => Mirror::Ninety,
             b'-' => Mirror::Zero,
-            _ => unreachable!("Invalid mirror"),
+            b'.' => Mirror::None,
+            _ => panic!("Invalid mirror"),
         }
     }
 }
@@ -33,6 +35,7 @@ impl Mirror {
         (x, y): (usize, usize),
     ) -> (Option<Direction>, Option<Direction>) {
         match *self {
+            Mirror::None => (Some(direction.clone()), None),
             Mirror::Zero => match direction {
                 Direction::Left { .. } => (Some(Direction::Left { x, y }), None),
                 Direction::Right { .. } => (Some(Direction::Right { x, y }), None),
@@ -66,7 +69,7 @@ impl Mirror {
 
 pub struct Solution;
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 enum Direction {
     Left { x: usize, y: usize },
     Right { x: usize, y: usize },
@@ -75,162 +78,88 @@ enum Direction {
 }
 
 impl Direction {
-    fn overlaps(&self, other: &Direction, ctx: &[&[u8]], mut non: Vec<String>) -> bool {
-        let d = self.ray_distance(ctx, &mut non);
-        let d2 = other.ray_distance(ctx, &mut non);
-        if d == 0 || d2 == 0 {
-            return false;
-        }
-
-        match (self, other) {
-            (&Direction::Left { x, y }, &Direction::Up { x: x2, y: y2 }) => {
-                x > x2 && y < y2 && x < x2 + 2 + d && y + 2 + d2 > y2
-            }
-            (&Direction::Left { x, y }, &Direction::Down { x: x2, y: y2 }) => {
-                x > x2 && y > y2 && x < x2 + 2 + d && y < y2 + 2 + d2
-            }
-            (&Direction::Right { x, y }, &Direction::Up { x: x2, y: y2 }) => {
-                x < x2 && y < y2 && x + 2 + d > x2 && y + 2 + d2 > y2
-            }
-            (&Direction::Right { x, y }, &Direction::Down { x: x2, y: y2 }) => {
-                x < x2 && y > y2 && x + 2 + d > x2 && y < y2 + 2 + d2
-            }
-            (&Direction::Up { x, y }, &Direction::Left { x: x2, y: y2 }) => {
-                x < x2 && y > y2 && x + 2 + d2 > x2 && y < y2 + 2 + d
-            }
-            (&Direction::Up { x, y }, &Direction::Right { x: x2, y: y2 }) => {
-                x > x2 && y > y2 && x < x2 + 2 + d2 && y < y2 + 2 + d
-            }
-            (&Direction::Down { x, y }, &Direction::Left { x: x2, y: y2 }) => {
-                x < x2 && y < y2 && x + 2 + d2 > x2 && y + 2 + d > y2
-            }
-            (&Direction::Down { x, y }, &Direction::Right { x: x2, y: y2 }) => {
-                x > x2 && y < y2 && x < x2 + 2 + d2 && y + 2 + d > y2
-            }
-            _ => false,
+    fn dx(&self) -> (i8, i8) {
+        match self {
+            Direction::Left { .. } => (-1, 0),
+            Direction::Right { .. } => (1, 0),
+            Direction::Up { .. } => (0, -1),
+            Direction::Down { .. } => (0, 1),
         }
     }
 
-    fn next(&self, ctx: &[&[u8]]) -> (Option<Self>, Option<Self>) {
-        match *self {
-            Direction::Left { x, y } => ctx[y][0..x]
-                .iter()
-                .enumerate()
-                .rev()
-                .find(|&(_, a)| MIRRORS.contains(a))
-                .map(|(xi, v)| Mirror::from(v).reflect(self, (xi, y)))
-                .unwrap_or((None, None)),
-            Direction::Right { x, y } => ctx[y][x + 1..]
-                .iter()
-                .enumerate()
-                .find(|&(_, a)| MIRRORS.contains(a))
-                .map(|(xi, v)| Mirror::from(v).reflect(self, (x + 1 + xi, y)))
-                .unwrap_or((None, None)),
-            Direction::Up { x, y } => ctx[0..y]
-                .iter()
-                .enumerate()
-                .rev()
-                .map(|(yi, ln)| (yi, ln[x]))
-                .find(|&(_, a)| MIRRORS.contains(&a))
-                .map(|(yi, v)| Mirror::from(&v).reflect(self, (x, yi)))
-                .unwrap_or((None, None)),
-            Direction::Down { x, y } => ctx[y + 1..]
-                .iter()
-                .enumerate()
-                .map(|(yi, ln)| (yi, ln[x]))
-                .find(|&(_, a)| MIRRORS.contains(&a))
-                .map(|(yi, v)| Mirror::from(&v).reflect(self, (x, y + 1 + yi)))
-                .unwrap_or((None, None)),
+    fn pos(&self) -> (usize, usize) {
+        match self {
+            Direction::Left { x, y }
+            | Direction::Right { x, y }
+            | Direction::Up { x, y }
+            | Direction::Down { x, y } => (*x, *y),
         }
     }
 
-    fn ray_distance(&self, ctx: &[&[u8]], visualizer: &mut [String]) -> usize {
-        let distance = match *self {
-            Direction::Left { x, y } => ctx[y][0..x]
-                .iter()
-                .rev()
-                .take_while(|a| !MIRRORS.contains(a))
-                .count(),
-            Direction::Right { x, y } => ctx[y][x + 1..]
-                .iter()
-                .take_while(|a| !MIRRORS.contains(a))
-                .count(),
-            Direction::Up { x, y } => ctx[0..y]
-                .iter()
-                .rev()
-                .map(|ln| ln[x])
-                .take_while(|a| !MIRRORS.contains(a))
-                .count(),
-            Direction::Down { x, y } => ctx[y + 1..]
-                .iter()
-                .map(|ln| ln[x])
-                .take_while(|a| !MIRRORS.contains(a))
-                .count(),
-        };
-        match *self {
-            Direction::Left { x, y } => {
-                visualizer[y].replace_range(x - distance..=x, &"<".repeat(distance + 1))
-            }
-            Direction::Right { x, y } => {
-                visualizer[y].replace_range(x..=x + distance, &">".repeat(distance + 1))
-            }
-            Direction::Up { x, y } => {
-                visualizer[y - distance..=y]
-                    .iter_mut()
-                    .for_each(|ln| ln.replace_range(x..=x, "^"));
-            }
-            Direction::Down { x, y } => {
-                visualizer[y..=y + distance]
-                    .iter_mut()
-                    .for_each(|ln| ln.replace_range(x..=x, "v"));
-            }
-        };
+    fn next_pos(&self) -> Option<(usize, usize)> {
+        let (x, y) = self.pos();
+        let (dx, dy) = self.dx();
+        if (x as isize + dx as isize) < 0 || (y as isize + dy as isize) < 0 {
+            None
+        } else {
+            Some((
+                (x as isize + dx as isize) as usize,
+                (y as isize + dy as isize) as usize,
+            ))
+        }
+    }
 
-        std::io::stdout().flush().unwrap();
-        distance
+    fn next_dir(&self, ctx: &[&[u8]]) -> (Option<Direction>, Option<Direction>) {
+        if let Some((x, y)) = self.next_pos() {
+            if x >= ctx[0].len() || y >= ctx.len() {
+                return (None, None);
+            }
+            Mirror::from(&ctx[y][x]).reflect(self, (x, y))
+        } else {
+            (None, None)
+        }
     }
 }
 
-fn calculate(ctx: &[&[u8]]) -> usize {
-    let mut queue = Vec::with_capacity(
+fn calculate(ctx: &[&[u8]], init: Option<Direction>) -> usize {
+    let mut queue: Vec<Direction> = Vec::with_capacity(
         ctx.iter()
             .map(|ln| ln.iter().filter(|a| MIRRORS.contains(a)).count())
-            .sum::<usize>(),
+            .sum::<usize>()
+            * 2,
     );
-    queue.push(Direction::Right { x: 0, y: 0 });
-    let mut used: HashSet<Direction> = Default::default();
-    let mut visualizer = ctx
-        .iter()
-        .map(|ln| String::from_utf8_lossy(ln).to_string())
-        .collect::<Vec<_>>();
+    let mut used: HashSet<Direction> = HashSet::with_capacity(queue.capacity());
+    if init.is_some() {
+        used.insert(init.clone().unwrap());
+    }
+    queue.push(init.unwrap_or(Direction::Right { x: 0, y: 0 }));
 
     while let Some(next_direction) = queue.pop() {
-        if let (Some(new_direction), other) = next_direction.next(ctx) {
-            if !used.contains(&new_direction) {
-                queue.push(new_direction);
-            }
-            if let Some(other_direction) = other {
-                if !used.contains(&other_direction) {
-                    queue.push(other_direction);
+        match next_direction.next_dir(ctx) {
+            (Some(dir1), Some(dir2)) => {
+                if !used.contains(&dir1) {
+                    queue.push(dir1.clone());
+                }
+                if !used.contains(&dir2) {
+                    queue.push(dir2.clone());
                 }
             }
+            (Some(dir1), None) => {
+                if !used.contains(&dir1) {
+                    queue.push(dir1.clone());
+                }
+            }
+            (None, Some(dir2)) => {
+                if !used.contains(&dir2) {
+                    queue.push(dir2.clone());
+                }
+            }
+            (None, None) => (),
         }
         used.insert(next_direction);
     }
 
-    println!("Used: {:#?}", used);
-
-    let mut overlapping = 0;
-    for i in used.iter() {
-        for a in used.iter() {
-            if i != a && i.overlaps(a, ctx, visualizer.clone()) {
-                overlapping += 1;
-            }
-        }
-    }
-
-    let res = used
-        .iter()
+    used.iter()
         .map(|dir| match dir {
             Direction::Up { x, y }
             | Direction::Down { x, y }
@@ -239,30 +168,113 @@ fn calculate(ctx: &[&[u8]]) -> usize {
         })
         .collect::<HashSet<_>>()
         .len()
-        + used
-            .into_iter()
-            .map(|direction| direction.ray_distance(ctx, &mut visualizer))
-            .sum::<usize>()
-        - overlapping / 2;
+}
 
-    println!("{}\n\n", visualizer.join("\n"));
-    res
+fn calc_energized(input: &[&[u8]], start: (isize, isize, isize, isize)) -> usize {
+    let mut queue = vec![start];
+    let mut seen = HashSet::new();
+
+    while let Some((mut row, mut col, drow, dcol)) = queue.pop() {
+        row += drow;
+        col += dcol;
+
+        if row < 0 || row as usize >= input.len() || col < 0 || col as usize >= input[0].len() {
+            continue;
+        }
+
+        let new_pos = input[row as usize][col as usize];
+
+        match new_pos {
+            b'.' => {
+                queue.push((row, col, drow, dcol));
+                seen.insert((row, col, drow, dcol));
+            }
+            b'\\' if !seen.contains(&(row, col, dcol, drow)) => {
+                queue.push((row, col, dcol, drow));
+                seen.insert((row, col, dcol, drow));
+            }
+            b'/' if !seen.contains(&(row, col, -dcol, -drow)) => {
+                queue.push((row, col, -dcol, -drow));
+                seen.insert((row, col, -dcol, -drow));
+            }
+            b'|' if drow != 0 => {
+                queue.push((row, col, drow, dcol));
+                seen.insert((row, col, drow, dcol));
+            }
+            b'|' => {
+                if !seen.contains(&(row, col, 1, 0)) {
+                    queue.push((row, col, 1, 0));
+                    seen.insert((row, col, 1, 0));
+                }
+                if !seen.contains(&(row, col, -1, 0)) {
+                    queue.push((row, col, -1, 0));
+                    seen.insert((row, col, -1, 0));
+                }
+            }
+            b'-' if dcol != 0 => {
+                queue.push((row, col, drow, dcol));
+                seen.insert((row, col, drow, dcol));
+            }
+            b'-' => {
+                if !seen.contains(&(row, col, 0, 1)) {
+                    queue.push((row, col, 0, 1));
+                    seen.insert((row, col, 0, 1));
+                }
+                if !seen.contains(&(row, col, 0, -1)) {
+                    queue.push((row, col, 0, -1));
+                    seen.insert((row, col, 0, -1));
+                }
+            }
+            _ => continue,
+        }
+    }
+    seen.iter()
+        .map(|(row, col, _, _)| (row, col))
+        .collect::<HashSet<_>>()
+        .len()
 }
 
 impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<usize> {
         let new_input = input.iter().map(|s| s.as_bytes()).collect::<Vec<_>>();
-        Ok(calculate(&new_input))
-        // Ok(0)
+        // let init =
+        //     MIRRORS
+        //         .contains(&new_input[0][0])
+        //         .then(|| match Mirror::from(&new_input[0][0]) {
+        //             Mirror::Zero => Direction::Right { x: 0, y: 0 },
+        //             Mirror::FortyFive => Direction::Up { x: 0, y: 0 },
+        //             Mirror::Ninety => Direction::Down { x: 0, y: 0 },
+        //             Mirror::OneThirtyFive => Direction::Down { x: 0, y: 0 },
+        //             Mirror::None => Direction::Right { x: 0, y: 0 },
+        //         });
+        // Ok(calculate(&new_input, init))
+        Ok(calc_energized(&new_input, (0, -1, 0, 1)))
     }
 
-    fn part2(_input: Vec<String>) -> GenericResult<usize> {
-        Ok(0)
+    fn part2(input: Vec<String>) -> GenericResult<usize> {
+        let new_input = input.iter().map(|s| s.as_bytes()).collect::<Vec<_>>();
+        let result = (0..new_input.len()).fold(0, |acc, n| {
+            acc.max(calc_energized(&new_input, (n as isize, -1, 0, 1)))
+                .max(calc_energized(
+                    &new_input,
+                    (n as isize, new_input.len() as isize, 0, -1),
+                ))
+        });
+        Ok((0..new_input[0].len()).fold(result, |acc, n| {
+            acc.max(calc_energized(&new_input, (-1, n as isize, 1, 0)))
+                .max(calc_energized(
+                    &new_input,
+                    (new_input.len() as isize, n as isize, -1, 0),
+                ))
+        }))
     }
 }
 
 advent_tests!(
     part 1 => (
         "../inputs/tests/day16.txt" => 46
+    ),
+    part 2 => (
+        "../inputs/tests/day16.txt" => 51
     )
 );
