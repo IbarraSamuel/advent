@@ -1,7 +1,6 @@
+use crate::advent_utils::{AdventSolution, GenericResult};
 use std::collections::HashMap;
 use std::vec;
-
-use crate::advent_utils::{AdventSolution, GenericResult};
 
 pub struct Solution;
 
@@ -48,11 +47,13 @@ impl AdventSolution for Solution {
                     .min_by_key(|&(_, idx)| idx)
                     .map(|(name, _)| to_check[name])?;
 
-                to_check
+                let last = to_check
                     .keys()
                     .filter_map(|&word| Some((word, line.rfind(word)?)))
                     .max_by_key(|&(_, idx)| idx)
-                    .map(|(name, _)| first * 10 + to_check[name])
+                    .map(|(name, _)| to_check[name])?;
+
+                Some(first * 10 + last)
             })
             .sum::<u32>();
 

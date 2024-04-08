@@ -1,6 +1,7 @@
 from advent_utils import read_input, AdventSolution, AdventResultType
 from builtin.string import atol
 from collections import Optional
+from math import min, max
 
 
 struct Solution(AdventSolution):
@@ -56,23 +57,30 @@ fn first_numeric[accum: IntLiteral](line: String) -> Int:
 
 
 fn line_value(line: String, mapper: Dict[StringLiteral, Int]) -> Int:
-    var found_items = List[Tuple[StringLiteral, Int]]()
+    # TODO: work in progress since Dicts are not working properly.
+    var min_dict = Dict[Int, Int]()
+    var max_dict = Dict[Int, Int]()
+
     for k in mapper:
-        var idx = line.find(k[])
-        if idx != -1:
-            found_items.append((k[], idx))
+        var min_idx = line.find(k[])
+        var max_idx = line.rfind(k[])
+        if min_idx != -1:
+            min_dict[min_idx] = mapper.find(k[]).value()
+    return 0
 
-    var min_val = Tuple("", len(line))
-    var max_val = Tuple("", -1)
-    for it in found_items:
-        if min_val.get[1, Int]() > it[].get[1, Int]():
-            min_val = it[]
-        if max_val.get[1, Int]() < it[].get[1, Int]():
-            max_val = it[]
+    # if max_idx != -1:
+    #     max_dict[max_idx] = k[].value
 
-    var first = mapper.find(min_val.get[0, StringLiteral]()).value()
-    var last = mapper.find(max_val.get[0, StringLiteral]()).value()
-    return first * 10 + last
+    return 0
+    var min_val = len(line)
+    var max_val = -1
+    for it in min_dict:
+        min_val = min(min_val, it[])
+
+    for it in max_dict:
+        max_val = max(max_val, it[])
+
+    return min_dict.find(min_val).value() * 10 + max_dict.find(max_val).value()
 
 
 @always_inline
