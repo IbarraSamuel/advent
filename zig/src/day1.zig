@@ -1,5 +1,5 @@
 const print = @import("std").debug.print;
-const utils = @import("utils.zig");
+const utils = @import("advent_utils.zig");
 const std = @import("std");
 
 pub fn compose_number(input: []const u8) !usize {

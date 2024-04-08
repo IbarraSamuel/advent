@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn get_input(path: []const u8, comptime size: ?usize) ![]const u8 {
+pub fn get_input(comptime path: []const u8, comptime size: ?usize) ![]const u8 {
     var sz: usize = size orelse 1024 * 1024;
     return try std.fs.cwd().readFileAlloc(std.heap.page_allocator, path, sz);
 }
@@ -49,4 +49,9 @@ pub fn read_file(path: []const u8) !std.ArrayList(std.ArrayList(u8)) {
         error.EndOfStream => {},
         else => |e| return e,
     }
+}
+
+pub fn run(comptime path: []const u8, comptime T: type, comptime AR: fn ([]u8) T) !void {
+    const input = try read_file(path);
+    const output = AR(input);
 }
