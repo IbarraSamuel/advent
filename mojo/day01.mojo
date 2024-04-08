@@ -70,8 +70,8 @@ fn line_value(line: String, mapper: Dict[StringLiteral, Int]) -> Int:
         if max_val.get[1, Int]() < it[].get[1, Int]():
             max_val = it[]
 
-    var first = mapper.find(min_val.get[0, StringLiteral]()).or_else(0)
-    var last = mapper.find(max_val.get[0, StringLiteral]()).or_else(0)
+    var first = mapper.find(min_val.get[0, StringLiteral]()).value()
+    var last = mapper.find(max_val.get[0, StringLiteral]()).value()
     return first * 10 + last
 
 
