@@ -1,9 +1,9 @@
 const std = @import("std");
-const day1 = @import("day1.zig");
+const run = @import("advent_utils.zig").run;
+const day01 = @import("day01.zig");
 
 pub fn main() !void {
-    const day_1_result = try day1.part1("../inputs/day1_1.txt");
-    std.debug.print("Day 1 part 1: {}.\n", .{day_1_result});
+    try run(usize, day01.Result, "../inputs/day01.txt");
 }
 
 test "simple test" {

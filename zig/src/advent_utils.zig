@@ -1,57 +1,25 @@
 const std = @import("std");
 
-pub fn get_input(comptime path: []const u8, comptime size: ?usize) ![]const u8 {
+fn DayFunction(comptime T: type) type {
+    return fn ([]u8) anyerror!T;
+}
+
+pub fn AdventResult(comptime T: type) type {
+    return struct {
+        part_1: DayFunction(T),
+        part_2: DayFunction(T),
+    };
+}
+
+pub fn get_input(comptime path: []const u8, comptime size: ?usize) ![]u8 {
     var sz: usize = size orelse 1024 * 1024;
     return try std.fs.cwd().readFileAlloc(std.heap.page_allocator, path, sz);
 }
 
-pub fn read_all_file(path: []const u8, comptime size: ?usize) ![]const u8 {
-    var sz: usize = size orelse 1024 * 1024;
-
-    const file = try std.fs.cwd().openFile(path, .{});
-    defer file.close();
-
-    var buf_reader = std.io.bufferedReader(file.reader());
-    const reader = buf_reader.reader();
-
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-
-    const allocator = gpa.allocator();
-
-    var raw_lines = std.ArrayList(u8).init(allocator);
-    defer raw_lines.deinit();
-
-    try reader.readAllArrayList(&raw_lines, sz);
-
-    return raw_lines.items;
-}
-
-pub fn read_file(path: []const u8) !std.ArrayList(std.ArrayList(u8)) {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-
-    const allocator = gpa.allocator();
-
-    const file = try std.fs.cwd().openFile(path, .{});
-    defer file.close();
-
-    var buf_reader = std.io.bufferedReader(file.reader());
-    const reader = buf_reader.reader();
-
-    var line = std.ArrayList(u8).init(allocator);
-    defer line.deinit();
-
-    while (reader.streamUntilDelimiter(line.writer(), '\n', null)) {
-        defer line.clearRetainingCapacity();
-        std.debug.print("--{s}\n", .{line.items});
-    } else |err| switch (err) {
-        error.EndOfStream => {},
-        else => |e| return e,
-    }
-}
-
-pub fn run(comptime path: []const u8, comptime T: type, comptime AR: fn ([]u8) T) !void {
-    const input = try read_file(path);
-    const output = AR(input);
+pub fn run(comptime T: type, comptime AR: AdventResult(T), comptime path: []const u8) !void {
+    const input = try get_input(path, null);
+    const d1 = try AR.part_1(input);
+    std.debug.print("day 1: {}\n", .{d1});
+    const d2 = try AR.part_2(input);
+    std.debug.print("day 2: {}\n", .{d2});
 }
