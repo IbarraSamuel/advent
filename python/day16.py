@@ -1,4 +1,4 @@
-with open("../inputs/day16.txt", "r") as file:
+with open("../inputs/day16.txt") as file:
     grid = file.read().splitlines()
 
 
@@ -50,7 +50,6 @@ def calc_energized(grid: list[str], start: tuple[int, int, int, int]) -> int:
 
 # row -1 because its like you start outside the grid
 solution1 = calc_energized(grid, (0, -1, 0, 1))
-print("Solution 1", solution1)
 
 solution2 = 0
 for row in range(len(grid)):
@@ -67,4 +66,3 @@ for col in range(len(grid[0])):
         calc_energized(grid, (len(grid), col, -1, 0)),
     )
 
-print("Solution 2", solution2)

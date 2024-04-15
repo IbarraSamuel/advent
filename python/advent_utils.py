@@ -1,7 +1,8 @@
 """Utility functions for Advent of Code."""
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Protocol, Sequence, TypeVar
+from typing import Protocol, TypeVar
 
 T_co = TypeVar("T_co", covariant=True)
 
@@ -28,6 +29,4 @@ class AdventResult(Protocol[T_co]):
 
 def run[T](result: type[AdventResult[T]], path: str) -> None:
     """Run the solution for a given day."""
-    lines = read_input(path)
-    print("day 1:", result.day_1(lines))
-    print("day 2:", result.day_2(lines))
+    read_input(path)

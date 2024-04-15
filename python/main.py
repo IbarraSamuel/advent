@@ -2,7 +2,7 @@ import day01
 from advent_utils import run
 
 
-def main():
+def main() -> None:
     run(day01.Solution, "../inputs/day01.txt")
 
 

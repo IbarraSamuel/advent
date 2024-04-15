@@ -12,21 +12,19 @@ for row in open("inputs/day12.txt"):
                 if (
                     n + contiguous - 1 < len(record)
                     and "." not in record[n : n + contiguous]
-                ):
-                    if (
-                        i == len(checksum) - 1 and "#" not in record[n + contiguous :]
-                    ) or (
-                        i < len(checksum) - 1
-                        and n + contiguous < len(record)
-                        and record[n + contiguous] != "#"
-                    ):
-                        new_positions[n + contiguous + 1] = (
-                            new_positions[n + contiguous + 1] + v
-                            if n + contiguous + 1 in new_positions
-                            else v
-                        )
+                ) and ((
+                    i == len(checksum) - 1 and "#" not in record[n + contiguous :]
+                ) or (
+                    i < len(checksum) - 1
+                    and n + contiguous < len(record)
+                    and record[n + contiguous] != "#"
+                )):
+                    new_positions[n + contiguous + 1] = (
+                        new_positions[n + contiguous + 1] + v
+                        if n + contiguous + 1 in new_positions
+                        else v
+                    )
                 if record[n] == "#":
                     break
         positions = new_positions
     ways += sum(positions.values())
-print(ways)

@@ -25,4 +25,3 @@ def part_1(input: str) -> int:
 
 with open("../inputs/day13.txt") as f:
     values = f.read()
-    print(part_1(values))
