@@ -12,7 +12,7 @@ pub fn AdventResult(comptime T: type) type {
 }
 
 pub fn get_input(comptime path: []const u8, comptime size: ?usize) ![]u8 {
-    var sz: usize = size orelse 1024 * 1024;
+    const sz: usize = size orelse 1024 * 1024;
     return try std.fs.cwd().readFileAlloc(std.heap.page_allocator, path, sz);
 }
 
