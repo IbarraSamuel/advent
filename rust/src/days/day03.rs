@@ -34,7 +34,7 @@ impl Number {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let values: usize = input
             .iter()
             .enumerate()
@@ -80,7 +80,7 @@ impl AdventSolution for Solution {
         Ok(values)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         fn get_num(pos: (usize, usize), input: &[String]) -> usize {
             assert!(input[pos.1].chars().nth(pos.0).unwrap().is_ascii_digit());
 

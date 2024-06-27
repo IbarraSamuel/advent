@@ -90,7 +90,7 @@ impl Hand {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let mut hands = input
             .iter()
             .map(|s| {
@@ -111,7 +111,7 @@ impl AdventSolution for Solution {
         Ok(result)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let mut hands = input
             .iter()
             .map(|s| {

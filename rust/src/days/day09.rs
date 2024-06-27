@@ -23,7 +23,7 @@ fn calc_prev_and_next(values: &[i64]) -> (i64, i64) {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<i64> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let last_values = input
             .iter()
             .map(|s| {
@@ -38,7 +38,7 @@ impl AdventSolution for Solution {
         Ok(last_values.iter().sum::<i64>())
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<i64> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let last_values = input
             .iter()
             .map(|s| {

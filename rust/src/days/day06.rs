@@ -35,7 +35,7 @@ impl Race {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let total_races = input[0].split_whitespace().count() - 1;
         let lines = input
             .iter()
@@ -58,7 +58,7 @@ impl AdventSolution for Solution {
         Ok(result)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         if let &[duration, record] = input
             .iter()
             .filter_map(|l| {

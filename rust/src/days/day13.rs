@@ -30,7 +30,7 @@ fn almost_a_mirror(values: &[String]) -> Option<usize> {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let total = input
             .split(|s| s.is_empty())
             .map(|h| {
@@ -54,7 +54,7 @@ impl AdventSolution for Solution {
         Ok(total)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let total = input
             .split(|s| s.is_empty())
             .map(|h| {

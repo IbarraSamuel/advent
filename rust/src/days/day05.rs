@@ -5,7 +5,7 @@ pub struct Solution;
 type HashMapper<'t> = HashMap<&'t str, (&'t str, Vec<(usize, usize, usize)>)>;
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let seeds = input[0]
             .strip_prefix("seeds: ")
             .unwrap()
@@ -64,7 +64,7 @@ impl AdventSolution for Solution {
         Ok(final_values)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct Range {
             init: usize,
@@ -97,9 +97,7 @@ impl AdventSolution for Solution {
                 &self,
                 other: &RangeMap,
             ) -> Option<(Option<Range>, Range, Option<Range>)> {
-                let Some(overlap) = self.overlap(&other.range) else {
-                    return None;
-                };
+                let overlap = self.overlap(&other.range)?;
 
                 let left = if self.init < overlap.init {
                     Some((self.init, overlap.init).into())

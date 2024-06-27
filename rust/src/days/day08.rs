@@ -31,7 +31,7 @@ fn lcm(first: usize, second: usize) -> usize {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let pattern = input[0].chars().map(Direction::from).collect::<Vec<_>>();
 
         let nodes = input
@@ -67,7 +67,7 @@ impl AdventSolution for Solution {
         Ok(iterations)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let pattern = input[0].chars().map(Direction::from).collect::<Vec<_>>();
 
         let nodes = input

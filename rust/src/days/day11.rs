@@ -4,7 +4,7 @@ use crate::advent_utils::{AdventSolution, GenericResult};
 pub struct Solution;
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<isize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let empty_rows = input
             .iter()
             .enumerate()
@@ -39,7 +39,7 @@ impl AdventSolution for Solution {
         Ok(steps / 2)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<isize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let empty_rows = input
             .iter()
             .enumerate()

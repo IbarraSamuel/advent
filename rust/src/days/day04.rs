@@ -8,7 +8,7 @@ use crate::{
 pub struct Solution {}
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         fn inp_to_values((left, right): (&str, &str)) -> usize {
             let pow = left
                 .split_whitespace()
@@ -37,7 +37,7 @@ impl AdventSolution for Solution {
         Ok(out)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         fn inp_to_values((left, right): (&str, &str)) -> usize {
             left.split_whitespace()
                 .filter_map(|v| v.parse::<usize>().ok())

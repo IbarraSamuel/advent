@@ -32,7 +32,7 @@ impl Bag {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let result = input
             .into_iter()
             .filter_map(|line| {
@@ -60,7 +60,7 @@ impl AdventSolution for Solution {
         Ok(result)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let result = input
             .into_iter()
             .map(|line| {

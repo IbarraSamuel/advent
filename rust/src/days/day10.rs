@@ -117,7 +117,7 @@ fn get_inners_count(map: &[Vec<Pipe>]) -> usize {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let mut map = input
             .iter()
             .enumerate()
@@ -149,7 +149,7 @@ impl AdventSolution for Solution {
         Ok(count / 2)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let mut map = input
             .iter()
             .enumerate()

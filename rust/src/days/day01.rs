@@ -5,7 +5,7 @@ use std::vec;
 pub struct Solution;
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<u32> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let result = input
             .into_iter()
             .map(|line| {
@@ -17,7 +17,7 @@ impl AdventSolution for Solution {
         Ok(result)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<u32> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let to_check: HashMap<&str, u32> = HashMap::from_iter(vec![
             ("one", 1),
             ("two", 2),

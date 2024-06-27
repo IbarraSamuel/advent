@@ -101,12 +101,12 @@ fn solve(input: Vec<String>) -> usize {
 }
 
 impl AdventSolution for Solution {
-    fn part1(input: Vec<String>) -> GenericResult<usize> {
+    fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         let combinations = solve(input);
         Ok(combinations)
     }
 
-    fn part2(input: Vec<String>) -> GenericResult<usize> {
+    fn part2(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
         // todo!();
         let new_input = input
             .into_iter()
