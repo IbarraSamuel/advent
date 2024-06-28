@@ -1,7 +1,6 @@
 from advent_utils import read_input, AdventSolution, AdventResultType
 from builtin.string import atol
 from collections import Optional
-from math import min, max
 
 
 struct Solution(AdventSolution):
@@ -13,7 +12,7 @@ struct Solution(AdventSolution):
         for line in input:
             total += calc[F=first_numeric](line[])
 
-        return total
+        return rebind[T, Self.T](total)
 
     @staticmethod
     fn day_2[T: AdventResultType = Self.T](input: List[String]) -> T:

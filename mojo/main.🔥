@@ -1,4 +1,4 @@
-import day01, day16
+from days import day01, day16
 from advent_utils import read_input, run
 
 

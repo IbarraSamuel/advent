@@ -4,9 +4,10 @@ from collections.optional import Optional
 fn read_input[path: StringLiteral]() -> Optional[List[String]]:
     try:
         with open(path, "r") as f:
-            return Optional(f.read().split(delimiter="\n"))
+            return Optional(f.read().splitlines())
     except:
         return None
+    return None
 
 
 trait AdventResultType(Stringable, Copyable):
@@ -29,7 +30,7 @@ fn run[S: AdventSolution, path: StringLiteral, T: AdventResultType = Int]():
         print("No file found with path:", path)
 
     var result_1 = S.day_1[T](input.value())
-    print("\tPart 1:", result_1)
+    print("\tPart 1:", str(result_1))
     var result_2 = S.day_2[T](input.value())
-    print("\tPart 2:", result_2)
+    print("\tPart 2:", str(result_2))
     return

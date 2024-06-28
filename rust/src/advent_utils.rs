@@ -16,7 +16,7 @@ pub fn run<S: AdventSolution>(path: impl AsRef<Path>) -> GenericResult<()> {
 
     match S::part2(input) {
         Ok(result_2) => println!("\tPart 2: {result_2}\n"),
-        _ => println!("NOT IMPLEMENTED!\n"),
+        _ => println!("\tPart 2: NOT IMPLEMENTED!\n"),
     }
     Ok(())
 }

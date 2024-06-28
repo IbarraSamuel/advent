@@ -1,5 +1,5 @@
-import day01
-from advent_utils import run
+from .advent_utils import run
+from .days import day01
 
 
 def main() -> None:

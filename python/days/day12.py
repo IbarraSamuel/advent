@@ -1,3 +1,4 @@
+# pyright: reportAny=false
 from functools import cache
 
 with open("inputs/day12.txt") as file:
@@ -36,7 +37,6 @@ def main() -> None:
         conditions = "?".join([conditions] * 5)
         rules = rules * 5
         solution2 += count_arrangements(conditions, rules)
-
 
 
 if __name__ == "__main__":
