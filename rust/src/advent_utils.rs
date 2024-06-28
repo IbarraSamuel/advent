@@ -56,7 +56,9 @@ macro_rules! advent_tests {
             fn part_1() -> GenericResult<()> {
                 $(
                     let inp = read_input($input1)?;
-                    assert_eq!(Solution::part1(inp)?, $output1);
+                    let str_inp = format!("{}", Solution::part1(inp)?);
+                    let str_out = format!("{}", $output1);
+                    assert_eq!(str_inp, str_out);
                 )+
 
                 Ok(())
@@ -66,7 +68,9 @@ macro_rules! advent_tests {
             fn part_2() -> GenericResult<()> {
                 $(
                     let inp = read_input($input2)?;
-                    assert_eq!(Solution::part2(inp)?, $output2);
+                    let str_inp = format!("{}", Solution::part2(inp)?);
+                    let str_out = format!("{}", $output2);
+                    assert_eq!(str_inp, str_out);
                 )+
                 Ok(())
             }
