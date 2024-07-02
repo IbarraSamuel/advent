@@ -1,4 +1,4 @@
-from advent_utils import read_input, AdventSolution, AdventResultType
+from advent_utils import read_input, AdventSolution
 from builtin.string import atol
 from collections import Optional
 
@@ -7,7 +7,7 @@ struct Solution(AdventSolution):
     alias T = Int
 
     @staticmethod
-    fn day_1[T: AdventResultType = Self.T](input: List[String]) -> T:
+    fn day_1[T: AnyTrivialRegType = Self.T](input: List[String]) -> T:
         var total: Self.T = 0
         for line in input:
             total += calc[F=first_numeric](line[])
@@ -15,7 +15,7 @@ struct Solution(AdventSolution):
         return rebind[T, Self.T](total)
 
     @staticmethod
-    fn day_2[T: AdventResultType = Self.T](input: List[String]) -> T:
+    fn day_2[T: AnyTrivialRegType = Self.T](input: List[String]) -> T:
         var mapper = Dict[StringLiteral, Int]()
         mapper["one"] = 1
         mapper["two"] = 2
@@ -40,7 +40,7 @@ struct Solution(AdventSolution):
         for line in input:
             total += line_value(line[], mapper)
 
-        return total
+        return rebind[T, Self.T](total)
 
 
 fn first_numeric[accum: IntLiteral](line: String) -> Int:

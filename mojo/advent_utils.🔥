@@ -10,26 +10,22 @@ fn read_input[path: StringLiteral]() -> Optional[List[String]]:
     return None
 
 
-trait AdventResultType(Stringable, Copyable):
-    ...
-
-
 trait AdventSolution:
     @staticmethod
-    fn day_1[T: AdventResultType](input: List[String]) -> T:
+    fn day_1[T: Stringable](input: List[String]) -> T:
         ...
 
     @staticmethod
-    fn day_2[T: AdventResultType](input: List[String]) -> T:
+    fn day_2[T: Stringable](input: List[String]) -> T:
         ...
 
 
-fn run[S: AdventSolution, path: StringLiteral, T: AdventResultType = Int]():
+fn run[S: AdventSolution, path: StringLiteral, T: Stringable]():
     var input = read_input[path=path]()
     if not input:
         print("No file found with path:", path)
 
-    var result_1 = S.day_1[T](input.value())
+    var result_1: T = S.day_1[T](input.value())
     print("\tPart 1:", str(result_1))
     var result_2 = S.day_2[T](input.value())
     print("\tPart 2:", str(result_2))
