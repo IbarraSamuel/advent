@@ -1,6 +1,6 @@
-from collections.abc import Sequence
+"""Day 1 result."""
 
-from advent_utils import AdventSolution
+from collections.abc import Sequence
 
 IM = {
     "one": 1,
@@ -24,27 +24,31 @@ IM = {
 }
 
 
-def keep_numbers(line: str) -> str:
+def _keep_numbers(line: str) -> str:
     return "".join([c for c in line if c.isdigit()])
 
 
-class Solution(AdventSolution):
+class Solution:
+    """Solution for the first day."""
+
     @staticmethod
-    def day_1(lines: Sequence[str]) -> int:
-        only_numbers = [keep_numbers(line) for line in lines]
+    def part_1(lines: Sequence[str]) -> int:
+        """Day 1 result."""
+        only_numbers = [_keep_numbers(line) for line in lines]
         return sum(int(n[0] + n[-1]) for n in only_numbers)
 
     @staticmethod
-    def day_2(lines: Sequence[str]) -> int:
+    def part_2(lines: Sequence[str]) -> int:
+        """Day 2 result."""
         total = 0
         for line in lines:
-            first = min(
+            first, _ = min(
                 ((a, line.find(a)) for a in IM if a in line),
                 key=lambda x: x[1],
-            )[0]
-            last = max(
+            )
+            last, _ = max(
                 ((a, line.rfind(a)) for a in IM if a in line),
                 key=lambda x: x[1],
-            )[0]
+            )
             total += IM[first] * 10 + IM[last]
         return total

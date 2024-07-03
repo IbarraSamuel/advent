@@ -2,21 +2,20 @@
 
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Protocol, TypeVar, override
+from typing import Protocol, override
 
 
 class Stringable(Protocol):
+    """Defines a type that could be converted to a string."""
+
     @override
     def __str__(self) -> str: ...
-
-
-T_co = TypeVar("T_co", covariant=True)
 
 
 def read_input(path: str) -> list[str]:
     """Read input file into a polars DataFrame."""
     with Path(path).open() as f:
-        return f.readlines()
+        return [s.strip() for s in f]
 
 
 class AdventSolution(Protocol):
@@ -35,12 +34,12 @@ class AdventSolution(Protocol):
 
 def run(result: type[AdventSolution], path: str) -> None:
     """Run the solution for a given day."""
-    print(f"From {path} =>")
+    print(f"From {path} =>")  # noqa: T201
     inp = read_input(path)
     day1 = result.part_1(inp)
-    print(f"\tPart 1: {day1}")
+    print(f"\tPart 1: {day1}")  # noqa: T201
     try:
         day2 = result.part_2(inp)
-        print(f"Part 2: {day2}")
+        print(f"\tPart 2: {day2}")  # noqa: T201
     except AttributeError:
-        print("Part 2: NOT IMPLEMENTED")
+        print("\tPart 2: NOT IMPLEMENTED")  # noqa: T201

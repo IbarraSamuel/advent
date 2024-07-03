@@ -1,7 +1,59 @@
 from advent_utils import AdventSolution
 from algorithm.functional import sync_parallelize, vectorize
+from algorithm.reduction import sum, _simd_sum
 
-alias max_game = Game(12, 13, 14)
+alias Game = (Int, Int, Int)
+alias max_game: Game = (12, 13, 14)
+
+
+@always_inline
+fn create_game(card: String) -> Game:
+    var r = 0
+    var g = 0
+    var b = 0
+    var cards: List[String]
+    try:
+        cards = card.split(", ")
+    except:
+        return (0, 0, 0)
+
+    @parameter
+    for i in range(3):
+        if i >= len(cards):
+            break
+        var color = cards[i]
+        var space = color.find(" ")
+        var val: Int
+        try:
+            val = atol(color[:space])
+        except:
+            return (0, 0, 0)
+        if color.endswith("d"):
+            r += val
+        elif color.endswith("n"):
+            g += val
+        else:
+            b += val
+
+    return (r, g, b)
+
+
+@always_inline
+fn less_than_max(game: Game) -> Bool:
+    return (
+        game[0] <= max_game[0]
+        and game[1] <= max_game[1]
+        and game[2] <= max_game[2]
+    )
+
+
+@always_inline
+fn calc_max(game: Game, other: Game) -> Game:
+    return (
+        max(game[0], other[0]),
+        max(game[1], other[1]),
+        max(game[2], other[2]),
+    )
 
 
 struct Solution(AdventSolution):
@@ -10,78 +62,42 @@ struct Solution(AdventSolution):
         var total = 0
 
         @parameter
-        fn calc_line(idx: Int) -> None:
+        fn calc_line[v: Int](idx: Int) capturing:
+            var cards: List[String]
             try:
-                for card in input[idx].split("; "):
-                    if Game(card[]) not in max_game:
-                        return
-                total += idx + 1
+                cards = input[idx][input[idx].find(": ") + 2 :].split("; ")
             except:
-                pass
+                return
 
-        for idx in range(len(input)):
-            calc_line(idx)
+            for card in cards:
+                var gm = create_game(card[])
+                if not less_than_max(gm):
+                    return
+            total += idx + 1
+
+        vectorize[calc_line, 1](len(input))
 
         return str(total)
 
     @staticmethod
     fn part_2(input: List[String]) -> String:
-        var total = 0
-        try:
-            for line in input:
-                total += calc_line(line[].split(": ")[1])
-        except:
-            pass
-        return str(total)
+        var simd = SIMD[DType.uint32, 128](value=0)
 
+        @parameter
+        fn set_result[v: Int](idx: Int):
+            var max_card = 0, 0, 0
+            var first_space = input[idx].find(": ") + 2
+            var cards: List[String]
+            try:
+                cards = input[idx][first_space:].split("; ")
+            except:
+                return
 
-@always_inline
-fn calc_line(line: String) raises -> Int:
-    var max_card = Game(0, 0, 0)
-    for card in line.split("; "):
-        max_card = max_card.calc_max(Game(card[]))
+            for card in cards:
+                var gm = create_game(card[])
+                max_card = calc_max(max_card, gm)
 
-    return int(max_card.r) * int(max_card.g) * int(max_card.b)
+            simd[idx] = max_card[0] * max_card[1] * max_card[2]
 
-
-@value
-struct Game:
-    var r: UInt8
-    var g: UInt8
-    var b: UInt8
-
-    fn __str__(self) -> String:
-        return (
-            "Game("
-            + str(self.r)
-            + ", "
-            + str(self.g)
-            + ", "
-            + str(self.b)
-            + ")"
-        )
-
-    fn __init__(inout self, card: String) raises:
-        self.__init__(0, 0, 0)
-        var rgb = card.split(", ")
-        for color in rgb:
-            var tp = color[].split(" ")
-            if tp[1] == "red":
-                self.r += atol(tp[0])
-            if tp[1] == "green":
-                self.g += atol(tp[0])
-            if tp[1] == "blue":
-                self.b += atol(tp[0])
-
-    fn __init__(inout self, r: UInt8, g: UInt8, b: UInt8):
-        self.r = r
-        self.g = g
-        self.b = b
-
-    fn __contains__(self, other: Game) -> Bool:
-        return self.r >= other.r and self.g >= other.g and self.b >= other.b
-
-    fn calc_max(self, other: Game) -> Game:
-        return Game(
-            max(self.r, other.r), max(self.g, other.g), max(self.b, other.b)
-        )
+        vectorize[set_result, 1](len(input))
+        return str(simd.reduce_add())

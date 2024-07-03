@@ -3,5 +3,11 @@ from advent_utils import read_input, run, test
 
 
 fn main() raises:
+    # tests()
     run[day01.Solution, "../inputs/day01.txt"]()
     run[day02.Solution, "../inputs/day02.txt"]()
+
+
+fn tests() raises:
+    # test[day01.Solution, "../inputs/day01.txt"]()
+    # test[day02.Solution, "../inputs/tests/day2_1.txt", 8, 2286]()
