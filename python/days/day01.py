@@ -1,5 +1,7 @@
 from collections.abc import Sequence
 
+from advent_utils import AdventSolution
+
 IM = {
     "one": 1,
     "two": 2,
@@ -26,7 +28,7 @@ def keep_numbers(line: str) -> str:
     return "".join([c for c in line if c.isdigit()])
 
 
-class Solution:
+class Solution(AdventSolution):
     @staticmethod
     def day_1(lines: Sequence[str]) -> int:
         only_numbers = [keep_numbers(line) for line in lines]

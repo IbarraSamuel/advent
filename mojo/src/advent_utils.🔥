@@ -1,0 +1,43 @@
+from collections.optional import Optional
+import sys
+from testing import assert_equal
+
+
+fn read_input[path: StringLiteral]() raises -> List[String]:
+    with open(path, "r") as f:
+        return f.read().splitlines()
+
+
+trait AdventSolution:
+    @staticmethod
+    fn part_1(input: List[String]) -> String:
+        ...
+
+    @staticmethod
+    fn part_2(input: List[String]) -> String:
+        ...
+
+
+fn run[S: AdventSolution, path: StringLiteral]() raises:
+    var input = read_input[path=path]()
+    print("From", path, "=>")
+
+    var result_1 = S.part_1(input)
+    print("\tPart 1:", result_1)
+    var result_2 = S.part_2(input)
+    print("\tPart 2:", result_2)
+    print()
+
+
+fn test[
+    T: Stringable, //,
+    S: AdventSolution,
+    path: StringLiteral,
+    expected_result_1: T,
+    expected_result_2: T,
+]() raises:
+    var input = read_input[path=path]()
+    var result_1 = S.part_1(input)
+    assert_equal(result_1, str(expected_result_1))
+    var result_2 = S.part_2(input)
+    assert_equal(result_2, str(expected_result_2))

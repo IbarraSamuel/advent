@@ -1,0 +1,87 @@
+from advent_utils import AdventSolution
+from algorithm.functional import sync_parallelize, vectorize
+
+alias max_game = Game(12, 13, 14)
+
+
+struct Solution(AdventSolution):
+    @staticmethod
+    fn part_1(input: List[String]) -> String:
+        var total = 0
+
+        @parameter
+        fn calc_line(idx: Int) -> None:
+            try:
+                for card in input[idx].split("; "):
+                    if Game(card[]) not in max_game:
+                        return
+                total += idx + 1
+            except:
+                pass
+
+        for idx in range(len(input)):
+            calc_line(idx)
+
+        return str(total)
+
+    @staticmethod
+    fn part_2(input: List[String]) -> String:
+        var total = 0
+        try:
+            for line in input:
+                total += calc_line(line[].split(": ")[1])
+        except:
+            pass
+        return str(total)
+
+
+@always_inline
+fn calc_line(line: String) raises -> Int:
+    var max_card = Game(0, 0, 0)
+    for card in line.split("; "):
+        max_card = max_card.calc_max(Game(card[]))
+
+    return int(max_card.r) * int(max_card.g) * int(max_card.b)
+
+
+@value
+struct Game:
+    var r: UInt8
+    var g: UInt8
+    var b: UInt8
+
+    fn __str__(self) -> String:
+        return (
+            "Game("
+            + str(self.r)
+            + ", "
+            + str(self.g)
+            + ", "
+            + str(self.b)
+            + ")"
+        )
+
+    fn __init__(inout self, card: String) raises:
+        self.__init__(0, 0, 0)
+        var rgb = card.split(", ")
+        for color in rgb:
+            var tp = color[].split(" ")
+            if tp[1] == "red":
+                self.r += atol(tp[0])
+            if tp[1] == "green":
+                self.g += atol(tp[0])
+            if tp[1] == "blue":
+                self.b += atol(tp[0])
+
+    fn __init__(inout self, r: UInt8, g: UInt8, b: UInt8):
+        self.r = r
+        self.g = g
+        self.b = b
+
+    fn __contains__(self, other: Game) -> Bool:
+        return self.r >= other.r and self.g >= other.g and self.b >= other.b
+
+    fn calc_max(self, other: Game) -> Game:
+        return Game(
+            max(self.r, other.r), max(self.g, other.g), max(self.b, other.b)
+        )

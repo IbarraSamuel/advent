@@ -1,0 +1,7 @@
+from days import day01, day02
+from advent_utils import read_input, run, test
+
+
+fn main() raises:
+    run[day01.Solution, "../inputs/day01.txt"]()
+    run[day02.Solution, "../inputs/day02.txt"]()
