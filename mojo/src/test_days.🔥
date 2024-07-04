@@ -1,0 +1,22 @@
+from days import day01, day02, day03
+from advent_utils import read_input, run, test_solution
+
+
+fn test_all_days() raises:
+    test_solution[
+        Int,
+        day01.Solution,
+        ("../inputs/day01.txt", 142),
+        ("../inputs/tests/day1_2.txt", 281),
+    ]()
+    test_solution[
+        Int,
+        day02.Solution,
+        ("..inputs/tests/day2_1.txt", 8),
+        ("..inputs/tests/day2_1.txt", 8),
+    ]()
+    test_solution[
+        Int,
+        day03.Solution,
+        ("..inputs/tests/day3_1.txt", 4361),
+    ]()

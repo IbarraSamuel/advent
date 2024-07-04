@@ -1,0 +1,77 @@
+# alias Point = StaticIntTuple[2]
+
+
+@value
+struct Point(KeyElement):
+    var x: Int
+    var y: Int
+
+    fn __hash__(self) -> Int:
+        return self.x * 1000000 + self.y
+
+    fn __eq__(self, other: Self) -> Bool:
+        return self.x == other.x and self.y == other.y
+
+    fn __ne__(self, other: Self) -> Bool:
+        return not (self == other)
+
+
+fn parse_number(s: String, pos: Int) -> Tuple[String, Int]:
+    var current = s[pos]
+    var left: String = ""
+    var lpos: Int = pos
+    var right: String = ""
+    var rpos: Int = pos
+    if pos > 0 and s[pos - 1].isdigit():
+        left, lpos = parse_number(s, pos - 1)
+
+    if pos < len(s) - 1 and s[pos + 1].isdigit():
+        right, rpos = parse_number(s, pos + 1)
+    current = left + current + right
+    return current, lpos
+
+
+fn check_window(
+    point: Point, input: List[String], inout results: Set[Point]
+) -> Int:
+    var min_x = min(point.x, 0)
+    var max_x = min(point.x, len(input) - 1)
+    var min_y = min(point.y, 0)
+    var max_y = min(point.y, len(input[0]) - 1)
+    var first_x: Int
+    var to_parse: String
+    var total = 0
+    for y in range(min_y, max_y + 1):
+        for x in range(min_x, max_x + 1):
+            if input[y][x].isdigit():
+                to_parse, first_x = parse_number(input[y], x)
+                var current_point = Point(first_x, y)
+                if current_point not in results:
+                    results.add(current_point)
+                    try:
+                        total += atol(to_parse)
+                    except:
+                        pass
+    return total
+
+
+struct Solution:
+    @staticmethod
+    fn part_1(input: List[String]) -> String:
+        var points = List[Point]()
+
+        for y in range(len(input)):
+            for x in range(len(input[y])):
+                if input[y][x] != "." and not input[y][x].isdigit():
+                    points.append(Point(x, y))
+
+        var total = 0
+        var results = Set[Point]()
+        for point in points:
+            total += check_window(point[], input, results)
+
+        return total
+
+    @staticmethod
+    fn part_2(input: List[String]) -> String:
+        return 0

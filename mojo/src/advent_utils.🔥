@@ -1,11 +1,16 @@
 from collections.optional import Optional
 import sys
 from testing import assert_equal
+from builtin.builtin_list import VariadicList
 
 
 fn read_input[path: StringLiteral]() raises -> List[String]:
     with open(path, "r") as f:
         return f.read().splitlines()
+
+
+trait TestResult(Stringable, Movable, Copyable):
+    ...
 
 
 trait AdventSolution:
@@ -29,7 +34,7 @@ fn run[S: AdventSolution, path: StringLiteral]() raises:
     print()
 
 
-fn test[
+fn test_solution[
     T: Stringable, //,
     S: AdventSolution,
     path: StringLiteral,
@@ -41,3 +46,21 @@ fn test[
     assert_equal(result_1, str(expected_result_1))
     var result_2 = S.part_2(input)
     assert_equal(result_2, str(expected_result_2))
+
+
+fn test_solution[
+    T: TestResult,
+    S: AdventSolution,
+    *tests: Tuple[StringLiteral, T],
+]() raises:
+    alias test_list = VariadicList(tests)
+
+    @parameter
+    for i in range(len(test_list)):
+        alias path: StringLiteral = test_list[i][0][0]
+        alias expected_result: T = test_list[i][0][1]
+
+        var result_1 = S.part_1(read_input[path=path]())
+        assert_equal(result_1, str(expected_result))
+        var result_2 = S.part_2(read_input[path=path]())
+        assert_equal(result_2, str(expected_result))

@@ -56,7 +56,7 @@ fn calc_max(game: Game, other: Game) -> Game:
     )
 
 
-struct Solution(AdventSolution):
+struct Solution:
     @staticmethod
     fn part_1(input: List[String]) -> String:
         var total = 0
