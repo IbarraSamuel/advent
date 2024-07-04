@@ -59,14 +59,14 @@ fn line_value(line: String, mapper: Dict[String, Int]) -> Int:
     var last: Int = -1
 
     for k in mapper:
-        var min_tp = k[], line.find(k[])
-        var max_tp = k[], line.rfind(k[])
+        var mn = line.find(k[])
+        var mx = line.rfind(k[])
 
-        if first == -1 or min_tp[1] != -1 and min_tp[1] < first:
-            first_k, first = Optional(min_tp[0]), min_tp[1]
+        if first == -1 or mn != -1 and mn < first:
+            first_k, first = Optional(k[]), mn
 
-        if last == -1 or max_tp[1] != -1 and max_tp[1] > last:
-            last_k, last = Optional(max_tp[0]), max_tp[1]
+        if last == -1 or mx != -1 and mx > last:
+            last_k, last = Optional(k[]), mx
 
     return mapper.get(first_k.value(), 0) * 10 + mapper.get(last_k.value(), 0)
 

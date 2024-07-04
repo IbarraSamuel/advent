@@ -1,5 +1,5 @@
 from days import day01, day02, day03
-from advent_utils import read_input, run, test_solution
+from advent_utils import read_input, run
 
 
 fn main() raises:

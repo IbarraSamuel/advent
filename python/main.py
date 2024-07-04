@@ -1,5 +1,6 @@
 """Program Entrypoint."""
 
+# pyright: reportImplicitRelativeImport=false
 from advent_utils import run
 from days import day01, day02
 

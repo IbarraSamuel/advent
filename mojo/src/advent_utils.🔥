@@ -49,18 +49,41 @@ fn test_solution[
 
 
 fn test_solution[
-    T: TestResult,
+    T: TestResult, //,
     S: AdventSolution,
-    *tests: Tuple[StringLiteral, T],
+    test_1: Tuple[StringLiteral, T],
+    test_2: Tuple[StringLiteral, T],
+]() raises:
+    alias path_1: StringLiteral = test_1[0]
+    alias expected_result_1: T = test_1[1]
+
+    alias path_2: StringLiteral = test_2[0]
+    alias expected_result_2: T = test_2[1]
+
+    var result_1 = S.part_1(read_input[path=path_1]())
+    assert_equal(result_1, str(expected_result_1))
+
+    var result_2 = S.part_2(read_input[path=path_2]())
+    assert_equal(result_2, str(expected_result_2))
+
+
+fn test_solution[
+    T: TestResult, //,
+    S: AdventSolution,
+    *tests: Tuple[StringLiteral, Tuple[T, T]],
 ]() raises:
     alias test_list = VariadicList(tests)
 
     @parameter
     for i in range(len(test_list)):
         alias path: StringLiteral = test_list[i][0][0]
-        alias expected_result: T = test_list[i][0][1]
+        alias expected_result_1: T = test_list[i][0][1][0]
+        alias expected_result_2: T = test_list[i][0][1][1]
 
-        var result_1 = S.part_1(read_input[path=path]())
-        assert_equal(result_1, str(expected_result))
-        var result_2 = S.part_2(read_input[path=path]())
-        assert_equal(result_2, str(expected_result))
+        if str(expected_result_1) != "0":
+            var result_1 = S.part_1(read_input[path=path]())
+            assert_equal(result_1, str(expected_result_1))
+
+        if str(expected_result_2) != "0":
+            var result_2 = S.part_2(read_input[path=path]())
+            assert_equal(result_2, str(expected_result_2))
