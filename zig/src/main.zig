@@ -5,7 +5,7 @@ const day01 = @import("days/day01.zig");
 const day02 = @import("days/day02.zig");
 
 pub fn main() !void {
-    try run(usize, day01.Result, "../inputs/day01.txt");
+    try run(usize, day01.Solution, "../inputs/day01.txt");
 }
 
 test {

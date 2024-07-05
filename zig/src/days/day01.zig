@@ -7,7 +7,7 @@ const mapper = hash_map.StringHashMap(usize);
 
 pub const Solution: AdventSolution(usize) = .{ .part_1 = part1, .part_2 = part2 };
 
-fn compose_number(input: []const u8) !usize {
+fn composeNumber(input: []const u8) !usize {
     var first: ?usize = null;
     var second: []const u8 = undefined;
 
@@ -24,7 +24,7 @@ fn compose_number(input: []const u8) !usize {
     return first.? * 10 + last;
 }
 
-fn calc_line(line: []const u8, map: hash_map.StringHashMap(usize)) !usize {
+fn calcLine(line: []const u8, map: hash_map.StringHashMap(usize)) !usize {
     var first_k: ?[]const u8 = null;
     var last_k: ?[]const u8 = null;
     var first: isize = -1;
@@ -52,7 +52,7 @@ fn part1(file_content: []u8) anyerror!usize {
     var input = std.mem.splitScalar(u8, file_content, '\n');
     var total: usize = 0;
     return while (input.next()) |line| {
-        total += try compose_number(line);
+        total += try composeNumber(line);
     } else total;
 }
 
@@ -80,6 +80,6 @@ fn part2(file_content: []u8) anyerror!usize {
     try map.put("nine", 9);
     var total: usize = 0;
     return while (input.next()) |line| {
-        total += try calc_line(line, map);
+        total += try calcLine(line, map);
     } else total;
 }
