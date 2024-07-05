@@ -3,12 +3,9 @@ const advent_utils = @import("../advent_utils.zig");
 const AdventSolution = advent_utils.AdventSolution;
 pub const Solution: AdventSolution(usize) = .{ .part_1 = part1, .part_2 = part2 };
 
-const Card = struct {
-    r: usize = 0,
-    g: usize = 0,
-    b: usize = 0,
-};
-const MaxCard: Card = .{ .r = 12, .g = 13, .b = 14 };
+// The order is: 0: red, 1: green, 2: blue
+const Card = struct { usize = 0, usize = 0, usize = 0 };
+const MaxCard: Card = .{ 12, 13, 14 };
 
 fn createCard(card_str: []const u8) Card {
     var card: Card = .{};
@@ -18,11 +15,11 @@ fn createCard(card_str: []const u8) Card {
         const num = std.fmt.parseUnsigned(usize, color[0..space_pos], 10) catch unreachable;
         const last_char = color[color.len - 1];
         if (last_char == 'd') {
-            card.r += num;
+            card[0] += num;
         } else if (last_char == 'n') {
-            card.g += num;
+            card[1] += num;
         } else if (last_char == 'e') {
-            card.b += num;
+            card[2] += num;
         } else {
             unreachable;
         }
@@ -30,16 +27,16 @@ fn createCard(card_str: []const u8) Card {
 }
 
 fn lessThanMax(card: Card) bool {
-    return (card.r <= MaxCard.r and
-        card.g <= MaxCard.g and
-        card.b <= MaxCard.b);
+    return (card[0] <= MaxCard[0] and
+        card[1] <= MaxCard[1] and
+        card[2] <= MaxCard[2]);
 }
 
 fn calcMax(c1: Card, c2: Card) Card {
     return .{
-        .r = @max(c1.r, c2.r),
-        .g = @max(c1.g, c2.g),
-        .b = @max(c1.b, c2.b),
+        @max(c1[0], c2[0]),
+        @max(c1[1], c2[1]),
+        @max(c1[2], c2[2]),
     };
 }
 
@@ -72,6 +69,6 @@ fn part2(input: []const u8) !usize {
             const card = createCard(card_str);
             max_card = calcMax(card, max_card);
         }
-        total += (max_card.r * max_card.g * max_card.b);
+        total += (max_card[0] * max_card[1] * max_card[2]);
     } else total;
 }
