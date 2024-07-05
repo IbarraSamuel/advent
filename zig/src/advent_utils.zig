@@ -11,7 +11,7 @@ pub fn AdventSolution(comptime T: type) type {
     };
 }
 
-pub fn get_input(comptime path: []const u8) ![]u8 {
+pub fn getInput(comptime path: []const u8) ![]u8 {
     const file = try std.fs.cwd().openFile(path, .{});
     defer file.close();
 
@@ -25,15 +25,15 @@ pub fn get_input(comptime path: []const u8) ![]u8 {
 }
 
 pub fn run(comptime T: type, comptime AR: AdventSolution(T), comptime path: []const u8) !void {
-    const input = try get_input(path);
+    const input = try getInput(path);
     const d1 = try AR.part_1(input);
     std.debug.print("day 1: {}\n", .{d1});
     const d2 = try AR.part_2(input);
     std.debug.print("day 2: {}\n", .{d2});
 }
 
-pub fn test_solution(comptime T: type, comptime AR: AdventSolution(T), comptime path: []const u8, comptime expected: T, expected_2: T) !void {
-    const input = try get_input(path);
+pub fn testSolution(comptime T: type, comptime AR: AdventSolution(T), comptime path: []const u8, comptime expected: T, expected_2: T) !void {
+    const input = try getInput(path);
     const d1 = try AR.part_1(input);
     const d2 = try AR.part_2(input);
 
@@ -41,12 +41,12 @@ pub fn test_solution(comptime T: type, comptime AR: AdventSolution(T), comptime 
     try std.testing.expectEqual(d2, expected_2);
 }
 
-pub fn test_solutions(comptime T: type, comptime AR: AdventSolution(T), comptime path: []const u8, comptime expected: T, comptime path_2: []const u8, expected_2: T) !void {
-    const input = try get_input(path);
+pub fn testSolutions(comptime T: type, comptime AR: AdventSolution(T), comptime path: []const u8, comptime expected: T, comptime path_2: []const u8, expected_2: T) !void {
+    const input = try getInput(path);
     const d1 = try AR.part_1(input);
     try std.testing.expectEqual(d1, expected);
 
-    const input_2 = try get_input(path_2);
+    const input_2 = try getInput(path_2);
     const d2 = try AR.part_2(input_2);
     try std.testing.expectEqual(d2, expected_2);
 }
