@@ -27,9 +27,13 @@ pub fn getInput(comptime path: []const u8) ![]u8 {
 pub fn run(comptime T: type, comptime AR: AdventSolution(T), comptime path: []const u8) !void {
     const input = try getInput(path);
     const d1 = try AR.part_1(input);
-    std.debug.print("day 1: {}\n", .{d1});
-    const d2 = try AR.part_2(input);
-    std.debug.print("day 2: {}\n", .{d2});
+    std.debug.print("From {s} =>\n", .{path});
+    std.debug.print("\tPart 1: {d}\n", .{d1});
+    const d2 = AR.part_2(input) catch {
+        std.debug.print("\tPart 2: NOT IMPLEMENTED\n\n", .{});
+        return;
+    };
+    std.debug.print("\tPart 2: {d}\n\n", .{d2});
 }
 
 pub fn testSolution(comptime T: type, comptime AR: AdventSolution(T), comptime path: []const u8, comptime expected: T, expected_2: T) !void {
@@ -37,16 +41,16 @@ pub fn testSolution(comptime T: type, comptime AR: AdventSolution(T), comptime p
     const d1 = try AR.part_1(input);
     const d2 = try AR.part_2(input);
 
-    try std.testing.expectEqual(d1, expected);
-    try std.testing.expectEqual(d2, expected_2);
+    try std.testing.expectEqual(expected, d1);
+    try std.testing.expectEqual(expected_2, d2);
 }
 
 pub fn testSolutions(comptime T: type, comptime AR: AdventSolution(T), comptime path: []const u8, comptime expected: T, comptime path_2: []const u8, expected_2: T) !void {
     const input = try getInput(path);
     const d1 = try AR.part_1(input);
-    try std.testing.expectEqual(d1, expected);
+    try std.testing.expectEqual(expected, d1);
 
     const input_2 = try getInput(path_2);
     const d2 = try AR.part_2(input_2);
-    try std.testing.expectEqual(d2, expected_2);
+    try std.testing.expectEqual(expected_2, d2);
 }

@@ -1,11 +1,11 @@
 const std = @import("std");
 const advent_utils = @import("advent_utils.zig");
-const run = advent_utils.run;
 const day01 = @import("days/day01.zig");
 const day02 = @import("days/day02.zig");
 
 pub fn main() !void {
-    try run(usize, day01.Solution, "../inputs/day01.txt");
+    try advent_utils.run(usize, day01.Solution, "../inputs/day01.txt");
+    try advent_utils.run(usize, day02.Solution, "../inputs/day02.txt");
 }
 
 test {
