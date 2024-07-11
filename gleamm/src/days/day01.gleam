@@ -7,8 +7,8 @@ import gleam/result
 import gleam/string
 
 pub fn part1(input: List(String)) -> String {
-  let accum = fn(acc, s) {
-    s
+  let accum = fn(acc, line) {
+    line
     |> string.to_graphemes
     |> list.filter_map(int.parse)
     |> fn(l) {
@@ -42,7 +42,17 @@ pub fn part2(input: List(String)) -> String {
     |> dict.insert("eight", 8)
     |> dict.insert("nine", 9)
 
-  todo
+  let accum = fn(acc, line) {
+    line
+    |> string.to_graphemes
+    |> list.filter_map(int.parse)
+    |> fn(l) {
+      let assert Ok(frst) = l |> list.first
+      let assert Ok(lst) = l |> list.last
+      acc + frst * 10 + lst
+    }
+  }
+  input |> list.fold(0, accum) |> int.to_string
 }
 
 pub const solution = advent_utils.Solution(part1, part2)
