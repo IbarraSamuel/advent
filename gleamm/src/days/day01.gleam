@@ -3,6 +3,7 @@ import gleam/bool
 import gleam/dict.{type Dict}
 import gleam/dynamic
 import gleam/int
+import gleam/io
 import gleam/iterator
 import gleam/list
 import gleam/option
@@ -18,7 +19,7 @@ pub fn part1(input: List(String)) -> String {
     |> fn(l) {
       let assert Ok(frst) = l |> list.first
       let assert Ok(lst) = l |> list.last
-      acc + frst * 10 + lst
+      acc + frst * 10 + lst |> io.debug
     }
   }
   input |> list.fold(0, accum) |> int.to_string
