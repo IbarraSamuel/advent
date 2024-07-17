@@ -48,4 +48,51 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_2(input: List[String]) -> String:
-        return 0
+        var total = 0
+        var amount = List[Int]()
+        for _ in range(len(input)):
+            amount.append(1)
+
+        fn calc_line(line: Reference[is_mutable=False, type=String]) -> Int:
+            var winners = List[String]()
+            var inp = line[].find(": ") + 2
+            var pipe = line[].find("|")
+
+            var win_str = line[][inp : pipe - 1]
+            var num_str = line[][pipe + 2 :]
+            var winner_amnt = 0
+
+            var accm: String = ""
+            for nm in win_str:
+                if nm.isspace() and len(accm) > 0:
+                    winners.append(accm)
+                    accm = ""
+                    continue
+
+                accm += nm
+            winners.append(accm)
+            accm = ""
+
+            for nm in num_str:
+                if nm.isspace() and len(accm) > 0:
+                    if accm in winners:
+                        winner_amnt += 1
+                    accm = ""
+
+                    continue
+
+                accm += nm
+
+            if accm in winners:
+                winner_amnt += 1
+
+            return winner_amnt
+
+        for line in input:
+            var amnt = calc_line(line[])
+            var times = amount.pop(0) if len(amount) > 0 else 1
+            total += times
+            for i in range(amnt):
+                amount[i] += times
+
+        return total

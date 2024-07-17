@@ -18,5 +18,5 @@ fn test_all_days() raises:
     ]()
     test_solution[
         day04.Solution,
-        ("../../inputs/tests/day4_1.txt", (13, 0)),
+        ("../../inputs/tests/day4_1.txt", (13, 30)),
     ]()
