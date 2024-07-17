@@ -1,5 +1,6 @@
 # alias Point = StaticIntTuple[2]
 from algorithm.functional import vectorize
+from advent_utils import AdventSolution
 
 
 @value
@@ -99,7 +100,7 @@ fn check_window[
     total += local_result[0] * local_result[1]
 
 
-struct Solution:
+struct Solution(AdventSolution):
     @staticmethod
     fn part_1(input: List[String]) -> String:
         var points = List[Point]()

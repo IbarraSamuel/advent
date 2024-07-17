@@ -2,7 +2,7 @@ from advent_utils import AdventSolution
 from builtin.string import atol
 
 
-struct Solution:
+struct Solution(AdventSolution):
     @staticmethod
     fn part_1(input: List[String]) -> String:
         var total = 0
