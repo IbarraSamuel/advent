@@ -2,6 +2,7 @@ from collections.optional import Optional
 import sys
 from testing import assert_equal
 from builtin.builtin_list import VariadicList
+from testing.testing import Testable
 
 
 fn read_input[path: StringLiteral]() raises -> List[String]:
@@ -9,7 +10,11 @@ fn read_input[path: StringLiteral]() raises -> List[String]:
         return f.read().splitlines()
 
 
-trait TestResult(Stringable, Movable, Copyable):
+trait TestResult(Formattable, Testable):
+    ...
+
+
+trait TestMovableResult(Formattable, Testable, Movable):
     ...
 
 
@@ -30,12 +35,11 @@ fn run[S: AdventSolution, path: StringLiteral]() raises:
     var result_1 = S.part_1(input)
     print("\tPart 1:", result_1)
     var result_2 = S.part_2(input)
-    print("\tPart 2:", result_2)
-    print()
+    print("\tPart 2:", result_2, end="\n")
 
 
 fn test_solution[
-    T: Stringable, //,
+    T: TestResult, //,
     S: AdventSolution,
     path: StringLiteral,
     expected_result_1: T,
@@ -49,7 +53,7 @@ fn test_solution[
 
 
 fn test_solution[
-    T: TestResult, //,
+    T: TestMovableResult, //,
     S: AdventSolution,
     test_1: Tuple[StringLiteral, T],
     test_2: Tuple[StringLiteral, T],
@@ -68,7 +72,7 @@ fn test_solution[
 
 
 fn test_solution[
-    T: TestResult, //,
+    T: TestMovableResult, //,
     S: AdventSolution,
     *tests: Tuple[StringLiteral, Tuple[T, T]],
 ]() raises:

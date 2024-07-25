@@ -8,7 +8,7 @@ struct Point(KeyElement):
     var x: Int
     var y: Int
 
-    fn __hash__(self) -> Int:
+    fn __hash__(self) -> UInt:
         return self.x * 1000000 + self.y
 
     fn __eq__(self, other: Self) -> Bool:
@@ -100,7 +100,7 @@ fn check_window[
     total += local_result[0] * local_result[1]
 
 
-struct Solution(AdventSolution):
+struct Solution:
     @staticmethod
     fn part_1(input: List[String]) -> String:
         var points = List[Point]()
