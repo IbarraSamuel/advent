@@ -1,10 +1,10 @@
-from advent_utils import AdventSolution
+from advent_utils import AdventSolution, AdventResult
 from algorithm.functional import vectorize
 
 
-struct Solution:
+struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(input: List[String]) -> String:
+    fn part_1(input: List[String]) -> AdventResult:
         var total = 0
 
         @parameter
@@ -47,7 +47,7 @@ struct Solution:
         return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> String:
+    fn part_2(input: List[String]) -> AdventResult:
         var total = 0
         var amount = List[Int]()
         for _ in range(len(input)):

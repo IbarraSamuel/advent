@@ -1,4 +1,4 @@
-from advent_utils import AdventSolution
+from advent_utils import AdventSolution, AdventResult
 from algorithm.functional import sync_parallelize, vectorize
 from algorithm.reduction import sum, _simd_sum
 
@@ -56,9 +56,9 @@ fn calc_max(game: Game, other: Game) -> Game:
     )
 
 
-struct Solution:
+struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(input: List[String]) -> String:
+    fn part_1(input: List[String]) -> AdventResult:
         var total = 0
 
         @parameter
@@ -80,7 +80,7 @@ struct Solution:
         return str(total)
 
     @staticmethod
-    fn part_2(input: List[String]) -> String:
+    fn part_2(input: List[String]) -> AdventResult:
         var simd = SIMD[DType.uint32, 128](value=0)
 
         @parameter
