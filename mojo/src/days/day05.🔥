@@ -39,7 +39,6 @@ struct Solution(AdventSolution):
         var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
 
         var seeds_nums = calc_num_ranges(atol_uint(seeds_list))
-        print_ranges_list(seeds_nums)
 
         var maps = List[MapRange]()
         for line in lines[2:]:
@@ -49,7 +48,6 @@ struct Solution(AdventSolution):
             # These lines are not useful
             if "map" in line[]:
                 seeds_nums = map_ranges(maps, seeds_nums)
-                print_ranges_list(seeds_nums)
                 maps.clear()
                 continue
 
@@ -57,7 +55,6 @@ struct Solution(AdventSolution):
             maps.append(map_range)
 
         seeds_nums = map_ranges(maps, seeds_nums)
-        print_ranges_list(seeds_nums)
 
         var m: Int = Int.MAX
         for n in seeds_nums:
@@ -90,14 +87,6 @@ struct MapRange:
 struct NumRange:
     var start: Int
     var end: Int
-
-
-fn print_ranges_list(l: List[NumRange]):
-    print("List[")
-    for rng in l:
-        print("\t", rng[].start, "..", rng[].end, ",")
-
-    print("]")
 
 
 fn calc_num_ranges(ranges: List[Int]) -> List[NumRange]:
@@ -185,6 +174,7 @@ fn map_ranges(
 
         for map in ranges:
             new_numbers, mask = calc_ranges(map[], num)
+
             if len(mask) == 3:  # 3 Produced
                 num = new_numbers[0]
                 used_ranges.append(new_numbers[1])
@@ -206,7 +196,8 @@ fn map_ranges(
                     # replace the current range `num` with the not mapped range.
                     num = new_numbers[i]
         # we finalize mapping num and we are still here. Let's continue with other maps. This will not move
-        used_ranges.append(num)
+        else:
+            used_ranges.append(num)
     return used_ranges
 
 
