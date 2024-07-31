@@ -19,7 +19,7 @@ pub fn part1(input: List(String)) -> String {
     |> fn(l) {
       let assert Ok(frst) = l |> list.first
       let assert Ok(lst) = l |> list.last
-      acc + frst * 10 + lst |> io.debug
+      acc + frst * 10 + lst
     }
   }
   input |> list.fold(0, accum) |> int.to_string

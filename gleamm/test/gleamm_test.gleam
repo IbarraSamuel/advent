@@ -18,11 +18,10 @@ pub fn hello_world_test() {
 
 pub fn solutions_test() {
   day01.solution
-  |> test_solution(
-    "../inputs/tests/part1_1.txt",
-    option.Some(142),
-    option.Some(281),
-  )
+  |> test_solution("../inputs/tests/part1_1.txt", option.Some(142), option.None)
+
+  day01.solution
+  |> test_solution("../inputs/tests/part1_2.txt", option.None, option.Some(281))
 }
 
 fn test_solution(
@@ -34,7 +33,8 @@ fn test_solution(
   let advent_utils.Solution(part1, part2) = solution
   let inp = path |> advent_utils.read_file
   case part_1_result {
-    option.Some(p1) -> inp |> part1 |> should.equal(p1 |> int.to_string)
+    option.Some(p1) ->
+      inp |> io.debug |> part1 |> io.debug |> should.equal(p1 |> int.to_string)
     option.None -> io.println("Nothing for part 1.")
   }
   case part_2_result {

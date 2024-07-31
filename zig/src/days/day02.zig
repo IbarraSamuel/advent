@@ -1,7 +1,7 @@
 const std = @import("std");
 const advent_utils = @import("../advent_utils.zig");
 const AdventSolution = advent_utils.AdventSolution;
-pub const Solution: AdventSolution(usize) = .{ .part_1 = part1, .part_2 = part2 };
+pub const Solution: AdventSolution(usize) = .{ .part1 = part1, .part2 = part2 };
 
 // The order is: 0: red, 1: green, 2: blue
 const Card = struct { usize = 0, usize = 0, usize = 0 };

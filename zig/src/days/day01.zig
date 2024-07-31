@@ -5,7 +5,7 @@ const std = @import("std");
 const hash_map = @import("std").hash_map;
 const mapper = hash_map.StringHashMap(usize);
 
-pub const Solution: AdventSolution(usize) = .{ .part_1 = part1, .part_2 = part2 };
+pub const Solution: AdventSolution(usize) = .{ .part1 = part1, .part2 = part2 };
 
 fn composeNumber(input: []const u8) !usize {
     var first: ?usize = null;

@@ -24,7 +24,7 @@ IM = {
 }
 
 
-def _keep_numbers(line: str) -> str:
+def _filter_digit_chars(line: str) -> str:
     return "".join([c for c in line if c.isdigit()])
 
 
@@ -34,7 +34,7 @@ class Solution:
     @staticmethod
     def part_1(lines: Sequence[str]) -> int:
         """Day 1 result."""
-        only_numbers = [_keep_numbers(line) for line in lines]
+        only_numbers = [_filter_digit_chars(line) for line in lines]
         return sum(int(n[0] + n[-1]) for n in only_numbers)
 
     @staticmethod
