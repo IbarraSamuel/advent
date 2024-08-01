@@ -10,8 +10,12 @@ pub fn main() !void {
     try advent_utils.run(usize, day03.Solution, "../inputs/day03.txt");
 }
 
-test {
+test "day01" {
     try advent_utils.testSolutions(usize, day01.Solution, "../inputs/tests/day1_1.txt", 142, "../inputs/tests/day1_2.txt", 281);
+}
+test "day02" {
     try advent_utils.testSolution(usize, day02.Solution, "../inputs/tests/day2_1.txt", 8, 2286);
+}
+test "day03" {
     try advent_utils.testSolution(usize, day03.Solution, "../inputs/tests/day3_1.txt", 4361, 467835);
 }
