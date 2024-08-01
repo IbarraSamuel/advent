@@ -1,14 +1,7 @@
 import advent_utils
-import gleam/bool
 import gleam/dict.{type Dict}
-import gleam/dynamic
 import gleam/int
-import gleam/io
-import gleam/iterator
 import gleam/list
-import gleam/option
-import gleam/order
-import gleam/result
 import gleam/string
 
 pub fn part1(input: List(String)) -> String {
@@ -23,6 +16,57 @@ pub fn part1(input: List(String)) -> String {
     }
   }
   input |> list.fold(0, accum) |> int.to_string
+}
+
+fn str_index(str: String, other: String) -> Int {
+  let before_other = str |> string.crop(other)
+  let main_len = str |> string.length
+  main_len - { before_other |> string.length }
+}
+
+fn str_rindex(str: String, other: String) -> Int {
+  let rev_str = str |> string.reverse
+  let rev_other = other |> string.reverse
+  let before_other = rev_str |> string.crop(rev_other)
+  before_other |> string.length
+}
+
+fn first_key(line: String, mapper: Dict(String, Int)) -> String {
+  let assert Ok(#(str, _)) =
+    mapper
+    |> dict.keys
+    |> list.filter(fn(v) { line |> string.contains(v) })
+    |> list.map(fn(k) { #(k, line |> str_index(k)) })
+    |> list.sort(fn(a, b) {
+      let #(_, a) = a
+      let #(_, b) = b
+      a |> int.compare(b)
+    })
+    |> list.first
+  str
+}
+
+fn last_key(line: String, mapper: Dict(String, Int)) -> String {
+  let assert Ok(#(str, _)) =
+    mapper
+    |> dict.keys
+    |> list.filter(fn(v) { line |> string.contains(v) })
+    |> list.map(fn(k) { #(k, line |> str_rindex(k)) })
+    |> list.sort(fn(a, b) {
+      let #(_, a) = a
+      let #(_, b) = b
+      a |> int.compare(b)
+    })
+    |> list.last
+  str
+}
+
+fn line_value(line: String, mapper: Dict(String, Int)) -> Int {
+  let firstk = line |> first_key(mapper)
+  let lastk = line |> last_key(mapper)
+  let assert Ok(f) = mapper |> dict.get(firstk)
+  let assert Ok(l) = mapper |> dict.get(lastk)
+  f * 10 + l
 }
 
 pub fn part2(input: List(String)) -> String {
@@ -46,57 +90,6 @@ pub fn part2(input: List(String)) -> String {
     |> dict.insert("seven", 7)
     |> dict.insert("eight", 8)
     |> dict.insert("nine", 9)
-
-  let line_value = fn(line: String, mapper: Dict(String, Int)) -> Int {
-    let assert #(option.Some(fk), _, option.Some(lk), _) =
-      mapper
-      |> dict.fold(#(option.None, -1, option.None, -1), fn(acc, k, _) {
-        let #(first_k, first, last_k, last) = acc
-        let min =
-          line
-          |> string.to_graphemes
-          |> list.index_fold(first, fn(acc, it, idx) {
-            case it == k {
-              True -> idx
-              False -> acc
-            }
-          })
-        let max =
-          line
-          |> string.to_graphemes
-          |> list.reverse
-          |> list.index_fold(first, fn(acc, it, idx) {
-            case it == k {
-              True -> idx
-              False -> acc
-            }
-          })
-          |> int.negate
-          |> int.add(line |> string.length |> int.subtract(1))
-        let #(first_k, first) = case
-          { min != -1 }
-          |> bool.and(min < first)
-          |> bool.or(first == -1)
-        {
-          True -> #(option.Some(k), min)
-          False -> #(first_k, min)
-        }
-        let #(last_k, last) = case
-          { max != -1 }
-          |> bool.and(max > last)
-          |> bool.or(last == -1)
-        {
-          True -> #(option.Some(k), max)
-          False -> #(last_k, max)
-        }
-
-        #(first_k, first, last_k, last)
-      })
-
-    let assert Ok(f) = mapper |> dict.get(fk)
-    let assert Ok(l) = mapper |> dict.get(lk)
-    f * 10 + l
-  }
 
   let accum = fn(acc: Int, line) -> Int {
     line
