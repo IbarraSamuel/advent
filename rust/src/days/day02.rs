@@ -88,9 +88,9 @@ impl AdventSolution for Solution {
 
 crate::advent_tests!(
     part 1 => (
-        "../inputs/tests/day2_1.txt" => 8
+        "../tests/day2_1.txt" => 8
     ),
     part 2 => (
-        "../inputs/tests/day2_1.txt" => 2286
+        "../tests/day2_1.txt" => 2286
     )
 );

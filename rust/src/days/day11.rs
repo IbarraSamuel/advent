@@ -86,9 +86,9 @@ impl AdventSolution for Solution {
 
 advent_tests!(
     part 1 => (
-        "../inputs/tests/day11.txt" => 374
+        "../tests/day11.txt" => 374
     ),
     part 2 => (
-        "../inputs/tests/day11.txt" => 82000210
+        "../tests/day11.txt" => 82000210
     )
 );

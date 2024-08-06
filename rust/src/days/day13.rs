@@ -81,9 +81,9 @@ impl AdventSolution for Solution {
 
 advent_tests!(
     part 1 => (
-        "../inputs/tests/day13.txt" => 405
+        "../tests/day13.txt" => 405
     ),
     part 2 => (
-        "../inputs/tests/day13.txt" => 400
+        "../tests/day13.txt" => 400
     )
 );
