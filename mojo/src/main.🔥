@@ -1,4 +1,4 @@
-from days import day01, day02, day03, day04, day05
+from days import day01, day02, day03, day04, day05, day06
 from advent_utils import read_input, run
 
 
@@ -8,3 +8,4 @@ fn main() raises:
     run[day03.Solution, "../inputs/day03.txt"]()
     run[day04.Solution, "../inputs/day04.txt"]()
     run[day05.Solution, "../inputs/day05.txt"]()
+    run[day06.Solution, "../inputs/day06.txt"]()
