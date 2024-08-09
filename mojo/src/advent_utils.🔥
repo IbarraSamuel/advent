@@ -3,6 +3,7 @@ import sys
 from testing import assert_equal
 from builtin.builtin_list import VariadicList
 from testing.testing import Testable
+from utils import Variant
 
 
 fn read_input[path: StringLiteral]() raises -> List[String]:

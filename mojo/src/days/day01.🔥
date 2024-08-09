@@ -1,5 +1,6 @@
 from advent_utils import AdventSolution, AdventResult
 from builtin.string import atol
+from collections import Dict, Optional
 
 
 struct Solution(AdventSolution):
