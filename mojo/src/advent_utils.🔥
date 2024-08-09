@@ -26,9 +26,9 @@ struct AdventResult(TestMovableResult):
         if self.value.isa[String]():
             return self.value[String]
         if self.value.isa[Int]():
-            return self.value[Int]
+            return str(self.value[Int])
         if self.value.isa[UInt]():
-            return Int(self.value[UInt])
+            return str(self.value[UInt])
         return "This is unreachable!"
 
     fn format_to(self, inout writer: Formatter):
