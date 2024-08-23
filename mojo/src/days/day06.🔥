@@ -1,4 +1,27 @@
 from advent_utils import AdventSolution, AdventResult
+from math import sqrt, floor, ceil
+
+
+@register_passable("trivial")
+struct Race:
+    var duration: UInt
+    var record: UInt
+
+
+@always_inline
+fn quadratic_solution(a: Float32, b: Float32, c: Float32) -> (Float32, Float32):
+    cns = -b / (2 * a)
+    v = sqrt(b**2 - 4 * a * c) / 2 * a
+    return cns - v, cns + v
+
+
+@always_inline
+fn races_winning(race: Race) -> UInt:
+    a, b, c = 1, race.duration, race.record
+    lower, upper = quadratic_solution(a, b, c)
+    lower, upper = floor(lower + 1), ceil(lower - 1)
+    lower_int, upper_int = int(lower), int(upper)
+    return UInt(upper_int) - UInt(lower_int) + 1
 
 
 struct Solution(AdventSolution):
