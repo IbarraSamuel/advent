@@ -1,4 +1,3 @@
-# alias Point = StaticIntTuple[2]
 from algorithm.functional import vectorize
 from advent_utils import AdventSolution, AdventResult
 from collections import Set
