@@ -11,6 +11,15 @@ fn read_input[path: StringLiteral]() raises -> List[String]:
         return f.read().splitlines()
 
 
+fn unwrap_or[
+    T: AnyType, O: Movable
+](f: fn (T) raises -> O, arg: T, /, owned default: O) -> O:
+    try:
+        return f(arg)
+    except:
+        return default^
+
+
 trait TestResult(Formattable, Testable):
     ...
 
