@@ -8,4 +8,4 @@ fn main() raises:
     run[day03.Solution, "../inputs/day03.txt"]()
     run[day04.Solution, "../inputs/day04.txt"]()
     run[day05.Solution, "../inputs/day05.txt"]()
-    run[day06.Solution, "../tests/day6.txt"]()
+    run[day06.Solution, "../inputs/day06.txt"]()

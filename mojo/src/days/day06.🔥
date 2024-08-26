@@ -3,23 +3,22 @@ from math import sqrt, floor, ceil
 
 
 @always_inline
-fn quadratic_solution(a: Float32, b: Float32, c: Float32) -> (Float32, Float32):
+fn quadratic_solution(a: Float64, b: Float64, c: Float64) -> (Float64, Float64):
     cns = -b / (2 * a)
-    v = sqrt(b**2 - 4 * a * c) / 2 * a
+    v = sqrt(b**2 - 4.0 * a * c) / (2 * a)
     return cns - v, cns + v
 
 
 @always_inline
-fn races_winning(duration: UInt, record: UInt) -> UInt:
-    a, b, c = 1, -Float32(duration), record
+fn races_winning(duration: Int, record: Int) -> UInt:
+    a, b, c = 1, -duration, record
     lower, upper = quadratic_solution(a, b, c)
-    print("Bounds are", lower, upper)
-    lower, upper = floor(lower + 1), ceil(lower - 1)
+    lower, upper = floor(lower + 1), ceil(upper - 1)
     lower_int, upper_int = int(lower), int(upper)
     return upper_int - lower_int + 1
 
 
-fn string_to_uint(inp: String) raises -> UInt:
+fn string_to_uint(inp: String) raises -> Int:
     return int(inp)
 
 
@@ -32,16 +31,7 @@ struct Solution(AdventSolution):
             record = input[1].split()[r_idx + 1]
             duration_int = unwrap_or(string_to_uint, duration, default=0)
             record_int = unwrap_or(string_to_uint, record, default=0)
-            print(
-                "duration:",
-                duration_int,
-                "with record:",
-                record_int,
-                end=" => ",
-            )
-            print(races_winning(duration_int, record_int))
             total *= races_winning(duration_int, record_int)
-            print(total)
 
         return total
 
