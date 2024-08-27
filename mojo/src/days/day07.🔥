@@ -1,8 +1,35 @@
 from advent_utils import AdventSolution, AdventResult, unwrap_or
 from collections import Counter
+import sys
 
 alias CardType = DType.uint8
-alias Hand = SIMD[CardType, 8]  # should be 5
+
+
+@register_passable("trivial")
+struct Hand:
+    alias type = SIMD[CardType, 8]
+    var value: Self.type
+    var level: UInt8
+    var bid: UInt32
+
+    fn __init__(inout self, s: String):
+        space_pos = s.find(" ")
+        self.bid = parse_int(s[space_pos + 1 :])
+
+        self.value = Hand.type()
+        ctr = Counter(s[:space_pos])
+        self.level = 1
+
+        for k in ctr.values():
+            self.level *= k[]
+
+        @parameter
+        for idx in range(5):
+            self.value[idx] = Card(s[idx]).value
+
+        print(
+            "Card:", self.value, "with bid:", self.bid, "and level:", self.level
+        )
 
 
 @register_passable("trivial")
@@ -29,51 +56,44 @@ struct Card:
         if v == "T":
             self = Self.T
         else:
-            self.value = unwrap_or(string_to_int, v, default=0)
+            self = parse_int(v)
 
 
-# What if instead of parsing, you check Value counts, and then
-# each count has his space of something more than 14 (like 100)
-# you can have as max (100100) for cards.
-# 4 and 1
-# 3 and 2
-# 3 and 1 and 1
-# 2 and 2 and 1
-# 2 and 1 and 1 and 1
-# 2 and 1 and 1 and 1 and 1
-
-# Always two kinds.
-# all kinds in a group are merged and sum together and them sum with lower groups.
-# then we sort all this and multiply at the end.
+fn parse_int(string: String) -> Int:
+    try:
+        return int(string)
+    except:
+        print("Error parsing int")
+        sys.exit(1)
+        return 0
 
 
-fn string_to_int(string: String) raises -> Int:
-    return int(string)
-
-
-fn parse_hand(string: String) -> Hand:
-    out = Hand()
-
-    @parameter
-    for idx in range(5):
-        out[idx] = Card(string[idx]).value
-
-    print(out)
-    return out
-
-fn rank_hand(hand: Hand, other: Hand) -> Bool:
+@parameter
+fn rank_hand(lhs: Hand, rhs: Hand) -> Bool:
     # Create a simd to represent the count of each element.
+    if lhs.level > rhs.level:
+        return True
+    if lhs.level < rhs.level:
+        return False
+
     @parameter
     for i in range(5):
+        if lhs.value[i] > rhs.value[i]:
+            return True
+        if lhs.value[i] < rhs.value[i]:
+            return False
 
-        c = hand[i]
+    print("Equals!!")
+    return True
 
-    for v in c:
-        
 
 struct Solution(AdventSolution):
     @staticmethod
     fn part_1(lines: List[String]) -> AdventResult:
+        cards = List[Hand]()
+        for line in lines:
+            cards.append(line[])
+        sort[rank_hand](cards)
         return 0
 
     @staticmethod
