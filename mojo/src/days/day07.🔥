@@ -1,0 +1,81 @@
+from advent_utils import AdventSolution, AdventResult, unwrap_or
+from collections import Counter
+
+alias CardType = DType.uint8
+alias Hand = SIMD[CardType, 8]  # should be 5
+
+
+@register_passable("trivial")
+struct Card:
+    var value: Scalar[CardType]
+    alias A = Self(14)
+    alias K = Self(13)
+    alias Q = Self(12)
+    alias J = Self(11)
+    alias T = Self(10)
+
+    fn __init__(inout self, v: Int):
+        self.value = v
+
+    fn __init__(inout self, v: String):
+        if v == "A":
+            self = Self.A
+        if v == "K":
+            self = Self.K
+        if v == "Q":
+            self = Self.Q
+        if v == "J":
+            self = Self.J
+        if v == "T":
+            self = Self.T
+        else:
+            self.value = unwrap_or(string_to_int, v, default=0)
+
+
+# What if instead of parsing, you check Value counts, and then
+# each count has his space of something more than 14 (like 100)
+# you can have as max (100100) for cards.
+# 4 and 1
+# 3 and 2
+# 3 and 1 and 1
+# 2 and 2 and 1
+# 2 and 1 and 1 and 1
+# 2 and 1 and 1 and 1 and 1
+
+# Always two kinds.
+# all kinds in a group are merged and sum together and them sum with lower groups.
+# then we sort all this and multiply at the end.
+
+
+fn string_to_int(string: String) raises -> Int:
+    return int(string)
+
+
+fn parse_hand(string: String) -> Hand:
+    out = Hand()
+
+    @parameter
+    for idx in range(5):
+        out[idx] = Card(string[idx]).value
+
+    print(out)
+    return out
+
+fn rank_hand(hand: Hand, other: Hand) -> Bool:
+    # Create a simd to represent the count of each element.
+    @parameter
+    for i in range(5):
+
+        c = hand[i]
+
+    for v in c:
+        
+
+struct Solution(AdventSolution):
+    @staticmethod
+    fn part_1(lines: List[String]) -> AdventResult:
+        return 0
+
+    @staticmethod
+    fn part_2(lines: List[String]) -> AdventResult:
+        return 0

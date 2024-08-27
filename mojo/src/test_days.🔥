@@ -1,4 +1,4 @@
-from days import day01, day02, day03, day04, day05, day06
+from days import day01, day02, day03, day04, day05, day06, day07
 from advent_utils import read_input, run, test_solution
 
 
@@ -42,4 +42,11 @@ fn test_day06() raises:
     test_solution[
         day06.Solution,
         ("../tests/day6.txt", (288, 71503)),
+    ]()
+
+
+fn test_day07() raises:
+    test_solution[
+        day07.Solution,
+        ("../tests/day7.txt", (6440, 5905)),
     ]()
