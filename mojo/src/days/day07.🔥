@@ -1,12 +1,25 @@
 from advent_utils import AdventSolution, AdventResult, unwrap_or
 from collections import Counter
+from utils import Span
 import sys
 
 alias CardType = DType.uint8
 
 
-@register_passable("trivial")
-struct Hand:
+struct HandMode:
+    alias First = HandMode(1)
+    alias Second = HandMode(2)
+    var value: UInt8
+
+    fn __init__(inout self, value: UInt8):
+        self.value = value
+
+    fn __eq__(self, other: HandMode) -> Bool:
+        return self.value == other.value
+
+
+@value
+struct Hand[mode: HandMode](ComparableCollectionElement):
     alias type = SIMD[CardType, 8]
     var value: Self.type
     var level: UInt8
@@ -15,25 +28,81 @@ struct Hand:
     fn __init__(inout self, s: String):
         space_pos = s.find(" ")
         self.bid = parse_int(s[space_pos + 1 :])
-
-        self.value = Hand.type()
-        ctr = Counter(s[:space_pos])
-        self.level = 1
-
-        for k in ctr.values():
-            self.level *= k[]
+        self.value = Self.type()
 
         @parameter
         for idx in range(5):
-            self.value[idx] = Card(s[idx]).value
+            self.value[idx] = Card[mode](s[idx]).value
 
-        print(
-            "Card:", self.value, "with bid:", self.bid, "and level:", self.level
-        )
+        self.level = 1
+        self._calc_level(s)
+
+    fn _calc_level(inout self, s: String):
+        chars = List(s[0], s[1], s[2], s[3], s[4])
+        self.level = 1
+        cnt = Counter(chars)
+
+        @parameter
+        if mode == HandMode.First:
+            for k in cnt.values():
+                self.level += k[] ** 2
+            return
+
+        val = cnt.most_common(1)[0]._value
+        try:
+            j_val = cnt.pop("J")
+            cnt[val] += j_val
+        except:
+            pass
+
+        for k in cnt.values():
+            self.level += k[] ** 2
+
+    fn __eq__(self, other: Self) -> Bool:
+        return (self.value == other.value).reduce_and()
+
+    fn __ne__(self, other: Self) -> Bool:
+        return not self == other
+
+    fn __gt__(self, other: Self) -> Bool:
+        if self.level > other.level:
+            return True
+        if self.level < other.level:
+            return False
+
+        @parameter
+        for i in range(5):
+            if self.value[i] > other.value[i]:
+                return True
+            if self.value[i] < other.value[i]:
+                return False
+
+        return False
+
+    fn __lt__(self, other: Self) -> Bool:
+        if self.level < other.level:
+            return True
+        if self.level > other.level:
+            return False
+
+        @parameter
+        for i in range(5):
+            if self.value[i] < other.value[i]:
+                return True
+            if self.value[i] > other.value[i]:
+                return False
+
+        return False
+
+    fn __ge__(self, other: Self) -> Bool:
+        return self == other or self > other
+
+    fn __le__(self, other: Self) -> Bool:
+        return self == other or self < other
 
 
 @register_passable("trivial")
-struct Card:
+struct Card[mode: HandMode]:
     var value: Scalar[CardType]
     alias A = Self(14)
     alias K = Self(13)
@@ -47,16 +116,22 @@ struct Card:
     fn __init__(inout self, v: String):
         if v == "A":
             self = Self.A
-        if v == "K":
+        elif v == "K":
             self = Self.K
-        if v == "Q":
+        elif v == "Q":
             self = Self.Q
-        if v == "J":
-            self = Self.J
-        if v == "T":
+        elif v == "J":
+
+            @parameter
+            if mode == HandMode.First:
+                self = Self.J
+            else:
+                self = 1
+        elif v == "T":
             self = Self.T
         else:
             self = parse_int(v)
+        return
 
 
 fn parse_int(string: String) -> Int:
@@ -68,34 +143,34 @@ fn parse_int(string: String) -> Int:
         return 0
 
 
-@parameter
-fn rank_hand(lhs: Hand, rhs: Hand) -> Bool:
-    # Create a simd to represent the count of each element.
-    if lhs.level > rhs.level:
-        return True
-    if lhs.level < rhs.level:
-        return False
-
-    @parameter
-    for i in range(5):
-        if lhs.value[i] > rhs.value[i]:
-            return True
-        if lhs.value[i] < rhs.value[i]:
-            return False
-
-    print("Equals!!")
-    return True
-
-
 struct Solution(AdventSolution):
+    alias Hand1 = Hand[HandMode.First]
+    alias Hand2 = Hand[HandMode.Second]
+
     @staticmethod
     fn part_1(lines: List[String]) -> AdventResult:
-        cards = List[Hand]()
+        cards = List[Self.Hand1]()
         for line in lines:
             cards.append(line[])
-        sort[rank_hand](cards)
-        return 0
+
+        total = 0
+
+        sort(cards)
+        for idx in range(len(cards)):
+            total += (idx + 1) * int(cards[idx].bid)
+
+        return total
 
     @staticmethod
     fn part_2(lines: List[String]) -> AdventResult:
-        return 0
+        cards = List[Self.Hand2]()
+        for line in lines:
+            cards.append(line[])
+
+        total = 0
+
+        sort(cards)
+        for idx in range(len(cards)):
+            total += (idx + 1) * int(cards[idx].bid)
+
+        return total
