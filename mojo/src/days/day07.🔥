@@ -1,5 +1,5 @@
 from advent_utils import AdventSolution, AdventResult, unwrap_or
-from collections import Counter
+from collections import Dict
 from utils import Span
 import sys
 
@@ -38,25 +38,32 @@ struct Hand[mode: HandMode](ComparableCollectionElement):
         self._calc_level(s)
 
     fn _calc_level(inout self, s: String):
-        chars = List(s[0], s[1], s[2], s[3], s[4])
-        self.level = 1
-        cnt = Counter(chars)
+        chars = Dict[String, Int](power_of_two_initial_capacity=Self.type.size)
 
         @parameter
-        if mode == HandMode.First:
-            for k in cnt.values():
-                self.level += k[] ** 2
-            return
+        for i in range(5):
+            chars[s[i]] = chars.get(s[i], 0) + 1
 
-        val = cnt.most_common(1)[0]._value
-        try:
-            j_val = cnt.pop("J")
-            cnt[val] += j_val
-        except:
-            pass
+        @parameter
+        if mode == HandMode.Second:
+            j_val = chars.pop("J", 0)
+            max_v, max_c = 0, String("")
 
-        for k in cnt.values():
-            self.level += k[] ** 2
+            @parameter
+            for i in range(5):
+                if s[i] != "J":
+                    cv = chars.get(s[i], 0)
+                    if cv > max_v:
+                        max_v = cv
+                        max_c = s[i]
+
+            if max_c and max_v:
+                chars[max_c] = max_v + j_val
+            else:
+                chars["J"] = j_val
+
+        for k in chars.values():
+            self.level += k[] ** 3
 
     fn __eq__(self, other: Self) -> Bool:
         return (self.value == other.value).reduce_and()
@@ -107,7 +114,7 @@ struct Card[mode: HandMode]:
     alias A = Self(14)
     alias K = Self(13)
     alias Q = Self(12)
-    alias J = Self(11)
+    alias J = Self(11 if mode == HandMode.First else 1)
     alias T = Self(10)
 
     fn __init__(inout self, v: Int):
@@ -121,17 +128,11 @@ struct Card[mode: HandMode]:
         elif v == "Q":
             self = Self.Q
         elif v == "J":
-
-            @parameter
-            if mode == HandMode.First:
-                self = Self.J
-            else:
-                self = 1
+            self = Self.J
         elif v == "T":
             self = Self.T
         else:
             self = parse_int(v)
-        return
 
 
 fn parse_int(string: String) -> Int:
