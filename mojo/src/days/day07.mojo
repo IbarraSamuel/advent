@@ -151,7 +151,7 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_1(lines: List[String]) -> AdventResult:
-        cards = List[Self.Hand1]()
+        cards = List[Self.Hand1](capacity=1000)
         for line in lines:
             cards.append(line[])
 
@@ -165,7 +165,7 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_2(lines: List[String]) -> AdventResult:
-        cards = List[Self.Hand2]()
+        cards = List[Self.Hand2](capacity=1000)
         for line in lines:
             cards.append(line[])
 
