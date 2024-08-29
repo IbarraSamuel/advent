@@ -18,7 +18,7 @@ struct HandMode:
         return self.value == other.value
 
 
-@value
+@register_passable("trivial")
 struct Hand[mode: HandMode](ComparableCollectionElement):
     alias type = SIMD[CardType, 8]
     var value: Self.type
@@ -37,6 +37,7 @@ struct Hand[mode: HandMode](ComparableCollectionElement):
         self.level = 1
         self._calc_level(s)
 
+    @always_inline("nodebug")
     fn _calc_level(inout self, s: String):
         chars = Dict[String, Int](power_of_two_initial_capacity=Self.type.size)
 
