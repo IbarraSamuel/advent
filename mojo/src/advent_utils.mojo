@@ -61,11 +61,11 @@ struct AdventResult(TestMovableResult):
 
 trait AdventSolution:
     @staticmethod
-    fn part_1(input: List[String]) -> AdventResult:
+    fn part_1(lines: List[String]) -> AdventResult:
         ...
 
     @staticmethod
-    fn part_2(input: List[String]) -> AdventResult:
+    fn part_2(lines: List[String]) -> AdventResult:
         ...
 
 
