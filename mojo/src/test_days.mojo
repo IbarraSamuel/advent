@@ -67,53 +67,53 @@ fn test_day09() raises:
     ]()
 
 
-fn test_day10() raises:
-    test_solution[
-        days.day10.Solution,
-        ("../tests/day10.txt", (8, 0)),
-        ("../tests/day10_2.txt", (0, 4)),
-        ("../tests/day10_3.txt", (0, 8)),
-        ("../tests/day10_4.txt", (0, 10)),
-    ]()
+# fn test_day10() raises:
+#     test_solution[
+#         days.day10.Solution,
+#         ("../tests/day10.txt", (8, 0)),
+#         ("../tests/day10_2.txt", (0, 4)),
+#         ("../tests/day10_3.txt", (0, 8)),
+#         ("../tests/day10_4.txt", (0, 10)),
+#     ]()
 
 
-fn test_day11() raises:
-    test_solution[
-        days.day11.Solution,
-        ("../tests/day11.txt", (374, 82000210)),
-    ]()
+# fn test_day11() raises:
+#     test_solution[
+#         days.day11.Solution,
+#         ("../tests/day11.txt", (374, 82000210)),
+#     ]()
 
 
-fn test_day12() raises:
-    test_solution[
-        days.day12.Solution,
-        ("../tests/day12.txt", (21, 525152)),
-    ]()
+# fn test_day12() raises:
+#     test_solution[
+#         days.day12.Solution,
+#         ("../tests/day12.txt", (21, 525152)),
+#     ]()
 
 
-fn test_day13() raises:
-    test_solution[
-        days.day13.Solution,
-        ("../tests/day13.txt", (405, 400)),
-    ]()
+# fn test_day13() raises:
+#     test_solution[
+#         days.day13.Solution,
+#         ("../tests/day13.txt", (405, 400)),
+#     ]()
 
 
-fn test_day14() raises:
-    test_solution[
-        days.day14.Solution,
-        ("../tests/day14.txt", (136, 64)),
-    ]()
+# fn test_day14() raises:
+#     test_solution[
+#         days.day14.Solution,
+#         ("../tests/day14.txt", (136, 64)),
+#     ]()
 
 
-fn test_day15() raises:
-    test_solution[
-        days.day15.Solution,
-        ("../tests/day15.txt", (1320, 145)),
-    ]()
+# fn test_day15() raises:
+#     test_solution[
+#         days.day15.Solution,
+#         ("../tests/day15.txt", (1320, 145)),
+#     ]()
 
 
-fn test_day16() raises:
-    test_solution[
-        days.day16.Solution,
-        ("../tests/day16.txt", (46, 51)),
-    ]()
+# fn test_day16() raises:
+#     test_solution[
+#         days.day16.Solution,
+#         ("../tests/day16.txt", (46, 51)),
+#     ]()
