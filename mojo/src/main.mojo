@@ -12,7 +12,7 @@ fn main() raises:
     run[days.day07.Solution, "../inputs/day07.txt"]()
     run[days.day08.Solution, "../inputs/day08.txt"]()
     run[days.day09.Solution, "../inputs/day09.txt"]()
-    # run[days.day10.Solution, "../inputs/day10.txt"]()
+    run[days.day10.Solution, "../inputs/day10.txt"]()
     # run[days.day11.Solution, "../inputs/day11.txt"]()
     # run[days.day12.Solution, "../inputs/day12.txt"]()
     # run[days.day13.Solution, "../inputs/day13.txt"]()

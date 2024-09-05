@@ -72,7 +72,6 @@ trait AdventSolution:
 fn run[S: AdventSolution, path: StringLiteral]() raises:
     var input = read_input[path=path]()
     print("From", path, "=>")
-
     var result_1 = S.part_1(input)
     print("\tPart 1:", result_1)
     var result_2 = S.part_2(input)
