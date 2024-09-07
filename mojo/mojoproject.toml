@@ -1,12 +1,9 @@
 [project]
 authors = ["Samuel Ibarra <ing.samuelibarra@gmail.com>"]
-channels = ["conda-forge", "https://conda.modular.com/max"]
+channels = ["conda-forge", "https://conda.modular.com/max-nightly"]
 description = "Add a short description here"
 name = "mojo"
 platforms = ["linux-64", "osx-arm64"]
 version = "0.1.0"
 
 [tasks]
-
-[dependencies]
-max = ">=24.4.0,<25"
