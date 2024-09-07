@@ -2,7 +2,7 @@ from advent_utils import AdventSolution, AdventResult
 from utils import StaticIntTuple, StaticTuple
 from collections import Dict, OptionalReg
 import sys
-
+from time import sleep
 
 alias Position = StaticIntTuple[2]
 alias PipeList = List[Pipe]
@@ -12,13 +12,14 @@ alias Vertical = ord("|")
 alias Horizontal = ord("-")
 alias UpRight = ord("L")
 alias UpLeft = ord("J")
-alias DownRight = ord("7")
-alias DownLeft = ord("F")
+alias DownLeft = ord("7")
+alias DownRight = ord("F")
 alias Ground = ord(".")
 alias Start = ord("S")
 
 alias VALID_PIPES = [Vertical, Horizontal, UpRight, UpLeft, DownRight, DownLeft]
 alias INVALID_PIPES = [Ground, Start]
+
 alias UP: Position = (0, 1)
 alias DOWN: Position = (0, -1)
 alias LEFT: Position = (-1, 0)
@@ -57,22 +58,24 @@ struct Pipe:
 
 
 @always_inline
-fn next_position(position: Position, movement: Movement) -> Position:
-    return (
-        position[0] + movement[0][0] + movement[1][0],
-        position[1] + movement[0][1] + movement[1][1],
-    )
+fn next_position(previous: Position, pipe: Pipe) -> Position:
+    curr_pos, movement = pipe.position, pipe.movement
+    mov_prev, mov_next = movement[0], movement[1]
+    if curr_pos == previous + mov_prev:
+        return previous + mov_prev + mov_next
+    if curr_pos == previous + mov_next:
+        return previous - mov_prev - mov_next
+    print("This should not occur.")
+    sys.exit(1)
+    return curr_pos
 
 
 @always_inline
-fn next_pipe(map: List[List[Pipe]], current: Pipe, prev_pos: Position) -> Pipe:
-    xi, yi = prev_pos[0], prev_pos[1]
-    x, y = current.position[0], current.position[1]
-    prev, next = current.movement[0], current.movement[1]
-    if not (x - xi == prev[0] and y - yi == prev[1]):
-        prev, next = next, prev
-    fx, fy = x + next[0] - prev[0], y + next[1] - prev[1]
-    return map[fy][fx]
+fn next_pipe(
+    map: List[List[Pipe]], current: Pipe, prev_pos: Position
+) -> (Pipe, Position):
+    next_pos = next_position(previous=prev_pos, pipe=current)
+    return map[next_pos[1]][next_pos[0]], current.position
 
 
 fn find_connected_pipe(
@@ -81,18 +84,14 @@ fn find_connected_pipe(
     xr, yr = ranges
     xmin, xmax = max(0, init.position[0] - 1), min(xr - 1, init.position[0] + 1)
     ymin, ymax = max(0, init.position[1] - 1), min(yr - 1, init.position[1] + 1)
+
     for x in range(xmin, xmax + 1):
         for y in range(ymin, ymax + 1):
-            if map[y][x].ord in VALID_PIPES:
-                ppos = map[y][x].position
-                diff = Position(
-                    init.position[0] - ppos[0], init.position[1] - ppos[1]
-                )
-                if (
-                    diff == map[y][x].movement[0]
-                    or diff == map[y][x].movement[1]
-                ):
-                    return map[y][x]
+            cpipe = map[y][x]
+            if cpipe.ord in VALID_PIPES:
+                diff = cpipe.position - init.position
+                if diff == cpipe.movement[0] or diff == cpipe.movement[1]:
+                    return cpipe
     return None
 
 
@@ -112,15 +111,31 @@ struct Solution(AdventSolution):
                 map[-1].append(Pipe(c, (x, y)))
 
         init = char.value()
-        print("finding init", init.position)
         current = find_connected_pipe(init, map, (x_range, y_range)).value()
-        print("finding current", current.position)
+        prev_pos = init.position
         total = 0
-        print("initialize for loop")
+        print(
+            total,
+            ":",
+            chr(init.ord),
+            prev_pos,
+            "->",
+            chr(current.ord),
+            current.position,
+        )
         while True:
-            current = next_pipe(map, current, init.position)
+            current, prev_pos = next_pipe(map, current, prev_pos)
             total += 1
-            print(total, current.position)
+            print(
+                total,
+                ":",
+                lines[prev_pos[1]][prev_pos[0]],
+                prev_pos,
+                "->",
+                chr(current.ord),
+                current.position,
+            )
+            sleep(0.5)
             if current.ord == Start:
                 break
 
