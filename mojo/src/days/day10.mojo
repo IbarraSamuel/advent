@@ -20,8 +20,8 @@ alias Start = ord("S")
 alias VALID_PIPES = [Vertical, Horizontal, UpRight, UpLeft, DownRight, DownLeft]
 alias INVALID_PIPES = [Ground, Start]
 
-alias UP: Position = (0, 1)
-alias DOWN: Position = (0, -1)
+alias UP: Position = (0, -1)
+alias DOWN: Position = (0, 1)
 alias LEFT: Position = (-1, 0)
 alias RIGHT: Position = (1, 0)
 
@@ -60,14 +60,10 @@ struct Pipe:
 @always_inline
 fn next_position(previous: Position, pipe: Pipe) -> Position:
     curr_pos, movement = pipe.position, pipe.movement
+    dpos = previous - curr_pos
     mov_prev, mov_next = movement[0], movement[1]
-    if curr_pos == previous + mov_prev:
-        return previous + mov_prev + mov_next
-    if curr_pos == previous + mov_next:
-        return previous - mov_prev - mov_next
-    print("This should not occur.")
-    sys.exit(1)
-    return curr_pos
+    next = mov_next if dpos == mov_prev else mov_prev
+    return curr_pos + next
 
 
 @always_inline
@@ -82,14 +78,15 @@ fn find_connected_pipe(
     init: Pipe, map: List[List[Pipe]], ranges: (Int, Int)
 ) -> OptionalReg[Pipe]:
     xr, yr = ranges
-    xmin, xmax = max(0, init.position[0] - 1), min(xr - 1, init.position[0] + 1)
-    ymin, ymax = max(0, init.position[1] - 1), min(yr - 1, init.position[1] + 1)
+    xi, yi = init.position[0], init.position[1]
+    xmin, xmax = max(0, xi - 1), min(xr - 1, xi + 1)
+    ymin, ymax = max(0, yi - 1), min(yr - 1, yi + 1)
 
     for x in range(xmin, xmax + 1):
         for y in range(ymin, ymax + 1):
             cpipe = map[y][x]
             if cpipe.ord in VALID_PIPES:
-                diff = cpipe.position - init.position
+                diff = init.position - cpipe.position
                 if diff == cpipe.movement[0] or diff == cpipe.movement[1]:
                     return cpipe
     return None
@@ -113,33 +110,14 @@ struct Solution(AdventSolution):
         init = char.value()
         current = find_connected_pipe(init, map, (x_range, y_range)).value()
         prev_pos = init.position
-        total = 0
-        print(
-            total,
-            ":",
-            chr(init.ord),
-            prev_pos,
-            "->",
-            chr(current.ord),
-            current.position,
-        )
+        total = 1
         while True:
             current, prev_pos = next_pipe(map, current, prev_pos)
             total += 1
-            print(
-                total,
-                ":",
-                lines[prev_pos[1]][prev_pos[0]],
-                prev_pos,
-                "->",
-                chr(current.ord),
-                current.position,
-            )
-            sleep(0.5)
             if current.ord == Start:
                 break
 
-        return total
+        return total // 2
 
     @staticmethod
     fn part_2(lines: List[String]) -> AdventResult:
