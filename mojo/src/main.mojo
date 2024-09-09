@@ -10,7 +10,7 @@ fn main() raises:
     run[days.day05.Solution, "../inputs/day05.txt"]()
     run[days.day06.Solution, "../inputs/day06.txt"]()
     run[days.day07.Solution, "../inputs/day07.txt"]()
-    run[days.day08.Solution, "../inputs/day08.txt"]()
+    run[days.day08.Solution, "../inputs/day08.txt"]()  # TODO: Optimize
     run[days.day09.Solution, "../inputs/day09.txt"]()
     run[days.day10.Solution, "../inputs/day10.txt"]()
     # run[days.day11.Solution, "../inputs/day11.txt"]()
