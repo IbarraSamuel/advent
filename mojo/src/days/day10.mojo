@@ -2,7 +2,8 @@ from advent_utils import AdventSolution, AdventResult
 from utils import StaticIntTuple, StaticTuple
 from collections import Dict, OptionalReg
 import sys
-from time import sleep
+from algorithm import parallelize
+from testing import assert_equal, assert_true, assert_false
 
 alias Position = StaticIntTuple[2]
 alias PipeList = List[Pipe]
@@ -91,10 +92,10 @@ fn find_connected_pipe(
                     return cpipe
     return None
 
+
 # --part 2
 
-fn explore_diag(x: Int, x_max: Int, y_max: Int, vals: List[String]) -> Int:
-    
+
 struct Solution(AdventSolution):
     @staticmethod
     fn part_1(lines: List[String]) -> AdventResult:
@@ -122,20 +123,41 @@ struct Solution(AdventSolution):
 
         return total // 2
 
+    # Actually, here you need to put
     @staticmethod
     fn part_2(lines: List[String]) -> AdventResult:
         x_max = lines[0].byte_length()
         y_max = lines.size
         total = 0
 
-        @parameter
-        fn calc_diag(diag: Int) -> None:
+        # @parameter
+        # fn calc_diag(diag: Int) -> None:
+        for diag in range(x_max + y_max - 1):
             xi = diag if diag < x_max else x_max - 1
             yi = 0 if diag < x_max else diag - x_max + 1
             xf = 0 if diag < y_max else diag - y_max + 1
             yf = diag if diag < y_max else y_max - 1
+            print("from (", xi, yi, ") to (", xf, yf, ")")
+            x, y = xi, yi
+            within = False
 
-            for x in range(xi, xf, -1):
-                for y in range(yi, yf):
-                    lines[y][x]
-        
+            while True:
+                if ord(lines[y][x]) in [
+                    Horizontal,
+                    Vertical,
+                    UpRight,
+                    DownLeft,
+                ]:
+                    within ^= True
+                if ord(lines[y][x]) == Ground and within:
+                    total += 1
+                print(lines[y][x], "on position (", x, y, ")")
+                if x == xf and y == yf:
+                    break
+                x, y = max(x - 1, xf), min(y + 1, yf)
+
+            if within:
+                print("Error here. We never went out of this window+!!")
+
+        # parallelize[calc_diag](x_max + y_max - 1)
+        return total
