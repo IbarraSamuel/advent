@@ -129,9 +129,12 @@ struct Solution(AdventSolution):
         x_max = lines[0].byte_length()
         y_max = lines.size
         total = 0
+        pipes = List[Pipe]()
 
-        # @parameter
-        # fn calc_diag(diag: Int) -> None:
+        for y in range(y_max):
+            for x in range(x_max):
+                c = lines[y][x]
+
         for diag in range(x_max + y_max - 1):
             xi = diag if diag < x_max else x_max - 1
             yi = 0 if diag < x_max else diag - x_max + 1
@@ -159,5 +162,4 @@ struct Solution(AdventSolution):
             if within:
                 print("Error here. We never went out of this window+!!")
 
-        # parallelize[calc_diag](x_max + y_max - 1)
         return total

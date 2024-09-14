@@ -24,7 +24,7 @@ trait TestResult(Formattable, Testable):
     ...
 
 
-trait TestMovableResult(Formattable, Testable, Movable):
+trait TestMovableResult(Formattable, Testable, CollectionElement):
     ...
 
 
