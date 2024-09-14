@@ -57,6 +57,12 @@ struct Pipe:
             sys.exit(1)
             self.movement = Movement(UP, UP)  # THIS SHOULD NEVER HAPPEN
 
+    fn __eq__(self, other: Self) -> Bool:
+        return self.position == other.position
+
+    fn __neq__(self, other: Self) -> Bool:
+        return not self == other
+
 
 @always_inline
 fn next_position(previous: Position, pipe: Pipe) -> Position:
@@ -69,14 +75,14 @@ fn next_position(previous: Position, pipe: Pipe) -> Position:
 
 @always_inline
 fn next_pipe(
-    map: List[List[Pipe]], current: Pipe, prev_pos: Position
+    map: List[String], current: Pipe, prev_pos: Position
 ) -> (Pipe, Position):
     next_pos = next_position(previous=prev_pos, pipe=current)
-    return map[next_pos[1]][next_pos[0]], current.position
+    return Pipe(map[next_pos[1]][next_pos[0]], next_pos), current.position
 
 
 fn find_connected_pipe(
-    init: Pipe, map: List[List[Pipe]], ranges: (Int, Int)
+    init: Pipe, map: List[String], ranges: (Int, Int)
 ) -> OptionalReg[Pipe]:
     xr, yr = ranges
     xi, yi = init.position[0], init.position[1]
@@ -85,7 +91,7 @@ fn find_connected_pipe(
 
     for x in range(xmin, xmax + 1):
         for y in range(ymin, ymax + 1):
-            cpipe = map[y][x]
+            cpipe = Pipe(map[y][x], (x, y))
             if cpipe.ord in VALID_PIPES:
                 diff = init.position - cpipe.position
                 if diff == cpipe.movement[0] or diff == cpipe.movement[1]:
@@ -112,11 +118,11 @@ struct Solution(AdventSolution):
                 map[-1].append(Pipe(c, (x, y)))
 
         init = char.value()
-        current = find_connected_pipe(init, map, (x_range, y_range)).value()
+        current = find_connected_pipe(init, lines, (x_range, y_range)).value()
         prev_pos = init.position
         total = 1
         while True:
-            current, prev_pos = next_pipe(map, current, prev_pos)
+            current, prev_pos = next_pipe(lines, current, prev_pos)
             total += 1
             if current.ord == Start:
                 break
@@ -129,11 +135,24 @@ struct Solution(AdventSolution):
         x_max = lines[0].byte_length()
         y_max = lines.size
         total = 0
-        pipes = List[Pipe]()
+        pipes = List[Pipe, True]()
 
         for y in range(y_max):
             for x in range(x_max):
                 c = lines[y][x]
+                if ord(lines[y][x]) == Start:
+                    pipes.append(Pipe(c, (x, y)))
+                    break
+            if pipes:
+                break
+
+        current = find_connected_pipe(pipes[0], lines, (x_max, y_max)).value()
+        pipes.append(current)
+        while True:
+            current, _ = next_pipe(lines, pipes[-1], pipes[-2].position)
+            pipes.append(current)
+            if current.ord == Start:
+                break
 
         for diag in range(x_max + y_max - 1):
             xi = diag if diag < x_max else x_max - 1
@@ -145,14 +164,18 @@ struct Solution(AdventSolution):
             within = False
 
             while True:
-                if ord(lines[y][x]) in [
+                pp = Pipe(lines[y][x], (x, y))
+                if pp.ord in [
                     Horizontal,
                     Vertical,
                     UpRight,
                     DownLeft,
                 ]:
-                    within ^= True
-                if ord(lines[y][x]) == Ground and within:
+                    for p in pipes:
+                        if p[] == pp:
+                            within ^= True
+                            # break
+                if within:
                     total += 1
                 print(lines[y][x], "on position (", x, y, ")")
                 if x == xf and y == yf:
