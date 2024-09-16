@@ -20,6 +20,7 @@ alias Start = ord("S")
 
 alias VALID_PIPES = [Vertical, Horizontal, UpRight, UpLeft, DownRight, DownLeft]
 alias INVALID_PIPES = [Ground, Start]
+alias VALID_DIAG = [Horizontal, Vertical, UpRight, DownLeft]
 
 alias UP: Position = (0, -1)
 alias DOWN: Position = (0, 1)
@@ -28,6 +29,35 @@ alias RIGHT: Position = (1, 0)
 
 
 @register_passable("trivial")
+# struct Pipe(Representable):
+struct UnpinnedPipe:
+    var movement: Movement
+
+    fn __init__(inout self, ord: Int):
+        if ord == Vertical:
+            self.movement = Movement(DOWN, UP)
+        elif ord == Horizontal:
+            self.movement = Movement(LEFT, RIGHT)
+        elif ord == UpRight:
+            self.movement = Movement(UP, RIGHT)
+        elif ord == UpLeft:
+            self.movement = Movement(UP, LEFT)
+        elif ord == DownRight:
+            self.movement = Movement(DOWN, RIGHT)
+        elif ord == DownLeft:
+            self.movement = Movement(DOWN, LEFT)
+        elif ord == Ground:
+            self.movement = Movement(UP, UP)
+        elif ord == Start:
+            self.movement = Movement(UP, UP)
+        else:
+            print("failed to parse pipe with ord", ord)
+            sys.exit(1)
+            self.movement = Movement(UP, UP)  # THIS SHOULD NEVER HAPPEN
+
+
+@register_passable("trivial")
+# struct Pipe(Representable):
 struct Pipe:
     var ord: Int
     var position: Position
@@ -35,27 +65,18 @@ struct Pipe:
 
     fn __init__(inout self, chr: String, position: Position):
         self.ord = ord(chr)
+        unpp = UnpinnedPipe(self.ord)
         self.position = position
-        if self.ord == Vertical:
-            self.movement = Movement(DOWN, UP)
-        elif self.ord == Horizontal:
-            self.movement = Movement(LEFT, RIGHT)
-        elif self.ord == UpRight:
-            self.movement = Movement(UP, RIGHT)
-        elif self.ord == UpLeft:
-            self.movement = Movement(UP, LEFT)
-        elif self.ord == DownRight:
-            self.movement = Movement(DOWN, RIGHT)
-        elif self.ord == DownLeft:
-            self.movement = Movement(DOWN, LEFT)
-        elif self.ord == Ground:
-            self.movement = Movement(UP, UP)
-        elif self.ord == Start:
-            self.movement = Movement(UP, UP)
-        else:
-            print("failed to parse pipe with char", chr, "and value", position)
-            sys.exit(1)
-            self.movement = Movement(UP, UP)  # THIS SHOULD NEVER HAPPEN
+        self.movement = unpp.movement
+
+    fn __repr__(self) -> String:
+        return (
+            "Pipe(char: "
+            + chr(self.ord)
+            + ", position: "
+            + str(self.position)
+            + ")"
+        )
 
     fn __eq__(self, other: Self) -> Bool:
         return self.position == other.position
@@ -81,6 +102,32 @@ fn next_pipe(
     return Pipe(map[next_pos[1]][next_pos[0]], next_pos), current.position
 
 
+fn convergence(a: Pipe, b: Pipe) -> Pipe:
+    # print(a.__repr__(), b.__repr__())
+    a1 = a.position + a.movement[0]
+    a2 = a.position + a.movement[1]
+    b1 = b.position + b.movement[0]
+    b2 = b.position + b.movement[1]
+
+    valid = a1 if a1 == b1 or a1 == b2 else a2
+
+    # d1 = a.position - valid
+    # d2 = b.position - valid
+
+    # print("inferring pipe on", valid, "with diffs:", d1, d2)
+
+    @parameter
+    for idx in range(len(VALID_PIPES)):
+        ppos = VALID_PIPES.get[idx, Int]()
+        p = Pipe(chr(ppos), valid)
+        if next_position(a.position, p) == b.position:
+            return p
+
+    print("THis should not happen. Error when infering pipe on infer_pipe")
+    sys.exit(1)
+    return Pipe("a", (1, 2))
+
+
 fn find_connected_pipe(
     init: Pipe, map: List[String], ranges: (Int, Int)
 ) -> OptionalReg[Pipe]:
@@ -96,10 +143,17 @@ fn find_connected_pipe(
                 diff = init.position - cpipe.position
                 if diff == cpipe.movement[0] or diff == cpipe.movement[1]:
                     return cpipe
+
     return None
 
 
-# --part 2
+@always_inline
+fn pipe_in_list(v: Pipe, l: List[Pipe, True]) -> Bool:
+    for p in l:
+        if v == p[]:
+            return True
+
+    return False
 
 
 struct Solution(AdventSolution):
@@ -132,6 +186,8 @@ struct Solution(AdventSolution):
     # Actually, here you need to put
     @staticmethod
     fn part_2(lines: List[String]) -> AdventResult:
+        # print("Hi")
+        # test_convergence()
         x_max = lines[0].byte_length()
         y_max = lines.size
         total = 0
@@ -150,39 +206,50 @@ struct Solution(AdventSolution):
         pipes.append(current)
         while True:
             current, _ = next_pipe(lines, pipes[-1], pipes[-2].position)
-            pipes.append(current)
             if current.ord == Start:
                 break
+            pipes.append(current)
+        repl = convergence(pipes[1], pipes[-1])
+        pipes[0] = repl
 
         for diag in range(x_max + y_max - 1):
             xi = diag if diag < x_max else x_max - 1
             yi = 0 if diag < x_max else diag - x_max + 1
             xf = 0 if diag < y_max else diag - y_max + 1
             yf = diag if diag < y_max else y_max - 1
-            print("from (", xi, yi, ") to (", xf, yf, ")")
+            # print("from (", xi, yi, ") to (", xf, yf, ")")
             x, y = xi, yi
             within = False
 
             while True:
                 pp = Pipe(lines[y][x], (x, y))
-                if pp.ord in [
-                    Horizontal,
-                    Vertical,
-                    UpRight,
-                    DownLeft,
-                ]:
-                    for p in pipes:
-                        if p[] == pp:
-                            within ^= True
-                            # break
-                if within:
-                    total += 1
-                print(lines[y][x], "on position (", x, y, ")")
+                pp = pp if pp.ord != Start else repl
+                in_the_loop = pipe_in_list(pp, pipes)
+                within ^= pp.ord in VALID_DIAG and in_the_loop
+                total += 1 if within and not in_the_loop else 0
+                # print(
+                #     lines[y][x], "on position (", x, y, ")", ". mode:", within
+                # )
                 if x == xf and y == yf:
                     break
+
                 x, y = max(x - 1, xf), min(y + 1, yf)
 
             if within:
                 print("Error here. We never went out of this window+!!")
+                sys.exit()
 
         return total
+
+
+fn test_convergence():
+    p1 = Pipe("|", (0, 0))
+    p2 = Pipe("-", (1, 1))
+    exp = Pipe("L", (0, 1))
+    print("expected:", end="")
+    print(exp.__repr__())
+    print("Found:", end="")
+    p3 = convergence(p1, p2)
+    print(p3.__repr__())
+    print(p3.position == exp.position)
+    print(p3.ord == exp.ord)
