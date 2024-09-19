@@ -1,19 +1,19 @@
-from advent_utils import AdventSolution, AdventResult
+from advent_utils import AdventSolution, AdventResult, FileTensor
 from collections import Dict, Optional
 from collections.string import atol
 
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(input: List[String]) -> AdventResult:
+    fn part_1(lines: List[String]) -> AdventResult:
         var total = 0
-        for line in input:
+        for line in lines:
             total += calc[F=first_numeric](line[])
 
         return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> AdventResult:
+    fn part_2(lines: List[String]) -> AdventResult:
         var mapper = Dict[String, Int]()
         mapper["one"] = 1
         mapper["two"] = 2
@@ -35,7 +35,7 @@ struct Solution(AdventSolution):
         mapper["9"] = 9
 
         var total = 0
-        for line in input:
+        for line in lines:
             total += line_value(line[], mapper)
 
         return total

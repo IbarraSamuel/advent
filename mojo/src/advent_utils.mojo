@@ -4,11 +4,19 @@ from testing import assert_equal
 from builtin.builtin_list import VariadicList
 from testing.testing import Testable
 from utils import Variant
+from tensor import Tensor
+from pathlib import Path
+
+alias FileTensor = Tensor[DType.uint8]
 
 
 fn read_input[path: StringLiteral]() raises -> List[String]:
-    with open(path, "r") as f:
+    with open(path, "rt") as f:
         return f.read().splitlines()
+
+
+fn read_input[path: Path]() raises -> FileTensor:
+    return Tensor[DType.uint8].fromfile(path)
 
 
 fn unwrap_or[
@@ -42,8 +50,7 @@ struct AdventResult(TestMovableResult):
         return "This is unreachable!"
 
     fn format_to(self, inout writer: Formatter):
-        var str_self = str(self)
-        writer.write(str_self)
+        writer.write(str(self))
 
     fn __eq__(self, other: Self) -> Bool:
         if self.value.isa[String]() and other.value.isa[String]():
@@ -69,8 +76,27 @@ trait AdventSolution:
         ...
 
 
+trait TensorSolution:
+    @staticmethod
+    fn part_1(lines: FileTensor) -> Int64:
+        ...
+
+    @staticmethod
+    fn part_2(lines: FileTensor) -> Int64:
+        ...
+
+
 fn run[S: AdventSolution, path: StringLiteral]() raises:
     var input = read_input[path=path]()
+    print("From", path, "=>")
+    var result_1 = S.part_1(input)
+    print("\tPart 1:", result_1)
+    var result_2 = S.part_2(input)
+    print("\tPart 2:", result_2, end="\n")
+
+
+fn run[S: TensorSolution, path: StringLiteral]() raises:
+    var input = read_input[path = Path(path)]()
     print("From", path, "=>")
     var result_1 = S.part_1(input)
     print("\tPart 1:", result_1)
