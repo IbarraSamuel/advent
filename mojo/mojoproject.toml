@@ -10,4 +10,4 @@ version = "0.1.0"
 test = {cmd="mojo test -I src src"}
 
 [dependencies]
-max = ">=24.6.0.dev2024090705,<25"
+max = ">=24.6.0.dev2024092405,<25"
