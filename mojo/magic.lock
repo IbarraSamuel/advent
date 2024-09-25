@@ -1807,6 +1807,7 @@ packages:
   - tqdm >=4.42.1
   - typing-extensions >=3.7.4.3
   license: Apache-2.0
+  license_family: APACHE
   size: 271697
   timestamp: 1727125286421
 - kind: conda
@@ -2004,6 +2005,7 @@ packages:
   constrains:
   - binutils_impl_linux-64 2.43
   license: GPL-3.0-only
+  license_family: GPL
   size: 668593
   timestamp: 1727091310383
 - kind: conda
@@ -4384,6 +4386,7 @@ packages:
   depends:
   - python >=3.6
   license: Apache-2.0
+  license_family: APACHE
   size: 142527
   timestamp: 1727140688093
 - kind: conda

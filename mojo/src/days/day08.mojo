@@ -7,6 +7,7 @@ from algorithm import parallelize
 
 alias LEFT = "L"
 alias RIGHT = "R"
+alias Indexer = Dict[String, Int]
 
 alias default_lpv = List[StaticIntTuple[2]]()
 
@@ -35,8 +36,7 @@ fn key_in_list(k: Int, lstp: List[StaticIntTuple[2]]) -> Optional[Int]:
 struct Solution:
     @staticmethod
     fn part_1(lines: List[String]) -> AdventResult:
-        alias Indexer = Dict[String, Int]
-        data_len = lines[0].byte_length() - 2
+        data_len = lines.size - 2
         dct = Indexer(power_of_two_initial_capacity=ceil_power_of_two(data_len))
         key = String("AAA")
         iterations = 0
@@ -60,10 +60,8 @@ struct Solution:
 
     @staticmethod
     fn part_2(lines: List[String]) -> AdventResult:
-        alias Indexer = Dict[String, Int]
-        data_len = lines[0].byte_length() - 2
-        init_cap = ceil(log(Float64(data_len)) / log(Float64(2)))
-        dct = Indexer(power_of_two_initial_capacity=2 ** int(init_cap))
+        data_len = lines.size - 2
+        dct = Indexer(power_of_two_initial_capacity=ceil_power_of_two(data_len))
         count = 0
 
         inits = List[Int](capacity=8)

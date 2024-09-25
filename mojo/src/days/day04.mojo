@@ -1,5 +1,5 @@
 from advent_utils import AdventSolution, AdventResult
-from algorithm.functional import vectorize
+from algorithm.functional import parallelize
 
 
 struct Solution(AdventSolution):
@@ -8,7 +8,7 @@ struct Solution(AdventSolution):
         var total = 0
 
         @parameter
-        fn calc_line[v: Int](idx: Int):
+        fn calc_line(idx: Int):
             var winners = List[String]()
             var line = input[idx]
             var inp = line.find(": ") + 2
@@ -43,7 +43,7 @@ struct Solution(AdventSolution):
                 winner_amnt += 1
             total += 2 ** (winner_amnt - 1) if winner_amnt > 0 else 0
 
-        vectorize[calc_line, 1](len(input))
+        parallelize[calc_line](len(input))
         return total
 
     @staticmethod
@@ -53,7 +53,7 @@ struct Solution(AdventSolution):
         for _ in range(len(input)):
             amount.append(1)
 
-        fn calc_line(line: Reference[is_mutable=False, type=String]) -> Int:
+        fn calc_line(line: Reference[String]) -> Int:
             var winners = List[String]()
             var inp = line[].find(": ") + 2
             var pipe = line[].find("|")
@@ -89,7 +89,7 @@ struct Solution(AdventSolution):
             return winner_amnt
 
         for line in input:
-            var amnt = calc_line(line[])
+            var amnt = calc_line(line)
             var times = amount.pop(0) if len(amount) > 0 else 1
             total += times
             for i in range(amnt):

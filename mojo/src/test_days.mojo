@@ -52,12 +52,12 @@ fn test_day07() raises:
     ]()
 
 
-# fn test_day08() raises:
-#     test_solution[
-#         days.day08.Solution,
-#         ("../tests/day8_1.txt", 2),
-#         ("../tests/day8_2.txt", 6),
-#     ]()
+fn test_day08() raises:
+    test_solution[
+        days.day08.Solution,
+        ("../tests/day8_1.txt", 2),
+        ("../tests/day8_2.txt", 6),
+    ]()
 
 
 fn test_day09() raises:

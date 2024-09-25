@@ -130,11 +130,18 @@ fn test_solution[
     alias path_2: StringLiteral = test_2[0]
     alias expected_result_2: T = test_2[1]
 
-    var result_1 = S.part_1(read_input[path=path_1]())
+    var result_1 = S.part_1(read_input[path_1]())
+    print(path_1)
+    print("result is:", result_1)
+    print("expected result is:", expected_result_1)
     assert_equal(str(result_1), str(expected_result_1))
 
-    var result_2 = S.part_2(read_input[path=path_2]())
+    var result_2 = S.part_2(read_input[path_2]())
+    print(path_2)
+    print("result is:", result_2)
+    print("expected result is:", expected_result_2)
     assert_equal(str(result_2), str(expected_result_2))
+    print("finalized correctly")
 
 
 fn test_solution[
