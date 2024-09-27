@@ -1,5 +1,5 @@
 from advent_utils import AdventSolution, AdventResult
-from algorithm.functional import sync_parallelize, vectorize
+from algorithm.functional import vectorize
 from algorithm.reduction import sum, _simd_sum
 
 alias Game = (Int, Int, Int)
