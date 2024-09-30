@@ -167,11 +167,11 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sse-starlette-2.1.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/starlette-0.38.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tk-8.6.13-noxft_h4845f30_101.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/tokenizers-0.19.1-py312hfef1a59_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/tokenizers-0.20.0-py312h5ee3a2d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tornado-6.4.1-py312h66e93f0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.66.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/transformers-4.44.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/transformers-4.45.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typer-0.12.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typer-slim-0.12.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typer-slim-standard-0.12.5-hd8ed1ab_0.conda
@@ -179,7 +179,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing_extensions-4.12.2-pyha770c72_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2024a-h8827d51_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/urllib3-2.2.3-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/uvicorn-0.30.6-py312h7900ff3_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/uvicorn-0.31.0-py312h7900ff3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xxhash-0.8.2-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/xz-5.2.6-h166bdaf_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/yaml-0.2.5-h7f98852_2.tar.bz2
@@ -338,11 +338,11 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sse-starlette-2.1.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/starlette-0.38.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tk-8.6.13-h5083fa2_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tokenizers-0.19.1-py312hfbf4c0d_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tokenizers-0.20.0-py312h12757c6_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tornado-6.4.1-py312h024a12e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.66.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/transformers-4.44.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/transformers-4.45.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typer-0.12.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typer-slim-0.12.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typer-slim-standard-0.12.5-hd8ed1ab_0.conda
@@ -350,7 +350,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing_extensions-4.12.2-pyha770c72_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2024a-h8827d51_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/urllib3-2.2.3-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/uvicorn-0.30.6-py312h81bd7bf_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/uvicorn-0.31.0-py312h81bd7bf_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/xxhash-0.8.2-hb547adb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/xz-5.2.6-h57fd34a_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/yaml-0.2.5-h3422bc3_2.tar.bz2
@@ -4880,13 +4880,14 @@ packages:
   timestamp: 1699202167581
 - kind: conda
   name: tokenizers
-  version: 0.19.1
-  build: py312hfbf4c0d_0
+  version: 0.20.0
+  build: py312h12757c6_0
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/tokenizers-0.19.1-py312hfbf4c0d_0.conda
-  sha256: c84c7f65ac58c4448ba8a682844b1b5aa54724026039ea655ef774150bfa4ad2
-  md5: 560c4039a7f54d6153520a0c029904a3
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/tokenizers-0.20.0-py312h12757c6_0.conda
+  sha256: c07431f220a384891ea95db7ddba57448a8104faff5dcbc142690b41f52bd144
+  md5: ae12ebb4009d3dc781ef44c6688eef6e
   depends:
+  - __osx >=11.0
   - huggingface_hub >=0.16.4,<1.0
   - libcxx >=16
   - python >=3.12,<3.13.0a0
@@ -4896,27 +4897,30 @@ packages:
   - __osx >=11.0
   license: Apache-2.0
   license_family: APACHE
-  size: 1856398
-  timestamp: 1713403690405
+  size: 1901499
+  timestamp: 1723431528309
 - kind: conda
   name: tokenizers
-  version: 0.19.1
-  build: py312hfef1a59_0
+  version: 0.20.0
+  build: py312h5ee3a2d_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/tokenizers-0.19.1-py312hfef1a59_0.conda
-  sha256: 53d5af60a18b2c642a7099e54feada13ee43273760d86f82ab3cf79e5f085b28
-  md5: e498c3643a86d34e076d725d6ed4a7e5
+  url: https://conda.anaconda.org/conda-forge/linux-64/tokenizers-0.20.0-py312h5ee3a2d_0.conda
+  sha256: 707ac7f2c649203a688e24e05519bd6784d5bdd5e5184462a84bc4297445f6ac
+  md5: 39bcf03c9790e88994d6acb56c2d19dc
   depends:
+  - __glibc >=2.17,<3.0.a0
   - huggingface_hub >=0.16.4,<1.0
   - libgcc-ng >=12
   - libstdcxx-ng >=12
-  - openssl >=3.2.1,<4.0a0
+  - openssl >=3.3.1,<4.0a0
   - python >=3.12,<3.13.0a0
   - python_abi 3.12.* *_cp312
+  constrains:
+  - __glibc >=2.17
   license: Apache-2.0
   license_family: APACHE
-  size: 2745622
-  timestamp: 1713403069534
+  size: 2205150
+  timestamp: 1723431362611
 - kind: conda
   name: tornado
   version: 6.4.1
@@ -4985,13 +4989,13 @@ packages:
   timestamp: 1713535244513
 - kind: conda
   name: transformers
-  version: 4.44.2
+  version: 4.45.1
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/transformers-4.44.2-pyhd8ed1ab_0.conda
-  sha256: ff42271f3650525a8c7250618bcf763dd800088eed300baeb0e15c9856131f2a
-  md5: 00d239b9219b2453736c8b1d816d793a
+  url: https://conda.anaconda.org/conda-forge/noarch/transformers-4.45.1-pyhd8ed1ab_0.conda
+  sha256: ebb1237fe9b8c7322ffe69d190f526f53d1fb25fd97ee3317650e9e40870270a
+  md5: 5b9f5a5c18fdf7706227f163f2095a46
   depends:
   - datasets !=2.5.0
   - filelock
@@ -5003,12 +5007,12 @@ packages:
   - regex !=2019.12.17
   - requests
   - safetensors >=0.4.1
-  - tokenizers >=0.19,<0.20
+  - tokenizers >=0.20,<0.21
   - tqdm >=4.27
   license: Apache-2.0
   license_family: APACHE
-  size: 3424805
-  timestamp: 1724403480837
+  size: 3580150
+  timestamp: 1727546761864
 - kind: conda
   name: typer
   version: 0.12.5
@@ -5127,12 +5131,12 @@ packages:
   timestamp: 1726496531769
 - kind: conda
   name: uvicorn
-  version: 0.30.6
+  version: 0.31.0
   build: py312h7900ff3_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/uvicorn-0.30.6-py312h7900ff3_0.conda
-  sha256: 85a98c5c92a5cffb238541ad72d5cb4db5e99aff2376fa4d0bf2817d24cfac1f
-  md5: 5c514d198dd2383d05e7d8b4d93e4e16
+  url: https://conda.anaconda.org/conda-forge/linux-64/uvicorn-0.31.0-py312h7900ff3_0.conda
+  sha256: 0abb60995d2a90eb094101188e5be2ebb3495d460afdc101332a06d50f6901d4
+  md5: 069c7bfb27ab05c65fd654c7640a088c
   depends:
   - click >=7.0
   - h11 >=0.8
@@ -5140,16 +5144,16 @@ packages:
   - python_abi 3.12.* *_cp312
   license: BSD-3-Clause
   license_family: BSD
-  size: 132020
-  timestamp: 1723660099723
+  size: 133728
+  timestamp: 1727549517990
 - kind: conda
   name: uvicorn
-  version: 0.30.6
+  version: 0.31.0
   build: py312h81bd7bf_0
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/uvicorn-0.30.6-py312h81bd7bf_0.conda
-  sha256: 8078e14e9f2a4ef3295825018c41e1d8bde1ac936c48dbcd6b5212d1d9fa2140
-  md5: 9059f5a0f4baf1c941a90568e65997e8
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/uvicorn-0.31.0-py312h81bd7bf_0.conda
+  sha256: 5ba0deb548755a99cf34f8b4effbe98b99b8c5cf6c7aa18b68a3ec965d6b43c0
+  md5: 25df50debc9c90ac374846f358aa4008
   depends:
   - click >=7.0
   - h11 >=0.8
@@ -5158,8 +5162,8 @@ packages:
   - python_abi 3.12.* *_cp312
   license: BSD-3-Clause
   license_family: BSD
-  size: 133290
-  timestamp: 1723660236813
+  size: 134473
+  timestamp: 1727549629904
 - kind: conda
   name: xxhash
   version: 0.8.2
