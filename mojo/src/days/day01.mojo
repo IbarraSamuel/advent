@@ -1,6 +1,12 @@
-from advent_utils import AdventSolution, AdventResult, FileTensor
+from advent_utils import (
+    AdventResult,
+    FileTensor,
+    GenericAdventSolution,
+    TestMovableResult,
+    SIMDResult,
+)
 from collections import Dict, Optional
-from algorithm.functional import map
+from algorithm.functional import parallelize
 
 alias MapList = [
     ("one", 1),
@@ -24,51 +30,55 @@ alias MapList = [
 ]
 
 
-struct Solution(AdventSolution):
+struct Solution(GenericAdventSolution):
+    alias Result: TestMovableResult = Int
+
     @staticmethod
-    fn part_1(lines: List[String]) -> AdventResult:
-        var total = 0
+    fn part_1(lines: List[String]) raises -> Self.Result:
+        var total = SIMDResult(0)
 
         @parameter
         fn calc_line(idx: Int):
+            # for idx in range(lines.size):
             f, l = first_numeric(lines[idx])
-            total += f * 10 + l
+            total[idx] = f * 10 + l
 
-        map[calc_line](lines.size)
-        return total
+        parallelize[calc_line](lines.size)
+        return int(total.reduce_add())
 
     @staticmethod
-    fn part_2(lines: List[String]) -> AdventResult:
-        var total = 0
+    fn part_2(lines: List[String]) raises -> Self.Result:
+        var total = SIMDResult(0)
 
         @parameter
         fn calc_line(idx: Int):
-            total += line_value(lines[idx])
+            # for idx in range(lines.size):
+            total[idx] = line_value(lines[idx])
 
-        map[calc_line](lines.size)
-
-        return total
+        parallelize[calc_line](lines.size)
+        return int(total.reduce_add())
 
 
 fn first_numeric(line: String) -> (Int, Int):
     pos, end = 0, len(line) - 1
     fval, lval = 0, 0
 
-    while pos <= (end + 1) // 2:
-        try:
-            if not fval:
+    while pos <= end:
+        if not fval:
+            try:
                 fval = int(line[pos])
-            if not lval:
+            except:
+                pass
+        if not lval:
+            try:
                 lval = int(line[end - pos])
-        except:
-            pos += 1
-        else:
-            return fval, lval
+            except:
+                pass
 
-    if not fval:
-        fval = lval
-    if not lval:
-        lval = fval
+        if not fval or not lval:
+            pos += 1
+        elif fval and lval:
+            return fval, lval
 
     return fval, lval
 

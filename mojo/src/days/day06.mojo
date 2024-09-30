@@ -1,4 +1,4 @@
-from advent_utils import AdventSolution, AdventResult, unwrap_or
+from advent_utils import GenericAdventSolution, TestMovableResult, unwrap_or
 from math import sqrt, floor, ceil
 
 
@@ -22,9 +22,11 @@ fn string_to_uint(inp: String) raises -> Int:
     return int(inp)
 
 
-struct Solution(AdventSolution):
+struct Solution(GenericAdventSolution):
+    alias Result: TestMovableResult = Int
+
     @staticmethod
-    fn part_1(input: List[String]) -> AdventResult:
+    fn part_1(input: List[String]) raises -> Int:
         total = 1
         for r_idx in range(len(input[0].split()) - 1):
             duration = input[0].split()[r_idx + 1]
@@ -36,7 +38,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> AdventResult:
+    fn part_2(input: List[String]) raises -> Int:
         duration = "".join(input[0].split()[1:])
         record = "".join(input[1].split()[1:])
         duration_int = unwrap_or(string_to_uint, duration, default=0)

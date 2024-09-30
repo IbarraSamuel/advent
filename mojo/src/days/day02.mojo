@@ -1,4 +1,4 @@
-from advent_utils import AdventSolution, AdventResult
+from advent_utils import GenericAdventSolution, TestMovableResult
 from algorithm.functional import vectorize
 from algorithm.reduction import sum, _simd_sum
 
@@ -56,9 +56,11 @@ fn calc_max(game: Game, other: Game) -> Game:
     )
 
 
-struct Solution(AdventSolution):
+struct Solution(GenericAdventSolution):
+    alias Result: TestMovableResult = Int
+
     @staticmethod
-    fn part_1(input: List[String]) -> AdventResult:
+    fn part_1(input: List[String]) raises -> Self.Result:
         var total = 0
 
         @parameter
@@ -77,10 +79,10 @@ struct Solution(AdventSolution):
 
         vectorize[calc_line, 1](len(input))
 
-        return str(total)
+        return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> AdventResult:
+    fn part_2(input: List[String]) raises -> Self.Result:
         var simd = SIMD[DType.uint32, 128](value=0)
 
         @parameter
@@ -100,4 +102,5 @@ struct Solution(AdventSolution):
             simd[idx] = max_card[0] * max_card[1] * max_card[2]
 
         vectorize[set_result, 1](len(input))
-        return str(simd.reduce_add())
+        result = simd.reduce_add()
+        return int(result)
