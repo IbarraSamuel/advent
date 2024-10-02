@@ -1,4 +1,4 @@
-from advent_utils import AdventSolution, AdventResult
+from advent_utils import GenericAdventSolution, TestMovableResult
 from utils import StaticIntTuple, StaticTuple
 from collections import Dict, OptionalReg
 import os
@@ -20,7 +20,7 @@ alias Start = "S"
 
 alias VALID_PIPES = [Vertical, Horizontal, UpRight, UpLeft, DownRight, DownLeft]
 alias INVALID_PIPES = [Ground, Start]
-alias VALID_DIAG = [Horizontal, Vertical, UpRight, DownLeft]
+# alias VALID_DIAG = [Horizontal, Vertical, UpRight, DownLeft]
 
 alias UP: Position = (0, -1)
 alias DOWN: Position = (0, 1)
@@ -102,10 +102,10 @@ fn convergence(a: Pipe, b: Pipe) -> Pipe:
 
 
 fn find_connected_pipe(
-    init: Pipe, map: List[String], ranges: (Int, Int)
+    pos: Position, map: List[String], ranges: (Int, Int)
 ) -> OptionalReg[Pipe]:
     xr, yr = ranges
-    xi, yi = init.position[0], init.position[1]
+    xi, yi = pos[0], pos[1]
     xmin, xmax = max(0, xi - 1), min(xr - 1, xi + 1)
     ymin, ymax = max(0, yi - 1), min(yr - 1, yi + 1)
 
@@ -113,7 +113,7 @@ fn find_connected_pipe(
         for y in range(ymin, ymax + 1):
             cpipe = Pipe(map[y][x], (x, y))
             if cpipe.char in VALID_PIPES:
-                diff = init.position - cpipe.position
+                diff = pos - cpipe.position
                 if diff == cpipe.movement[0] or diff == cpipe.movement[1]:
                     return cpipe
 
@@ -129,9 +129,11 @@ fn pipe_in_list(v: Pipe, l: List[Pipe, True]) -> Bool:
     return False
 
 
-struct Solution(AdventSolution):
+struct Solution(GenericAdventSolution):
+    alias Result: TestMovableResult = Int
+
     @staticmethod
-    fn part_1(lines: List[String]) -> AdventResult:
+    fn part_1(lines: List[String]) raises -> Self.Result:
         y_range = lines.size
         x_range = lines[0].byte_length()
         char = OptionalReg[Pipe](None)
@@ -145,7 +147,9 @@ struct Solution(AdventSolution):
                 break
 
         init = char.value()
-        current = find_connected_pipe(init, lines, (x_range, y_range)).value()
+        current = find_connected_pipe(
+            init.position, lines, (x_range, y_range)
+        ).value()
         prev_pos = init.position
         total = 1
         while True:
@@ -157,66 +161,148 @@ struct Solution(AdventSolution):
         return total // 2
 
     @staticmethod
-    fn part_2(lines: List[String]) -> AdventResult:
+    fn part_2(lines: List[String]) raises -> Self.Result:
         x_max = lines[0].byte_length()
         y_max = lines.size
         total = 0
-        pipes = List[Pipe, True]()
+        pipes = List[Position, True]()
 
         for y in range(y_max):
             for x in range(x_max):
-                c = lines[y][x]
                 if lines[y][x] == Start:
-                    pipes.append(Pipe(c, (x, y)))
+                    pipes.append((x, y))
                     break
             if pipes:
                 break
 
         current = find_connected_pipe(pipes[0], lines, (x_max, y_max)).value()
-        pipes.append(current)
+        pipes.append(current.position)
 
         while True:
-            current, _ = next_pipe(lines, pipes[-1], pipes[-2].position)
+            current, _ = next_pipe(lines, current, pipes[-2])
             if current.char == Start:
                 break
-            pipes.append(current)
+            pipes.append(current.position)
 
-        repl = convergence(pipes[1], pipes[-1])
-        pipes[0] = repl
+        frst, lst = pipes[1], pipes[-1]
+        frst_p, lst_p = Pipe(lines[frst[1]][frst[0]], frst), Pipe(
+            lines[lst[1]][lst[0]], lst
+        )
 
-        for diag in range(x_max + y_max - 1):
-            xi = diag if diag < x_max else x_max - 1
-            yi = 0 if diag < x_max else diag - x_max + 1
-            xf = 0 if diag < y_max else diag - y_max + 1
-            yf = diag if diag < y_max else y_max - 1
-            x, y = xi, yi
+        repl = convergence(frst_p, lst_p)
+        pipes[0] = repl.position
+
+        # Changing logic to use
+
+        for y in range(y_max):
+            # cnt = 0
             within = False
+            mid = False
+            up = False
+            # last = OptionalReg[StringLiteral]()
+            for x in range(x_max):
+                if (x, y) in pipes:
+                    if lines[y][x] == Vertical:
+                        within ^= True
 
-            while True:
-                pp = Pipe(lines[y][x], (x, y))
-                pp = pp if pp.char != Start else repl
-                in_the_loop = pipe_in_list(pp, pipes)
-                within ^= pp.char in VALID_DIAG and in_the_loop
-                total += 1 if within and not in_the_loop else 0
-                if x == xf and y == yf:
-                    break
+                    elif lines[y][x] == UpRight:
+                        mid, up = True, True
 
-                x, y = max(x - 1, xf), min(y + 1, yf)
+                    elif lines[y][x] == DownRight:
+                        mid, up = True, False
+
+                    elif lines[y][x] == DownLeft:
+                        mid, within = False, up
+
+                    elif lines[y][x] == UpLeft:
+                        mid, within = False, not up
+                elif within:
+                    total += 1
 
             if within:
-                os.abort("Error here. We never went out of this window+!!")
+                print("error on line")
+                print(lines[y])
+                for x in range(x_max):
+                    if (x, y) in pipes:
+                        print(lines[y][x], end="")
+                    else:
+                        print("'", end="")
+                print()
+                within = False
+                mid = False
+                up = False
+                # TODO: Print this but each char is one line, and print all (within, mid, up, chr)
+                for x in range(x_max):
+                    if (x, y) in pipes:
+                        if lines[y][x] == Vertical:
+                            within ^= True
+
+                        elif lines[y][x] == UpRight:
+                            mid, up = True, True
+
+                        elif lines[y][x] == DownRight:
+                            mid, up = True, False
+
+                        elif lines[y][x] == DownLeft:
+                            mid, within = False, up
+
+                        elif lines[y][x] == UpLeft:
+                            mid, within = False, not up
+                    print("I" if within else lines[y][x], end="")
+                print()
+
+                os.abort("not exiting the shape of the maze for line.")
+        # kjx
+
+        #                 if c == Vertical:
+        #                     within ^= True
+        #                     continue
+        #                 elif c == UpRight:
+        #                     if last.value() == DownLeft:
+        #                         within ^= True
+        #                         last = None
+        #                     continue
+        #                 elif c == DownRight:
+        #                     if last.value() == UpLeft:
+        #                         within ^= True
+        #                         last = None
+        #                     continue
+        #                 elif c == UpRight:
+        #                     if not last:
+        #                         last = UpRight
+        #                     elif last.value() == DownLeft:
+        #                         within ^= True
+        #                         last = None
+        #                     continue
+        #                 elif c == UpRight:
+        #                     if not last:
+        #                         last = UpRight
+        #                     elif last.value() == DownLeft:
+        #                         within ^= True
+        #                         last = None
+        #                     continue
+
+        # for diag in range(x_max + y_max - 1):
+        #     xi = diag if diag < x_max else x_max - 1
+        #     yi = 0 if diag < x_max else diag - x_max + 1
+        #     xf = 0 if diag < y_max else diag - y_max + 1
+        #     yf = diag if diag < y_max else y_max - 1
+        #     x, y = xi, yi
+        #     within = False
+
+        #     while True:
+        #         pp = Pipe(lines[y][x], (x, y))
+        #         pp = pp if pp.char != Start else repl
+        #         in_the_loop = pipe_in_list(pp, pipes)
+        #         within ^= pp.char in VALID_DIAG and in_the_loop
+        #         total += 1 if within and not in_the_loop else 0
+        #         if x == xf and y == yf:
+        #             break
+
+        #         x, y = max(x - 1, xf), min(y + 1, yf)
+
+        #     if within:
+        #         os.abort("Error here. We never went out of this window+!!")
 
         return total
-
-
-# fn test_convergence():
-#     p1 = Pipe("|", (0, 0))
-#     p2 = Pipe("-", (1, 1))
-#     exp = Pipe("L", (0, 1))
-#     print("expected:", end="")
-#     print(exp.__repr__())
-#     print("Found:", end="")
-#     p3 = convergence(p1, p2)
-#     print(p3.__repr__())
-#     print(p3.position == exp.position)
-#     print(p3.char == exp.char)
+        # return 0
