@@ -1,5 +1,4 @@
 from advent_utils import (
-    AdventResult,
     SIMDResult,
     GenericAdventSolution,
     TestMovableResult,
@@ -70,37 +69,37 @@ struct Solution(GenericAdventSolution):
         data_len = lines.size
         iter_len = lines[0].byte_length()
         dct = Indexer(power_of_two_initial_capacity=ceil_2pow(data_len - 2))
-
         init_nodes = List[Int](capacity=8)
-        loop_values = List[List[StaticIntTuple[2]]](capacity=8)
 
         for idx in range(2, lines.size):
             dct[lines[idx][:3]] = idx
             if lines[idx][2] == "A":
                 init_nodes.append(idx)
-                loop_values.append(default_lpv)
 
-        results = SIMDResult(0)
+        results = SIMD[DType.uint32, 8](0)
 
         @parameter
         fn calc_cycles(idx: Int):
-            init = lines[init_nodes[idx]][:3]
+            pos = lines[init_nodes[idx]][:3]
             done = False
             loop_no = 0
-            z_values = Dict[String, Int]()
+            readed = Dict[String, Int](power_of_two_initial_capacity=128)
             while not done:
                 for i in range(iter_len):
-                    if init.endswith("Z"):
-                        if init in z_values:
-                            results[idx] = (
-                                i + data_len * loop_no
-                            ) - z_values.get(init).value()
-                            return
-                        z_values[init] = i + data_len * loop_no
-                    init = (
-                        lines[dct.get(init).value()][7:10] if lines[0][i]
-                        == LEFT else lines[dct.get(init).value()][12:15]
+                    if pos in readed:
+                        results[idx] = (i + iter_len * loop_no) - readed.get(
+                            pos
+                        ).value()
+                        break
+
+                    readed[pos] = i + iter_len * loop_no
+
+                    pos = (
+                        lines[dct.get(pos).value()][7:10] if lines[0][i]
+                        == LEFT else lines[dct.get(pos).value()][12:15]
                     )
+                if results[idx] != 0:
+                    break
                 loop_no += 1
 
         parallelize[calc_cycles](init_nodes.size)
