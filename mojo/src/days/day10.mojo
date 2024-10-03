@@ -1,12 +1,12 @@
 from advent_utils import GenericAdventSolution, TestMovableResult
 from utils import StaticIntTuple, StaticTuple
-from collections import Dict, OptionalReg
+from collections import Dict, OptionalReg, OptionalReg
 import os
 from algorithm import parallelize
 from testing import assert_equal, assert_true, assert_false
 
 alias Position = StaticIntTuple[2]
-alias PipeList = List[Pipe]
+alias EMPTY_POS = Position()
 alias Movement = StaticTuple[Position, 2]
 
 alias Vertical = "|"
@@ -50,17 +50,6 @@ fn get_pipe_and_mov(char: String) -> (StringLiteral, Movement):
     return ("bad", Movement())
 
 
-@register_passable("trivial")
-struct Pipe:
-    var char: StringLiteral
-    var position: Position
-    var movement: Movement
-
-    fn __init__(inout self, chr: String, position: Position):
-        self.char, self.movement = get_pipe_and_mov(chr)
-        self.position = position
-
-
 @always_inline
 fn next_position(
     previous: Position, curr_pos: Position, movement: Movement
@@ -71,62 +60,22 @@ fn next_position(
     return curr_pos + next
 
 
-@always_inline
-fn next_pipe(
-    map: List[String], current: Pipe, prev_pos: Position
-) -> (Pipe, Position):
-    next_pos = next_position(
-        previous=prev_pos, curr_pos=current.position, movement=current.movement
-    )
-    return Pipe(map[next_pos[1]][next_pos[0]], next_pos), current.position
-
-
-fn convergence(a: Pipe, b: Pipe) -> Pipe:
-    a1 = a.position + a.movement[0]
-    a2 = a.position + a.movement[1]
-    b1 = b.position + b.movement[0]
-    b2 = b.position + b.movement[1]
-
-    valid = a1 if a1 == b1 or a1 == b2 else a2
-
-    @parameter
-    for idx in range(len(VALID_PIPES)):
-        ppos = VALID_PIPES.get[idx, StringLiteral]()
-
-        p = Pipe(ppos, valid)
-        if next_position(a.position, valid, p.movement) == b.position:
-            return p
-
-    os.abort("THis should not happen. Error when infering pipe on infer_pipe")
-    return Pipe("a", (1, 2))
-
-
-fn find_connected_pipe(
-    pos: Position, map: List[String], ranges: (Int, Int)
-) -> OptionalReg[Pipe]:
-    xr, yr = ranges
+fn find_connected_pipe(pos: Position, map: List[String]) -> Position:
+    xr, yr = map[0].byte_length(), map.size
     xi, yi = pos[0], pos[1]
     xmin, xmax = max(0, xi - 1), min(xr - 1, xi + 1)
     ymin, ymax = max(0, yi - 1), min(yr - 1, yi + 1)
 
     for x in range(xmin, xmax + 1):
         for y in range(ymin, ymax + 1):
-            cpipe = Pipe(map[y][x], (x, y))
-            if cpipe.char in VALID_PIPES:
-                diff = pos - cpipe.position
-                if diff == cpipe.movement[0] or diff == cpipe.movement[1]:
-                    return cpipe
+            ch, mov = get_pipe_and_mov(map[y][x])
+            if ch in VALID_PIPES:
+                diff = pos - (x, y)
+                if diff == mov[0] or diff == mov[1]:
+                    return (x, y)
 
-    return None
-
-
-@always_inline
-fn pipe_in_list(v: Pipe, l: List[Pipe, True]) -> Bool:
-    for p in l:
-        if v.position == p[].position:
-            return True
-
-    return False
+    os.abort("Error here. Cannot find connected pipe")
+    return EMPTY_POS
 
 
 struct Solution(GenericAdventSolution):
@@ -134,97 +83,52 @@ struct Solution(GenericAdventSolution):
 
     @staticmethod
     fn part_1(lines: List[String]) raises -> Self.Result:
-        y_range = lines.size
-        x_range = lines[0].byte_length()
-        char = OptionalReg[Pipe](None)
-        for y in range(y_range):
-            for x in range(x_range):
+        prev = EMPTY_POS
+        for y in range(lines.size):
+            for x in range(lines[0].byte_length()):
                 c = lines[y][x]
                 if c == Start:
-                    char = Pipe(c, (x, y))
+                    prev = (x, y)
                     break
-            if char:
+            if prev != EMPTY_POS:
                 break
 
-        init = char.value()
-        current = find_connected_pipe(
-            init.position, lines, (x_range, y_range)
-        ).value()
-        prev_pos = init.position
+        next = find_connected_pipe(prev, lines)
         total = 1
         while True:
-            current, prev_pos = next_pipe(lines, current, prev_pos)
             total += 1
-            if current.char == Start:
+            ch, mov = get_pipe_and_mov(lines[next[1]][next[0]])
+            npos = next_position(previous=prev, curr_pos=next, movement=mov)
+            prev, next = next, npos
+            if ch == Start:
                 break
 
         return total // 2
 
     @staticmethod
     fn part_2(lines: List[String]) raises -> Self.Result:
-        x_max = lines[0].byte_length()
-        y_max = lines.size
-        total = 0
-        pipes = List[Position, True]()
+        p1 = EMPTY_POS
 
-        for y in range(y_max):
-            for x in range(x_max):
+        for y in range(lines.size):
+            for x in range(lines[0].byte_length()):
                 if lines[y][x] == Start:
-                    pipes.append((x, y))
+                    p1 = (x, y)
                     break
-            if pipes:
+            if p1 != EMPTY_POS:
                 break
 
-        current = find_connected_pipe(pipes[0], lines, (x_max, y_max)).value()
-        pipes.append(current.position)
+        p2 = find_connected_pipe(p1, lines)
+
+        area = 0
+        n = 1
 
         while True:
-            current, _ = next_pipe(lines, current, pipes[-2])
-            if current.char == Start:
+            n += 1
+            char, mov = get_pipe_and_mov(lines[p2[1]][p2[0]])
+            npos = next_position(p1, p2, mov)
+            p1, p2 = p2, npos
+            area += p1[0] * p2[1] - p1[1] * p2[0]
+            if char == Start:
                 break
-            pipes.append(current.position)
 
-        frst, lst = pipes[1], pipes[-1]
-        frst_p, lst_p = Pipe(lines[frst[1]][frst[0]], frst), Pipe(
-            lines[lst[1]][lst[0]], lst
-        )
-
-        repl = convergence(frst_p, lst_p)
-
-        for y in range(y_max):
-            within = False
-            mid = False
-            up = False
-            for x in range(x_max):
-                if (x, y) in pipes:
-                    c = lines[y][x]
-
-                    if c == Start:
-                        c = repl.char
-
-                    if c == Horizontal:
-                        continue
-
-                    if c == Vertical:
-                        within ^= True
-
-                    elif c == UpRight:
-                        mid, up = True, True
-
-                    elif c== DownRight:
-                        mid, up = True, False
-
-                    elif c == DownLeft:
-                        mid, within = False, within ^ up
-
-                    elif c == UpLeft:
-                        mid, within = False, within ^ not up
-
-                elif within:
-                    total += 1
-
-            if within:
-                os.abort("not exiting the shape of the maze for line.")
-
-        return total
-        # return 0
+        return (abs(area) // 2) - (n // 2) + 1
