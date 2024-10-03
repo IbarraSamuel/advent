@@ -1,4 +1,4 @@
-from advent_utils import GenericAdventSolution, TestMovableResult, unwrap_or
+from advent_utils import GenericAdventSolution, TestMovableResult
 from math import sqrt, floor, ceil
 
 
@@ -18,8 +18,11 @@ fn races_winning(duration: Int, record: Int) -> UInt:
     return upper_int - lower_int + 1
 
 
-fn string_to_uint(inp: String) raises -> Int:
-    return int(inp)
+fn string_to_int(inp: String) -> Int:
+    try:
+        return int(inp)
+    except:
+        return 0
 
 
 struct Solution(GenericAdventSolution):
@@ -31,8 +34,8 @@ struct Solution(GenericAdventSolution):
         for r_idx in range(len(input[0].split()) - 1):
             duration = input[0].split()[r_idx + 1]
             record = input[1].split()[r_idx + 1]
-            duration_int = unwrap_or(string_to_uint, duration, default=0)
-            record_int = unwrap_or(string_to_uint, record, default=0)
+            duration_int = string_to_int(duration)
+            record_int = string_to_int(record)
             total *= races_winning(duration_int, record_int)
 
         return total
@@ -41,6 +44,6 @@ struct Solution(GenericAdventSolution):
     fn part_2(input: List[String]) raises -> Int:
         duration = "".join(input[0].split()[1:])
         record = "".join(input[1].split()[1:])
-        duration_int = unwrap_or(string_to_uint, duration, default=0)
-        record_int = unwrap_or(string_to_uint, record, default=0)
+        duration_int = string_to_int(duration)
+        record_int = string_to_int(record)
         return races_winning(duration_int, record_int)

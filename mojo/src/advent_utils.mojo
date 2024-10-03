@@ -6,6 +6,7 @@ from testing.testing import Testable
 from utils import Variant
 from tensor import Tensor
 from pathlib import Path
+from time import time_function
 
 alias FileTensor = Tensor[DType.uint8]
 alias SIMDResult = SIMD[DType.uint32, 1024]
@@ -112,34 +113,72 @@ trait TensorSolution:
         ...
 
 
-fn run[S: AdventSolution, path: StringLiteral]() capturing:
+fn run[S: AdventSolution, path: StringLiteral]() raises:
     var input = read_input[path=path]()
     print("From", path, "=>")
-    var result_1 = S.part_1(input)
-    print("\tPart 1:", result_1)
-    var result_2 = S.part_2(input)
-    print("\tPart 2:", result_2, end="\n")
+
+    var r1: AdventResult = 0
+
+    @parameter
+    fn part_1():
+        r1 = S.part_1(input)
+
+    t1 = time_function[func=part_1]() // 10e3
+    print("\tPart 1:", r1, "in", t1, "us.")
+    var r2: AdventResult = 0
+
+    @parameter
+    fn part_2():
+        r2 = S.part_2(input)
+
+    t2 = time_function[func=part_2]() // 10e3
+    print("\tPart 2:", r2, "in", t2, "us.", end="\n")
 
 
-fn run[S: GenericAdventSolution, path: StringLiteral]() capturing:
+fn run[S: GenericAdventSolution, path: StringLiteral]() raises:
     var input = read_input[path=path]()
-    try:
-        print("From", path, "=>")
-        var result_1 = S.part_1(input)
-        print("\tPart 1:", str(result_1))
-        var result_2 = S.part_2(input)
-        print("\tPart 2:", str(result_2), end="\n")
-    except:
-        abort("Error while running GenericSolution")
+    print("From", path, "=>")
+
+    var r1 = String()
+
+    @parameter
+    fn part_1() raises:
+        r1 = str(S.part_1(input))
+
+    t1 = time_function[func=part_1]() // 10e3
+    print("\tPart 1:", r1, "in", t1, "us.")
+
+    r2 = String()
+
+    @parameter
+    fn part_2() raises:
+        r2 = str(S.part_2(input))
+
+    t2 = time_function[func=part_2]() // 10e3
+    print("\tPart 2:", r2, "in", t2, "us.", end="\n")
 
 
-fn run[S: TensorSolution, path: StringLiteral]() capturing:
+fn run[S: TensorSolution, path: StringLiteral]() raises:
     var input = read_input[path = Path(path)]()
     print("From", path, "=>")
-    var result_1 = S.part_1(input)
-    print("\tPart 1:", result_1)
-    var result_2 = S.part_2(input)
-    print("\tPart 2:", result_2, end="\n")
+
+    r1 = Scalar[S.dtype]()
+
+    @parameter
+    fn part_1() raises:
+        r1 = S.part_1(input)
+
+    t1 = time_function[func=part_1]() // 10e3
+    print("\tPart 1:", r1, "in", t1, "us.")
+
+    r2 = Scalar[S.dtype]()
+
+    @parameter
+    fn part_2() raises:
+        r2 = S.part_2(input)
+
+    t2 = time_function[func=part_2]() // 10e3
+    print("\tPart 2:", r2, "in", t2, "us.", end="\n")
 
 
 fn test_solution[
