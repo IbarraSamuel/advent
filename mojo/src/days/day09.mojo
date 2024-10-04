@@ -7,22 +7,26 @@ from advent_utils import (
 from utils import StaticIntTuple
 from algorithm import parallelize
 import os
+from builtin.file import FileHandle
+from collections import Optional
 
 alias Size = 32
 alias Line = SIMD[DType.int64, Size]
-alias Mask = SIMD[DType.bool, Size]
-alias EMPTY_RES = SIMD[DType.int64, Size * 2](value=0)
 
 
 fn calc_prev_and_next(owned value: Line, last: Int) -> (Int64, Int64):
     idx = 0
-    frst, lst = value[0], value[last - 1]
-    while value[0] != 0 or value[last - 1 - idx] != 0:
-        idx += 1
-        value = value.shift_left[1]() - value
-        value[last - idx] = 0
+    idx, frst, lst = 0, Int64(0), Int64(0)
+    while not (value == 0).reduce_and():
         frst = value[0] - frst
         lst += value[last - 1 - idx]
+        value = value.shift_left[1]() - value
+        value[last - 1 - idx] = 0
+        idx += 1
+
+    if not idx % 2:
+        frst = -frst
+
     return frst, lst
 
 
@@ -33,7 +37,7 @@ fn create_line(v: String) -> (Line, Int):
     try:
 
         @parameter
-        for i in range(21):  # all lines have 21 items
+        for i in range(21):
             if i >= values.size:
                 break
             line[i] = int(values[i])
@@ -53,7 +57,6 @@ struct Solution(GenericAdventSolution):
 
         @parameter
         fn calc(idx: Int):
-            # for idx in range(lines.size):
             line, last = create_line(lines[idx])
             _, l = calc_prev_and_next(line, last)
             tot[idx] = l
@@ -64,10 +67,10 @@ struct Solution(GenericAdventSolution):
     @staticmethod
     fn part_2(lines: List[String]) raises -> Self.Result:
         tot = SIMD[DType.int64, 256](0)
+        # w = open("mojo2.txt", "wt")
 
         @parameter
         fn calc(idx: Int):
-            # for idx in range(lines.size):
             line, last = create_line(lines[idx])
             f, _ = calc_prev_and_next(line, last)
             tot[idx] = f
