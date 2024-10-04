@@ -1,55 +1,76 @@
-from advent_utils import AdventSolution, AdventResult
+from advent_utils import (
+    TensorSolution,
+    FileTensor,
+    GenericAdventSolution,
+    TestMovableResult,
+)
 from utils import StaticIntTuple
+from algorithm import parallelize
+import os
 
 alias Size = 32
 alias Line = SIMD[DType.int64, Size]
 alias Mask = SIMD[DType.bool, Size]
+alias EMPTY_RES = SIMD[DType.int64, Size * 2](value=0)
 
 
-fn calc_prev_and_next(owned value: Line, owned last: Int) -> (Int, Int):
-    all_results = List[StaticIntTuple[2]](capacity=Size)
-    all_results.append((int(value[0]), int(value[last - 1])))
-    while not (value == 0).reduce_and():
-        last -= 1
+fn calc_prev_and_next(owned value: Line, last: Int) -> (Int64, Int64):
+    idx = 0
+    frst, lst = value[0], value[last - 1]
+    while value[0] != 0 or value[last - 1 - idx] != 0:
+        idx += 1
         value = value.shift_left[1]() - value
-        value[last] = 0
-        all_results.append((int(value[0]), int(value[last - 1])))
-
-    frst, lst = 0, 0
-    for idx in range(all_results.size):
-        frst = all_results[all_results.size - idx - 1][0] - frst
-        lst += all_results[idx][1]
-
+        value[last - idx] = 0
+        frst = value[0] - frst
+        lst += value[last - 1 - idx]
     return frst, lst
 
 
 fn create_line(v: String) -> (Line, Int):
     values = v.split()
     line = Line(0)
-    for i in range(len(values)):
-        try:
+
+    try:
+
+        @parameter
+        for i in range(21):  # all lines have 21 items
+            if i >= values.size:
+                break
             line[i] = int(values[i])
-        except:
-            pass
+    except:
+        os.abort("bad bad on create line")
+        pass
 
     return (line, values.size)
 
 
-struct Solution(AdventSolution):
-    @staticmethod
-    fn part_1(lines: List[String]) -> AdventResult:
-        tot = 0
-        for str_line in lines:
-            line, last = create_line(str_line[])
-            _, l = calc_prev_and_next(line, last)
-            tot += l
-        return tot
+struct Solution(GenericAdventSolution):
+    alias Result: TestMovableResult = Int
 
     @staticmethod
-    fn part_2(lines: List[String]) -> AdventResult:
-        tot = 0
-        for str_line in lines:
-            line, last = create_line(str_line[])
+    fn part_1(lines: List[String]) raises -> Self.Result:
+        tot = SIMD[DType.int64, 256](0)
+
+        @parameter
+        fn calc(idx: Int):
+            # for idx in range(lines.size):
+            line, last = create_line(lines[idx])
+            _, l = calc_prev_and_next(line, last)
+            tot[idx] = l
+
+        parallelize[calc](lines.size)
+        return int(tot.reduce_add())
+
+    @staticmethod
+    fn part_2(lines: List[String]) raises -> Self.Result:
+        tot = SIMD[DType.int64, 256](0)
+
+        @parameter
+        fn calc(idx: Int):
+            # for idx in range(lines.size):
+            line, last = create_line(lines[idx])
             f, _ = calc_prev_and_next(line, last)
-            tot += f
-        return tot
+            tot[idx] = f
+
+        parallelize[calc](lines.size)
+        return int(tot.reduce_add())
