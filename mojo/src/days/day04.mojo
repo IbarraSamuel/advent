@@ -53,7 +53,7 @@ struct Solution(AdventSolution):
         for _ in range(len(input)):
             amount.append(1)
 
-        fn calc_line(line: Reference[String]) -> Int:
+        fn calc_line(line: Pointer[String]) -> Int:
             var winners = List[String]()
             var inp = line[].find(": ") + 2
             var pipe = line[].find("|")
