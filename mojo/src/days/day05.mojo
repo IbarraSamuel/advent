@@ -1,9 +1,11 @@
-from advent_utils import AdventResult, AdventSolution
+from advent_utils import AdventSolution
 
 
 struct Solution(AdventSolution):
+    alias dtype = DType.uint32
+
     @staticmethod
-    fn part_1(lines: List[String]) -> AdventResult:
+    fn part_1(lines: List[String]) -> UInt32:
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
         var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
@@ -33,7 +35,7 @@ struct Solution(AdventSolution):
         return m
 
     @staticmethod
-    fn part_2(lines: List[String]) -> AdventResult:
+    fn part_2(lines: List[String]) -> UInt32:
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
         var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()

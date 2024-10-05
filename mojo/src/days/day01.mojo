@@ -1,10 +1,4 @@
-from advent_utils import (
-    AdventResult,
-    FileTensor,
-    GenericAdventSolution,
-    TestMovableResult,
-    SIMDResult,
-)
+from advent_utils import SIMDResult, AdventSolution
 from collections import Dict, Optional
 from algorithm.functional import parallelize
 
@@ -30,11 +24,11 @@ alias MapList = [
 ]
 
 
-struct Solution(GenericAdventSolution):
-    alias Result: TestMovableResult = Int
+struct Solution(AdventSolution):
+    alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(lines: List[String]) raises -> Self.Result:
+    fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
         var total = SIMDResult(0)
 
         @parameter
@@ -44,10 +38,10 @@ struct Solution(GenericAdventSolution):
             total[idx] = f * 10 + l
 
         parallelize[calc_line](lines.size)
-        return int(total.reduce_add())
+        return total.reduce_add()
 
     @staticmethod
-    fn part_2(lines: List[String]) raises -> Self.Result:
+    fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
         var total = SIMDResult(0)
 
         @parameter
@@ -56,7 +50,7 @@ struct Solution(GenericAdventSolution):
             total[idx] = line_value(lines[idx])
 
         parallelize[calc_line](lines.size)
-        return int(total.reduce_add())
+        return total.reduce_add()
 
 
 fn first_numeric(line: String) -> (Int, Int):

@@ -1,4 +1,4 @@
-from advent_utils import AdventSolution, AdventResult, unwrap_or
+from advent_utils import AdventSolution
 from collections import Dict
 from utils import Span
 import sys
@@ -146,11 +146,12 @@ fn parse_int(string: String) -> Int:
 
 
 struct Solution(AdventSolution):
+    alias dtype = DType.uint32
     alias Hand1 = Hand[HandMode.First]
     alias Hand2 = Hand[HandMode.Second]
 
     @staticmethod
-    fn part_1(lines: List[String]) -> AdventResult:
+    fn part_1(lines: List[String]) -> UInt32:
         cards = List[Self.Hand1](capacity=1000)
         for line in lines:
             cards.append(line[])
@@ -164,7 +165,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(lines: List[String]) -> AdventResult:
+    fn part_2(lines: List[String]) -> UInt32:
         cards = List[Self.Hand2](capacity=1000)
         for line in lines:
             cards.append(line[])

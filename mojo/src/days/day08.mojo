@@ -1,8 +1,4 @@
-from advent_utils import (
-    SIMDResult,
-    GenericAdventSolution,
-    TestMovableResult,
-)
+from advent_utils import SIMDResult, AdventSolution
 import sys
 from collections import Dict, Optional
 from utils import StaticIntTuple
@@ -37,11 +33,11 @@ fn key_in_list(k: Int, lstp: List[StaticIntTuple[2]]) -> Optional[Int]:
     return None
 
 
-struct Solution(GenericAdventSolution):
-    alias Result: TestMovableResult = Int
+struct Solution(AdventSolution):
+    alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(lines: List[String]) raises -> Int:
+    fn part_1(lines: List[String]) -> UInt32:
         data_len = lines.size - 2
         dct = Indexer(power_of_two_initial_capacity=ceil_2pow(data_len))
         key = String("AAA")
@@ -65,7 +61,7 @@ struct Solution(GenericAdventSolution):
         return iterations
 
     @staticmethod
-    fn part_2(lines: List[String]) raises -> Int:
+    fn part_2(lines: List[String]) -> UInt32:
         data_len = lines.size
         iter_len = lines[0].byte_length()
         dct = Indexer(power_of_two_initial_capacity=ceil_2pow(data_len - 2))
@@ -107,4 +103,4 @@ struct Solution(GenericAdventSolution):
         first = results[0]
         for v in range(init_nodes.size - 1):
             first = lcm(first, results[v + 1])
-        return int(first)
+        return first

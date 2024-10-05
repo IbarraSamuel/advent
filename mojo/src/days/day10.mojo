@@ -1,4 +1,4 @@
-from advent_utils import GenericAdventSolution, TestMovableResult
+from advent_utils import AdventSolution
 from utils import StaticIntTuple, StaticTuple
 from collections import Dict, OptionalReg, OptionalReg
 import os
@@ -78,11 +78,11 @@ fn find_connected_pipe(pos: Position, map: List[String]) -> Position:
     return EMPTY_POS
 
 
-struct Solution(GenericAdventSolution):
-    alias Result: TestMovableResult = Int
+struct Solution(AdventSolution):
+    alias dtype = DType.int32
 
     @staticmethod
-    fn part_1(lines: List[String]) raises -> Self.Result:
+    fn part_1(lines: List[String]) -> Int32:
         prev = EMPTY_POS
         for y in range(lines.size):
             for x in range(lines[0].byte_length()):
@@ -106,7 +106,7 @@ struct Solution(GenericAdventSolution):
         return total // 2
 
     @staticmethod
-    fn part_2(lines: List[String]) raises -> Self.Result:
+    fn part_2(lines: List[String]) -> Int32:
         p1 = EMPTY_POS
 
         for y in range(lines.size):

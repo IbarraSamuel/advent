@@ -1,10 +1,12 @@
-from advent_utils import AdventSolution, AdventResult
+from advent_utils import AdventSolution
 from algorithm.functional import parallelize
 
 
 struct Solution(AdventSolution):
+    alias dtype = DType.uint32
+
     @staticmethod
-    fn part_1(input: List[String]) -> AdventResult:
+    fn part_1(input: List[String]) -> UInt32:
         var total = 0
 
         @parameter
@@ -47,7 +49,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> AdventResult:
+    fn part_2(input: List[String]) -> UInt32:
         var total = 0
         var amount = List[Int]()
         for _ in range(len(input)):

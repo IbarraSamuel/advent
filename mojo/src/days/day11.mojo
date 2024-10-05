@@ -1,4 +1,4 @@
-from advent_utils import AdventSolution, AdventResult
+from advent_utils import AdventSolution
 from collections import Optional
 from utils import StaticIntTuple
 
@@ -11,8 +11,10 @@ fn str_to_int(s: String) -> Optional[Int]:
 
 
 struct Solution(AdventSolution):
+    alias dtype = DType.uint32
+
     @staticmethod
-    fn part_1(lines: List[String]) -> AdventResult:
+    fn part_1(lines: List[String]) -> UInt32:
         nums = List[StaticIntTuple[2]]()
         empty_l = List[Int](capacity=lines.size)
         empty_c = List[Int](capacity=lines[0].byte_length())
@@ -58,7 +60,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(lines: List[String]) -> AdventResult:
+    fn part_2(lines: List[String]) -> UInt32:
         nums = List[StaticIntTuple[2]]()
         empty_l = List[Int](capacity=lines.size)
         empty_c = List[Int](capacity=lines[0].byte_length())

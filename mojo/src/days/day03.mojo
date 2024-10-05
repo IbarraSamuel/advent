@@ -1,5 +1,5 @@
 from algorithm.functional import vectorize
-from advent_utils import AdventSolution, AdventResult
+from advent_utils import AdventSolution
 from collections import Set
 from utils import StaticIntTuple
 
@@ -102,8 +102,10 @@ fn check_window[
 
 
 struct Solution(AdventSolution):
+    alias dtype = DType.uint32
+
     @staticmethod
-    fn part_1(input: List[String]) -> AdventResult:
+    fn part_1(input: List[String]) -> UInt32:
         var points = List[Point]()
         var x_len = len(input[0])
         var y_len = len(input)
@@ -127,7 +129,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> AdventResult:
+    fn part_2(input: List[String]) -> UInt32:
         var points = List[Point]()
         var x_len = len(input[0])
         var y_len = len(input)

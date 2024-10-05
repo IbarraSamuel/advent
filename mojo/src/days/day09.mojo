@@ -1,9 +1,4 @@
-from advent_utils import (
-    TensorSolution,
-    FileTensor,
-    GenericAdventSolution,
-    TestMovableResult,
-)
+from advent_utils import TensorSolution, FileTensor, AdventSolution
 from utils import StaticIntTuple
 from algorithm import parallelize
 import os
@@ -48,11 +43,11 @@ fn create_line(v: String) -> (Line, Int):
     return (line, values.size)
 
 
-struct Solution(GenericAdventSolution):
-    alias Result: TestMovableResult = Int
+struct Solution(AdventSolution):
+    alias dtype = DType.int64
 
     @staticmethod
-    fn part_1(lines: List[String]) raises -> Self.Result:
+    fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
         tot = SIMD[DType.int64, 256](0)
 
         @parameter
@@ -62,12 +57,11 @@ struct Solution(GenericAdventSolution):
             tot[idx] = l
 
         parallelize[calc](lines.size)
-        return int(tot.reduce_add())
+        return tot.reduce_add()
 
     @staticmethod
-    fn part_2(lines: List[String]) raises -> Self.Result:
+    fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
         tot = SIMD[DType.int64, 256](0)
-        # w = open("mojo2.txt", "wt")
 
         @parameter
         fn calc(idx: Int):
@@ -76,4 +70,4 @@ struct Solution(GenericAdventSolution):
             tot[idx] = f
 
         parallelize[calc](lines.size)
-        return int(tot.reduce_add())
+        return tot.reduce_add()
