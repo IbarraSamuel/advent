@@ -1,5 +1,4 @@
 from advent_utils import TensorSolution, FileTensor, AdventSolution
-from utils import StaticIntTuple
 from algorithm import parallelize
 import os
 from builtin.file import FileHandle

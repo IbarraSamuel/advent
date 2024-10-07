@@ -1,6 +1,6 @@
 from advent_utils import AdventSolution
 from collections import Optional
-from utils import StaticIntTuple
+from utils import IndexList
 
 
 fn str_to_int(s: String) -> Optional[Int]:
@@ -15,7 +15,7 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_1(lines: List[String]) -> UInt32:
-        nums = List[StaticIntTuple[2]]()
+        nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=lines.size)
         empty_c = List[Int](capacity=lines[0].byte_length())
         empty_c_flg = List[Bool](capacity=lines.size)
@@ -61,7 +61,7 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_2(lines: List[String]) -> UInt32:
-        nums = List[StaticIntTuple[2]]()
+        nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=lines.size)
         empty_c = List[Int](capacity=lines[0].byte_length())
         empty_c_flg = List[Bool](capacity=lines.size)

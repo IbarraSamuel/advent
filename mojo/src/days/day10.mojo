@@ -1,11 +1,11 @@
 from advent_utils import AdventSolution
-from utils import StaticIntTuple, StaticTuple
+from utils import IndexList, StaticTuple
 from collections import Dict, OptionalReg, OptionalReg
 import os
 from algorithm import parallelize
 from testing import assert_equal, assert_true, assert_false
 
-alias Position = StaticIntTuple[2]
+alias Position = IndexList[2]
 alias EMPTY_POS = Position()
 alias Movement = StaticTuple[Position, 2]
 

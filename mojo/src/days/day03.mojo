@@ -1,7 +1,7 @@
 from algorithm.functional import vectorize
 from advent_utils import AdventSolution
 from collections import Set
-from utils import StaticIntTuple
+from utils import IndexList
 
 
 @value
@@ -75,7 +75,7 @@ fn check_window[
     var first_x: Int
     var to_parse: String
     var old_results = Set(results)
-    var local_result: StaticIntTuple[2] = (0, 0)
+    var local_result: IndexList[2] = (0, 0)
     var local_count = 0
 
     for y in range(min_y, max_y + 1):

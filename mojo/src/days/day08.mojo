@@ -1,7 +1,7 @@
 from advent_utils import SIMDResult, AdventSolution
 import sys
 from collections import Dict, Optional
-from utils import StaticIntTuple
+from utils import IndexList
 from math import log, ceil
 from algorithm import parallelize
 
@@ -9,7 +9,7 @@ alias LEFT = "L"
 alias RIGHT = "R"
 alias Indexer = Dict[String, Int]
 
-alias default_lpv = List[StaticIntTuple[2]]()
+alias default_lpv = List[IndexList[2]]()
 
 
 fn lcm[tp: DType, //](first: Scalar[tp], second: Scalar[tp]) -> Scalar[tp]:
@@ -25,7 +25,7 @@ fn ceil_2pow(v: Int) -> Int:
 
 
 @always_inline
-fn key_in_list(k: Int, lstp: List[StaticIntTuple[2]]) -> Optional[Int]:
+fn key_in_list(k: Int, lstp: List[IndexList[2]]) -> Optional[Int]:
     for tp in lstp:
         if tp[][0] == k:
             return Optional(tp[][1])
