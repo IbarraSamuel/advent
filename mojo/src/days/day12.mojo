@@ -1,8 +1,17 @@
 from advent_utils import AdventSolution
 from algorithm import parallelize
 
+alias min_num_byte = ord("0")
 
-fn calc_line(line: String) raises -> Int32:
+
+fn calc_line(line: String) -> Int32:
+    line_parts = line.split()
+    footprint, raw_groups = line_parts[0], line_parts[1]
+    groups = List[UInt8]()
+    for chr in raw_groups:
+        if chr.as_bytes().isdigit():
+            uint(chr)
+
     goods = 0
     temps = 0
     p = line.find(" ") + 1
