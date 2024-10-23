@@ -50,15 +50,14 @@ fn calc_path_val(sig: String, pat: String) -> Int:
 
     while sig[i] == ".":
         i += 1
+
         if i == len(sig):
-            print("failed because there is still pattern to cover.")
+            print("Bad because there is still pattern missing")
             return 0
 
-    print("a")
-    while sig[i] == pat[i]:
+    while sig[i] == pat[a]:
         i += 1
         a += 1
-        print("b")
 
         if i == len(sig):
             print("Signature finished ok!")
@@ -67,22 +66,21 @@ fn calc_path_val(sig: String, pat: String) -> Int:
         if a == len(pat):
             print("Pattern finished.", "good?", "#" not in sig[i:])
             return 0 if "#" in sig[i:] else 1
-        print("c")
         while sig[i : i + 1] == ".." and i < len(sig) - 1:
             i += 1
 
     print("(i:", i, "), (a:", a, ")")
 
     if sig[i] == "#":
-        print(
-            (
-                " !! Not valid since the signature specifies something"
-                " different than what is next on the pattern. sig:"
-            ),
-            sig[i],
-            "pat:",
-            pat[a],
-        )
+        # print(
+        #     (
+        #         " !! Not valid since the signature specifies something"
+        #         " different than what is next on the pattern. sig:"
+        #     ),
+        #     sig[i],
+        #     "pat:",
+        #     pat[a],
+        # )
         return 0
 
     print(
@@ -90,10 +88,9 @@ fn calc_path_val(sig: String, pat: String) -> Int:
         String(" ") * a + "^" + String(" ") * (len(pat) - a - 1),
     )
 
-    return calc_path_val(sig[i + 1 :], pat[a + 1 :])
-    # dot_path = calc_path_val("." + sig[i + 1 :].lstrip("."), pat[a:])
-    # hash_path = calc_path_val("#" + sig[i + 1 :].lstrip("."), pat[a:])
-    # return dot_path + hash_path
+    dot_path = calc_path_val("." + sig[i + 1 :], pat[a:])
+    hash_path = calc_path_val("#" + sig[i + 1 :], pat[a:])
+    return dot_path + hash_path
 
 
 fn calc_line(line: String) -> Int32:
@@ -108,6 +105,7 @@ fn calc_line(line: String) -> Int32:
 fn calc_line_2(line: String) -> Int32:
     sig, pat = sig_and_pattern(line)
     sig = "?".join(List(sig, sig, sig, sig, sig))
+    pat = ",".join(List(pat, pat, pat, pat, pat))
     return calc_path_val(sig, pat)
 
 
