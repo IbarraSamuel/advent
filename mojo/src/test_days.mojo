@@ -70,10 +70,10 @@ fn test_day09() raises:
 fn test_day10() raises:
     test_solution[
         days.day10.Solution,
-        ("../tests/day10.txt", (8, 0)),
-        ("../tests/day10_2.txt", (0, 4)),
-        ("../tests/day10_3.txt", (0, 8)),
-        ("../tests/day10_4.txt", (0, 10)),
+        ("../tests/day10.txt", (8, -1)),
+        ("../tests/day10_2.txt", (-1, 4)),
+        ("../tests/day10_3.txt", (-1, 8)),
+        ("../tests/day10_4.txt", (-1, 10)),
     ]()
 
 

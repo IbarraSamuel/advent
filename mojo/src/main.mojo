@@ -1,6 +1,5 @@
-from advent_utils import read_input, run, test_solution
+from advent_utils import run
 import days
-from time import time_function
 
 
 fn main() raises:

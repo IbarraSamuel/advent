@@ -21,6 +21,38 @@ fn read_input[path: Path]() raises -> FileTensor:
     return FileTensor.fromfile(path)
 
 
+fn filter[
+    elem: CollectionElement, //,
+    *filters: fn (elem) -> Bool,
+    negate: Bool = False,
+](owned list: List[elem]) -> List[elem]:
+    alias fltrs = VariadicList(filters)
+    i = list.size - 1
+    while i >= 0:
+        to_delete = False
+
+        @parameter
+        for f in range(len(fltrs)):
+            to_delete = fltrs[f](list[i]) ^ negate
+
+        if to_delete:
+            _ = list.pop(i)
+
+        i -= 1
+    return list
+
+
+fn map[
+    elem: CollectionElement,
+    out: CollectionElement, //,
+    mapper: fn (elem) -> out,
+](list: List[elem]) -> List[out]:
+    final = List[out](capacity=list.size)
+    for value in list:
+        final.append(mapper(value[]))
+    return final
+
+
 trait AdventSolution:
     alias dtype: DType
 
@@ -30,18 +62,6 @@ trait AdventSolution:
 
     @staticmethod
     fn part_2(lines: List[String]) -> Scalar[dtype]:
-        ...
-
-
-trait TensorSolution:
-    alias dtype: DType
-
-    @staticmethod
-    fn part_1(lines: FileTensor) -> Scalar[dtype]:
-        ...
-
-    @staticmethod
-    fn part_2(lines: FileTensor) -> Scalar[dtype]:
         ...
 
 
@@ -99,10 +119,10 @@ fn test_solution[
 
         input = read_input[path=path]()
 
-        if str(expected_result_1) != "0":
+        if str(expected_result_1) != "-1":
             result_1 = S.part_1(input)
             assert_equal(result_1, expected_result_1)
 
-        if str(expected_result_2) != "0":
+        if str(expected_result_2) != "-1":
             result_2 = S.part_2(input)
             assert_equal(result_2, expected_result_2)
