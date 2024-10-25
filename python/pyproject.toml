@@ -1,22 +1,32 @@
+[project]
+name = "python"
+version = "0.1.0"
+description = "Advent of Code!"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
 [tool.basedpyright]
 include = [".", "days", "python"]
 pythonPlatform = "All"
 typeCheckingMode = "all"
-pythonVersion = "3.12"
+pythonVersion = "3.13"
 reportMissingTypeStubs = false
 reportImplicitRelativeImport = false
 
 [tool.ruff]
 fix = true
 unsafe-fixes = true
-target-version = "py39"
+target-version = "py313"
 
 [tool.ruff.format]
 # Enable reformatting of code snippets in docstrings.
 docstring-code-format = true
+preview = true
 
 [tool.ruff.lint]
 select = ["ALL"]
+preview = true
 ignore = [
     "PD010", # Pandas Vet - False Positive with Polars.
     "D203",  # One blank line before class docstring. Conflicts with D213.
@@ -25,6 +35,5 @@ ignore = [
     "COM812",  # Conflicts with Formatter
     "ISC001", # Conflicts with Formatter
     "S608", # SQL Injection Warning
+    "CPY001",
 ]
-flake8-tidy-imports.ban-relative-imports = "all"
-flake8-type-checking.strict = true

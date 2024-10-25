@@ -31,7 +31,7 @@ class Game:
             else:
                 self.b += int(v)
 
-        return self
+        return self  # noqa: DOC201
 
     @staticmethod
     def max_from_cards(cards: str) -> Game:
@@ -39,23 +39,23 @@ class Game:
         self = Game(0, 0, 0)
         for card in cards.split("; "):
             self = self.max(Game.from_card(card))
-        return self
+        return self  # noqa: DOC201
 
     def __contains__(self, other: Self) -> bool:
         """Check if self contains other."""
-        return self.r >= other.r and self.g >= other.g and self.b >= other.b
+        return self.r >= other.r and self.g >= other.g and self.b >= other.b  # noqa: DOC201
 
     def max(self, other: Self) -> Game:
         """Return the max of self and other."""
-        return Game(max(self.r, other.r), max(self.g, other.g), max(self.b, other.b))
+        return Game(max(self.r, other.r), max(self.g, other.g), max(self.b, other.b))  # noqa: DOC201
 
     def __add__(self, other: Self) -> Game:
         """Add two games."""
-        return Game(self.r + other.r, self.g + other.g, self.b + other.b)
+        return Game(self.r + other.r, self.g + other.g, self.b + other.b)  # noqa: DOC201
 
     def product(self) -> int:
         """Return the product of each color."""
-        return self.r * self.g * self.b
+        return self.r * self.g * self.b  # noqa: DOC201
 
 
 MAX_GAME = Game(12, 13, 14)
@@ -67,15 +67,13 @@ class Solution:
     @staticmethod
     def part_1(lines: Sequence[str]) -> int:
         """Return the solution for day 1."""
-        return sum(
-            [
-                idx + 1
-                for idx, line in enumerate(lines)
-                if Game.max_from_cards(line.split(": ")[1]) in MAX_GAME
-            ]
+        return sum(  # noqa: DOC201
+            idx + 1
+            for idx, line in enumerate(lines)
+            if Game.max_from_cards(line.split(": ")[1]) in MAX_GAME
         )
 
     @staticmethod
     def part_2(lines: Sequence[str]) -> int:
         """Return the solution for day 2."""
-        return sum(Game.max_from_cards(line.split(": ")[1]).product() for line in lines)
+        return sum(Game.max_from_cards(line.split(": ")[1]).product() for line in lines)  # noqa: DOC201

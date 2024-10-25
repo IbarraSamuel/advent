@@ -1,5 +1,6 @@
 """Day 1 result."""
 
+import operator
 from collections.abc import Sequence
 
 IM = {
@@ -35,7 +36,7 @@ class Solution:
     def part_1(lines: Sequence[str]) -> int:
         """Day 1 result."""
         only_numbers = [_filter_digit_chars(line) for line in lines]
-        return sum(int(n[0] + n[-1]) for n in only_numbers)
+        return sum(int(n[0] + n[-1]) for n in only_numbers)  # noqa: DOC201
 
     @staticmethod
     def part_2(lines: Sequence[str]) -> int:
@@ -44,11 +45,11 @@ class Solution:
         for line in lines:
             first, _ = min(
                 ((a, line.find(a)) for a in IM if a in line),
-                key=lambda x: x[1],
+                key=operator.itemgetter(1),
             )
             last, _ = max(
                 ((a, line.rfind(a)) for a in IM if a in line),
-                key=lambda x: x[1],
+                key=operator.itemgetter(1),
             )
             total += IM[first] * 10 + IM[last]
-        return total
+        return total  # noqa: DOC201

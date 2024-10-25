@@ -13,8 +13,15 @@ class Stringable(Protocol):
 
 
 def read_input(path: str) -> list[str]:
-    """Read input file into a polars DataFrame."""
-    with Path(path).open() as f:
+    """
+    Read input file into a polars DataFrame.
+
+    Returns
+    -------
+    A list of strings.
+
+    """
+    with Path(path).open(encoding="utf-8") as f:
         return [s.strip() for s in f]
 
 
