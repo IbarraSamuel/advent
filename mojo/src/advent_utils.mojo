@@ -5,7 +5,7 @@ from builtin.builtin_list import VariadicList
 from testing.testing import Testable
 from utils import Variant
 from tensor import Tensor
-from pathlib import Path
+from pathlib import Path, _dir_of_current_file
 from time import time_function
 
 alias FileTensor = Tensor[DType.uint8]
@@ -13,7 +13,8 @@ alias SIMDResult = SIMD[DType.uint32, 1024]
 
 
 fn read_input[path: StringLiteral]() raises -> List[String]:
-    with open(path, "rt") as f:
+    p = _dir_of_current_file().joinpath("../" + path)
+    with open(p, "rt") as f:
         return f.read().splitlines()
 
 
