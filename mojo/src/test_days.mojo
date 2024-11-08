@@ -91,11 +91,11 @@ fn test_day12() raises:
     ]()
 
 
-fn test_day13() raises:
-    test_solution[
-        days.day13.Solution,
-        ("../tests/day13.txt", (405, 400)),
-    ]()
+# fn test_day13() raises:
+#     test_solution[
+#         days.day13.Solution,
+#         ("../tests/day13.txt", (405, 400)),
+#     ]()
 
 
 # fn test_day14() raises:

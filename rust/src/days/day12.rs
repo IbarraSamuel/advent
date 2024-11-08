@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::io::Write;
+
 use crate::advent_tests;
 use crate::advent_utils::{AdventSolution, GenericResult};
 
@@ -36,7 +39,13 @@ const fn should_insert_it(
             && footprint[current_position + group_size] != b'#'))
 }
 
-fn solve(input: Vec<String>) -> usize {
+fn solve(input: Vec<String>, print: bool) -> usize {
+    let mut f = if print {
+        let fr = File::create("../rust.txt");
+        fr.unwrap()
+    } else {
+        File::open("src/main.rs").unwrap()
+    };
     input
         .iter()
         .map(|line| {
@@ -45,7 +54,7 @@ fn solve(input: Vec<String>) -> usize {
             let all_groups_size = groups.clone().sum::<usize>(); // total amount of hashes needed.
             let groups_len = groups.clone().count();
 
-            groups
+            let r = groups
                 .enumerate()
                 .fold(
                     (vec![(0, 1)], all_groups_size),
@@ -95,14 +104,19 @@ fn solve(input: Vec<String>) -> usize {
                 .0
                 .iter()
                 .map(|(_, v)| v)
-                .sum::<usize>()
+                .sum::<usize>();
+            let bt = format!("{line} -- {r}\n");
+            if print {
+                f.write_all(bt.as_bytes()).unwrap();
+            }
+            r
         })
         .sum::<usize>()
 }
 
 impl AdventSolution for Solution {
     fn part1(input: Vec<String>) -> GenericResult<impl std::fmt::Display> {
-        let combinations = solve(input);
+        let combinations = solve(input, true);
         Ok(combinations)
     }
 
@@ -117,7 +131,7 @@ impl AdventSolution for Solution {
                 [new_footprint, new_groups].join(" ")
             })
             .collect::<Vec<_>>();
-        let combinations = solve(new_input);
+        let combinations = solve(new_input, false);
         Ok(combinations)
     }
 }

@@ -39,14 +39,18 @@ fn should_instert_it(
 
 
 fn count(footprint: String, groups: List[Int]) -> Int:
-    acc = List((0, 1))
     groups_len = len(groups)
-    rem_group_size = len(groups)
+    rem_group_size = 0
+    for g in groups:
+        rem_group_size += g[]
+
+    acc_f = Tuple(List((0, 1)), rem_group_size)
     for group_idx in groups:
+        acc, rem_group_size = acc_f
         group_size = groups[group_idx[]]
         new_positions = List[(Int, Int)](capacity=30)
-        for _pos in new_positions:
-            k, v = _pos[]
+        for a in acc:
+            k, v = a[][0], a[][1]
             for current_position in range(
                 k,
                 len(footprint)
@@ -82,11 +86,13 @@ fn count(footprint: String, groups: List[Int]) -> Int:
                 if footprint[current_position : current_position + 1] == "#":
                     break
 
-        rem_group_size -= group_size
+        acc_f = new_positions, rem_group_size - group_size
 
     tot = 0
-    for a in acc:
+    for a in acc_f[0]:
         tot += a[][1]
+
+    print(tot)
 
     return tot
 
@@ -153,29 +159,37 @@ struct Solution(AdventSolution):
     alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(lines: List[String]) -> UInt32:
+    fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
         total = SIMDResult(0)
+        try:
+            file = open("../mojo.txt", mode="wt")
 
-        @parameter
-        fn calc_line(idx: Int):
-            splitted = lines[idx].split()
-            cfg, nums_chr = splitted[0], splitted[1]
-            nums = List[Int]()
-            try:
-                splitted_nums = nums_chr.split(",")
-                for num in splitted_nums:
-                    nums.append(int(num[]))
-            except:
-                os.abort("This shoudl never happen")
-            # cache = Dict[CacheKey, Int]()
-            # total[idx] = count(cfg, nums, cache)
-            total[idx] = count(cfg, nums)
+            # @parameter
+            # fn calc_line(idx: Int):
+            for idx in range(len(lines)):
+                splitted = lines[idx].split()
+                cfg, nums_chr = splitted[0], splitted[1]
+                nums = List[Int]()
+                try:
+                    splitted_nums = nums_chr.split(",")
+                    for num in splitted_nums:
+                        nums.append(int(num[]))
+                except:
+                    os.abort("This should never happen")
+                # cache = Dict[CacheKey, Int]()
+                # total[idx] = count(cfg, nums, cache)
+                total[idx] = count(cfg, nums)
+                file.write(lines[idx], " -- ", total[idx], "\n")
 
-        parallelize[calc_line](lines.size)
+            file.close()
+        except:
+            pass
+
+        # parallelize[calc_line](lines.size)
         return total.reduce_add()
 
     @staticmethod
-    fn part_2(lines: List[String]) -> UInt32:
+    fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
         total = SIMDResult(0)
 
         @parameter
@@ -188,7 +202,7 @@ struct Solution(AdventSolution):
                 for num in splitted_nums:
                     nums.append(int(num[]))
             except:
-                os.abort("This shoudl never happen")
+                os.abort("This should never happen")
             cfg = (("?" + cfg) * 5)[1:]
             nums *= 5
             # cache = Dict[CacheKey, Int]()
