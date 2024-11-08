@@ -1,56 +1,150 @@
+from collections import Dict
+from collections.string import StringSlice
 from advent_utils import AdventSolution, SIMDResult
-from algorithm import parallelize
-from collections import Dict, InlineList
 import os
+from algorithm.functional import parallelize
 
 
-@value
-struct CacheKey(KeyElement):
-    var cfg: String
-    var nums: List[Int]
+fn should_instert_it(
+    footprint: String,
+    group_size: UInt32,
+    groups_len: UInt32,
+    current_position: UInt32,
+    group_idx: UInt32,
+) -> Bool:
+    i = current_position
+    contains_hash = False
 
-    fn __hash__(self) -> UInt:
-        return (self.cfg + self.nums.__str__()).__hash__()
+    while i < len(footprint):
+        if footprint[int(i)] == "." and i < current_position + group_size:
+            return False
+        if footprint[int(i)] == "#" and i >= current_position + group_size:
+            contains_hash = True
+            break
 
-    fn __eq__(self, other: Self) -> Bool:
-        return self.cfg == other.cfg and self.nums == other.nums
+        i += 1
 
-    fn __ne__(self, other: Self) -> Bool:
-        return not self == other
+    return current_position + group_size - 1 < len(footprint) and (
+        (group_idx == groups_len - 1 and not contains_hash)
+        or (
+            group_idx < groups_len - 1
+            and current_position + group_size < len(footprint)
+            and footprint[int(current_position + group_size)] != "#"
+        )
+    )
 
-    fn __repr__(self) -> String:
-        try:
-            return "(cfg: {}, nums: {})".format(self.cfg, self.nums.__str__())
-        except:
-            return "repre raises"
+
+# fn calc_positions(inout new_positions: List[Tuple[Int, Int]], k: Int, v: Int):
+#     for current_position in k..footprint()
 
 
-fn count(cfg: String, nums: List[Int], inout cache: Dict[CacheKey, Int]) -> Int:
-    if (not cfg and not nums) or (not nums and "#" not in cfg):
-        return 1
+fn count(footprint: String, groups: List[Int]) -> Int:
+    acc = List((0, 1))
+    groups_len = len(groups)
+    rem_group_size = len(groups)
+    for group_idx in groups:
+        group_size = groups[group_idx[]]
+        new_positions = List[(Int, Int)](capacity=30)
+        for _pos in new_positions:
+            k, v = _pos[]
+            for current_position in range(
+                k,
+                len(footprint)
+                - rem_group_size
+                + group_size
+                + groups_len
+                - group_idx[]
+                - 1,
+            ):
+                if should_instert_it(
+                    footprint,
+                    group_size,
+                    groups_len,
+                    current_position,
+                    group_idx[],
+                ):
+                    found = False
+                    for i in range(len(new_positions)):
+                        if (
+                            new_positions[i][0]
+                            == current_position + group_size + 1
+                        ):
+                            last = new_positions[i]
+                            new_positions[i] = (last[0], last[1] + v)
+                            found = True
+                            break
 
-    if (not cfg and nums) or (not nums and "#" in cfg):
-        return 0
+                    if not found:
+                        new_positions.append(
+                            (current_position + group_size + 1, v)
+                        )
 
-    k = CacheKey(cfg, nums)
-    vl = cache.find(k)
-    if vl:
-        return vl.value()
+                if footprint[current_position : current_position + 1] == "#":
+                    break
 
-    result = 0
+        rem_group_size -= group_size
 
-    if cfg[0] in ".?":
-        result += count(cfg[1:], nums, cache)
+    tot = 0
+    for a in acc:
+        tot += a[][1]
 
-    if cfg[0] in "#?" and (
-        nums[0] <= len(cfg)
-        and "." not in cfg[: nums[0]]
-        and (nums[0] == len(cfg) or cfg[nums[0]] != "#")
-    ):
-        result += count(cfg[nums[0] + 1 :], nums[1:], cache)
+    return tot
 
-    cache[k] = result
-    return result
+
+# Rust impl
+
+# from advent_utils import AdventSolution, SIMDResult
+# from algorithm import parallelize
+# from collections import Dict, InlineList
+# import os
+
+# @value
+# struct CacheKey(KeyElement):
+#     var cfg: String
+#     var nums: List[Int]
+
+#     fn __hash__(self) -> UInt:
+#         return (self.cfg + self.nums.__str__()).__hash__()
+
+#     fn __eq__(self, other: Self) -> Bool:
+#         return self.cfg == other.cfg and self.nums == other.nums
+
+#     fn __ne__(self, other: Self) -> Bool:
+#         return not self == other
+
+#     fn __repr__(self) -> String:
+#         try:
+#             return "(cfg: {}, nums: {})".format(self.cfg, self.nums.__str__())
+#         except:
+#             return "repre raises"
+
+
+# fn count(cfg: String, nums: List[Int], inout cache: Dict[CacheKey, Int]) -> Int:
+#     if (not cfg and not nums) or (not nums and "#" not in cfg):
+#         return 1
+
+#     if (not cfg and nums) or (not nums and "#" in cfg):
+#         return 0
+
+#     k = CacheKey(cfg, nums)
+#     vl = cache.find(k)
+#     if vl:
+#         return vl.value()
+
+#     result = 0
+
+#     if cfg[0] in ".?":
+#         result += count(cfg[1:], nums, cache)
+
+#     if cfg[0] in "#?" and (
+#         nums[0] <= len(cfg)
+#         and "." not in cfg[: nums[0]]
+#         and (nums[0] == len(cfg) or cfg[nums[0]] != "#")
+#     ):
+#         result += count(cfg[nums[0] + 1 :], nums[1:], cache)
+
+#     cache[k] = result
+#     return result
 
 
 struct Solution(AdventSolution):
@@ -73,8 +167,9 @@ struct Solution(AdventSolution):
                     nums.append(int(num[]))
             except:
                 os.abort("This shoudl never happen")
-            cache = Dict[CacheKey, Int]()
-            total[idx] = count(cfg, nums, cache)
+            # cache = Dict[CacheKey, Int]()
+            # total[idx] = count(cfg, nums, cache)
+            total[idx] = count(cfg, nums)
 
         parallelize[calc_line](lines.size)
         return total.reduce_add()
@@ -96,8 +191,9 @@ struct Solution(AdventSolution):
                 os.abort("This shoudl never happen")
             cfg = (("?" + cfg) * 5)[1:]
             nums *= 5
-            cache = Dict[CacheKey, Int]()
-            total[idx] = count(cfg, nums, cache)
+            # cache = Dict[CacheKey, Int]()
+            # total[idx] = count(cfg, nums, cache)
+            total[idx] = count(cfg, nums)
 
         parallelize[calc_line](lines.size)
         return total.reduce_add()
