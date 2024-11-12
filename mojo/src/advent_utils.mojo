@@ -54,6 +54,17 @@ fn map[
     return final
 
 
+fn map[
+    elem: CollectionElement,
+    out: CollectionElement, //,
+    mapper: fn (elem) raises -> out,
+](list: List[elem]) raises -> List[out]:
+    final = List[out](capacity=list.size)
+    for value in list:
+        final.append(mapper(value[]))
+    return final
+
+
 trait AdventSolution:
     alias dtype: DType
 
