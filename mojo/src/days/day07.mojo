@@ -38,7 +38,7 @@ struct Hand[mode: HandMode](ComparableCollectionElement):
         self._calc_level(s)
 
     @always_inline("nodebug")
-    fn _calc_level(out self, s: String):
+    fn _calc_level(inout self, s: String):
         chars = Dict[String, Int](power_of_two_initial_capacity=Self.type.size)
 
         @parameter
