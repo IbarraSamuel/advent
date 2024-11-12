@@ -74,10 +74,10 @@ struct MapRange:
     var dest_start: Int
     var length: Int
 
-    fn __init__(inout self, range: MapRangeTp):
+    fn __init__(out self, range: MapRangeTp):
         self.dest_start, self.src_start, self.length = range
 
-    fn __init__(inout self, owned range: List[Int]):
+    fn __init__(out self, owned range: List[Int]):
         self.dest_start, self.src_start, self.length = (
             range[0],
             range[1],

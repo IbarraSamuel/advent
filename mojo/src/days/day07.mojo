@@ -11,7 +11,7 @@ struct HandMode:
     alias Second = HandMode(2)
     var value: UInt8
 
-    fn __init__(inout self, value: UInt8):
+    fn __init__(out self, value: UInt8):
         self.value = value
 
     fn __eq__(self, other: HandMode) -> Bool:
@@ -25,7 +25,7 @@ struct Hand[mode: HandMode](ComparableCollectionElement):
     var level: UInt8
     var bid: UInt32
 
-    fn __init__(inout self, s: String):
+    fn __init__(out self, s: String):
         space_pos = s.find(" ")
         self.bid = parse_int(s[space_pos + 1 :])
         self.value = Self.type()
@@ -38,7 +38,7 @@ struct Hand[mode: HandMode](ComparableCollectionElement):
         self._calc_level(s)
 
     @always_inline("nodebug")
-    fn _calc_level(inout self, s: String):
+    fn _calc_level(out self, s: String):
         chars = Dict[String, Int](power_of_two_initial_capacity=Self.type.size)
 
         @parameter
@@ -118,10 +118,10 @@ struct Card[mode: HandMode]:
     alias J = Self(11 if mode == HandMode.First else 1)
     alias T = Self(10)
 
-    fn __init__(inout self, v: Int):
+    fn __init__(out self, v: Int):
         self.value = v
 
-    fn __init__(inout self, v: String):
+    fn __init__(out self, v: String):
         if v == "A":
             self = Self.A
         elif v == "K":
