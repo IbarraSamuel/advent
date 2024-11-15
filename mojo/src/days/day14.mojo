@@ -2,7 +2,13 @@ from advent_utils import AdventSolution
 
 alias HORIZONTAL = [Direction.LEFT, Direction.RIGHT]
 alias POSITIVE = [Direction.RIGHT, Direction.DOWN]
-alias CLOCKWISE_DIRS = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
+alias CLOCKWISE_DIRS = [
+    Direction.RIGHT,
+    Direction.DOWN,
+    Direction.LEFT,
+    Direction.UP,
+]
+
 
 @register_passable("trivial")
 struct Direction:
@@ -23,23 +29,28 @@ struct Direction:
 
     # TO REMOVE
     fn __str__(self) -> String:
-        r = "UP" if self._value == 1 else "DOWN" if self._value == 2 else "LEFT" if self._value == 3 else "RIGHT"
+        r = (
+            "UP" if self._value
+            == 1 else "DOWN" if self._value
+            == 2 else "LEFT" if self._value
+            == 3 else "RIGHT"
+        )
         return String.write("Direction(", r, ")")
 
+
 fn calculate[direction: Direction](maze: List[String]) -> Int:
-    # TODO: PArallelize if possible
+    # TODO: Parallelize if possible
     alias positive = direction in POSITIVE
     alias horizontal = direction in HORIZONTAL
     max = len(maze[0]) if horizontal else maze.size
     tot = 0
     for r in range(maze.size):
         for c in range(len(maze[r])):
-            if maze[r][c] == 'O':
+            if maze[r][c] == "O":
                 val = c if horizontal else r
-                final_val = val + 1 if positive else max - val   
-                tot +=  final_val
-    return tot 
-
+                final_val = val + 1 if positive else max - val
+                tot += final_val
+    return tot
 
 
 fn tilt[*directions: Direction](inout maze: List[String]):
@@ -48,7 +59,9 @@ fn tilt[*directions: Direction](inout maze: List[String]):
     @parameter
     for di in range(len(directions_list)):
         alias direction = directions_list[di]
-        alias right_reprs = directions_list[di - 1] if di > 0 else Direction.RIGHT
+        alias right_reprs = directions_list[
+            di - 1
+        ] if di > 0 else Direction.RIGHT
         tilt_single[direction, right_reprs](maze)
 
 
@@ -68,16 +81,21 @@ fn directioner[look_dir: Direction, right_repr: Direction]() -> Direction:
                 @parameter
                 if curr_d2 == right_repr:
                     alias idx = dir - p2
-                    return CLOCKWISE_DIRS.get[idx if idx > 0 else idx + 4, Direction]()
+                    return CLOCKWISE_DIRS.get[
+                        idx if idx > 0 else idx + 4, Direction
+                    ]()
 
     return look_dir
- 
-    
-fn tilt_single[direction: Direction, right_reprs: Direction](inout maze: List[String]):
+
+
+fn tilt_single[
+    direction: Direction, right_reprs: Direction
+](inout maze: List[String]):
     y_max = maze.size
     x_max = maze[0].byte_length()
 
     alias new_dir = directioner[direction, right_reprs]()
+    print(str(new_dir))
     alias dir = 1 if new_dir in [Direction.RIGHT, Direction.DOWN] else -1
     # alias arange = aranger[new_dir]
 
@@ -96,7 +114,6 @@ fn tilt_single[direction: Direction, right_reprs: Direction](inout maze: List[St
     # print("elems_len:", elems_len)
     # print("acc_dir:", dir)
 
-
     collection = List[String](capacity=max(y_max, x_max))
     for g in range(groups_len):
         groups = List[(Int, Int)](capacity=groups_len)
@@ -108,10 +125,10 @@ fn tilt_single[direction: Direction, right_reprs: Direction](inout maze: List[St
             ne = e if dir == 1 else elems_len - 1 - e
             # print("checking the element", maze[y][x])
             # print(x, y)
-            if maze[y][x] == '#':
+            if maze[y][x] == "#":
                 groups.append((ne, count))
                 count = 0
-            if maze[y][x] == 'O':
+            if maze[y][x] == "O":
                 count += 1
         groups.append((elems_len, count))
 
@@ -168,7 +185,6 @@ struct Solution(AdventSolution):
 
             for idx in range(mazes.size):
                 if mazes[idx] == maze:
-
                     iteration = len(mazes)
                     print(iteration)
                     cycles = iteration - idx
