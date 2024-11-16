@@ -104,7 +104,7 @@ struct Solution(AdventSolution):
         valid_idx = (int(1e9) - iteration - 1) % cycles + (iteration - cycles)
         for i in mazes.items():
             if i[].value == valid_idx:
-                maze = i[].key
+                maze = i[].key.splitlines()
                 break
 
         return calculate[Direction.UP](maze)
