@@ -95,9 +95,6 @@ struct Solution(AdventSolution):
                 cycles = iteration - idx
                 break
 
-            if cycles:
-                break
-
             mazes["\n".join(maze)] = idx
             idx += 1
 
