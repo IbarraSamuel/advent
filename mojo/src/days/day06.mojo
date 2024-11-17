@@ -17,14 +17,6 @@ fn races_winning(duration: Int, record: Int) -> UInt:
     lower_int, upper_int = int(lower), int(upper)
     return upper_int - lower_int + 1
 
-
-fn string_to_int(inp: String) -> Int:
-    try:
-        return int(inp)
-    except:
-        return 0
-
-
 struct Solution(AdventSolution):
     alias dtype = DType.uint32
 
@@ -34,9 +26,12 @@ struct Solution(AdventSolution):
         for r_idx in range(len(input[0].split()) - 1):
             duration = input[0].split()[r_idx + 1]
             record = input[1].split()[r_idx + 1]
-            duration_int = string_to_int(duration)
-            record_int = string_to_int(record)
-            total *= races_winning(duration_int, record_int)
+            try:
+                duration_int = int(duration)
+                record_int = int(record)
+                total *= races_winning(duration_int, record_int)
+            except:
+                pass
 
         return total
 
@@ -44,6 +39,9 @@ struct Solution(AdventSolution):
     fn part_2(input: List[String]) -> UInt32:
         duration = "".join(input[0].split()[1:])
         record = "".join(input[1].split()[1:])
-        duration_int = string_to_int(duration)
-        record_int = string_to_int(record)
-        return races_winning(duration_int, record_int)
+        try:
+            duration_int = int(duration)
+            record_int = int(record)
+            return races_winning(duration_int, record_int)
+        except:
+            return 0
