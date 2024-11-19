@@ -18,8 +18,9 @@ fn read_input[path: StringLiteral]() raises -> List[String]:
         return f.read().splitlines()
 
 
-fn read_input[path: Path]() raises -> FileTensor:
-    return FileTensor.fromfile(path)
+fn read_input_as_tensor[path: StringLiteral]() raises -> FileTensor:
+    p = _dir_of_current_file().joinpath("../" + path)
+    return FileTensor.fromfile(p)
 
 
 fn filter[
@@ -77,6 +78,18 @@ trait AdventSolution:
         ...
 
 
+trait TensorSolution:
+    alias dtype: DType
+
+    @staticmethod
+    fn part_1(owned lines: FileTensor) raises -> Scalar[dtype]:
+        ...
+
+    @staticmethod
+    fn part_2(owned lines: FileTensor) raises -> Scalar[dtype]:
+        ...
+
+
 fn run[S: AdventSolution, path: StringLiteral]() raises:
     var input = read_input[path=path]()
     print("From", path, "=>")
@@ -94,6 +107,29 @@ fn run[S: AdventSolution, path: StringLiteral]() raises:
 
     @parameter
     fn part_2():
+        r2 = S.part_2(input)
+
+    t2 = time_function[func=part_2]() // 10e3
+    print("\tPart 2:", r2, "in", t2, "us.", end="\n")
+
+
+fn run[S: TensorSolution, path: StringLiteral]() raises:
+    var input = read_input_as_tensor[path=path]()
+    print("From", path, "=>")
+
+    var r1: Scalar[S.dtype] = 0
+
+    @parameter
+    fn part_1() raises:
+        r1 = S.part_1(input)
+
+    t1 = time_function[func=part_1]() // 10e3
+    print("\tPart 1:", r1, "in", t1, "us.")
+
+    var r2: Scalar[S.dtype] = 0
+
+    @parameter
+    fn part_2() raises:
         r2 = S.part_2(input)
 
     t2 = time_function[func=part_2]() // 10e3
@@ -130,6 +166,46 @@ fn test_solution[
         alias expected_result_2 = test_list[i][0][1][1]
 
         input = read_input[path=path]()
+
+        if str(expected_result_1) != "-1":
+            result_1 = S.part_1(input)
+            assert_equal(result_1, expected_result_1)
+
+        if str(expected_result_2) != "-1":
+            result_2 = S.part_2(input)
+            assert_equal(result_2, expected_result_2)
+
+
+fn test_solution[
+    S: TensorSolution,
+    test_1: (StringLiteral, Int),
+    test_2: (StringLiteral, Int),
+]() raises:
+    alias path_1 = test_1[0]
+    alias expected_result_1 = test_1[1]
+
+    alias path_2 = test_2[0]
+    alias expected_result_2 = test_2[1]
+
+    result_1 = S.part_1(read_input_as_tensor[path_1]())
+    assert_equal(result_1, expected_result_1)
+
+    result_2 = S.part_2(read_input_as_tensor[path_2]())
+    assert_equal(result_2, expected_result_2)
+
+
+fn test_solution[
+    S: TensorSolution, *tests: (StringLiteral, (Int, Int))
+]() raises:
+    alias test_list = VariadicList(tests)
+
+    @parameter
+    for i in range(len(test_list)):
+        alias path = test_list[i][0][0]
+        alias expected_result_1 = test_list[i][0][1][0]
+        alias expected_result_2 = test_list[i][0][1][1]
+
+        input = read_input_as_tensor[path=path]()
 
         if str(expected_result_1) != "-1":
             result_1 = S.part_1(input)
