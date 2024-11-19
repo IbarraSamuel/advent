@@ -154,7 +154,7 @@ struct Solution(AdventSolution):
     fn part_1(lines: List[String]) -> UInt32:
         cards = List[Self.Hand1](capacity=1000)
         for line in lines:
-            cards.append(line[])
+            cards.append(Self.Hand1(line[]))
 
         total = 0
 
@@ -168,7 +168,7 @@ struct Solution(AdventSolution):
     fn part_2(lines: List[String]) -> UInt32:
         cards = List[Self.Hand2](capacity=1000)
         for line in lines:
-            cards.append(line[])
+            cards.append(Self.Hand2(line[]))
 
         total = 0
 
