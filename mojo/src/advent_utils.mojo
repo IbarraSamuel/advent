@@ -3,10 +3,11 @@ from os import abort
 from testing import assert_equal
 from builtin.builtin_list import VariadicList
 from testing.testing import Testable
-from utils import Variant
+from utils import Variant, Span
 from tensor import Tensor
 from pathlib import Path, _dir_of_current_file
 from time import time_function
+from math import sqrt, ceil
 
 alias FileTensor = Tensor[DType.uint8]
 alias SIMDResult = SIMD[DType.uint32, 1024]
@@ -21,6 +22,11 @@ fn read_input[path: StringLiteral]() raises -> List[String]:
 fn read_input_as_tensor[path: StringLiteral]() raises -> FileTensor:
     p = _dir_of_current_file().joinpath("../" + path)
     return FileTensor.fromfile(p)
+
+
+@always_inline("nodebug")
+fn ceil_pow_of_two(v: Int) -> Int:
+    return int(ceil(sqrt(float(v))) ** 2)
 
 
 fn filter[
