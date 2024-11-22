@@ -19,22 +19,28 @@ alias VERTICAL: Mirr = ord("|")
 alias DIAG_45: Mirr = ord("/")
 alias DIAG_135: Mirr = ord("\\")
 alias MIRRORS = (HORIZONTAL, VERTICAL, DIAG_135, DIAG_45)
+# alias MIRRORS = (
+#     UInt8(HORIZONTAL),
+#     UInt8(VERTICAL),
+#     UInt8(DIAG_45),
+#     UInt8(DIAG_45),
+# )
 
 alias DOT = ord(".")
 alias LN = ord("\n")
 
 
-@always_inline("nodebug")
-fn dir_repr(v: Int) -> String:
-    return (
-        "UP" if v
-        == UP else "DOWN" if v
-        == DOWN else "LEFT" if v
-        == LEFT else "RIGHT"
-    )
+# # @always_inline("nodebug")
+# fn dir_repr(v: Int) -> String:
+#     return (
+#         "UP" if v
+#         == UP else "DOWN" if v
+#         == DOWN else "LEFT" if v
+#         == LEFT else "RIGHT"
+#     )
 
 
-@always_inline("nodebug")
+# @always_inline("nodebug")
 fn opposite(v: Int) -> Int:
     if v == DOWN:
         return UP
@@ -46,7 +52,7 @@ fn opposite(v: Int) -> Int:
         return RIGHT
 
 
-@always_inline("nodebug")
+# @always_inline("nodebug")
 fn delta(v: Int) -> IndexList[2]:
     if v == DOWN:
         return Index(1, 0)
@@ -58,7 +64,7 @@ fn delta(v: Int) -> IndexList[2]:
         return Index(0, -1)
 
 
-@always_inline
+# @always_inline
 fn reflect(v: Dir, mirror: UInt8) -> (Dir, Dir):
     """Self is the position relative to the mirror.
 
@@ -97,8 +103,8 @@ fn reflect(v: Dir, mirror: UInt8) -> (Dir, Dir):
     return NO_DIR, NO_DIR
 
 
-@always_inline("nodebug")
-fn oob(pos: IndexList[2], shape: TensorShape) -> Bool:
+# @always_inline("nodebug")
+fn oob(pos: IndexList[2], shape: (Int, Int)) -> Bool:
     return (
         pos[0] >= shape[0] or pos[0] < 0 or pos[1] >= shape[1] - 1 or pos[1] < 0
     )
@@ -128,15 +134,17 @@ fn calc_new_pos(
     dir: Dir,
     pos: IndexList[2],
     map: FileTensor,
+    sp: (Int, Int),
     inout readed: Set[Int],
     inout cache: Set[Cache],
+    # inout s: String,
 ) -> (IndexList[2], Int):
     dt = delta(dir)
     npos = pos
-    while int(map[npos]) == DOT or npos == pos:
+    while map[npos] == DOT or npos == pos:
         npos = npos + dt
         k = Cache(npos, dir)
-        if oob(npos, map.shape()) or map[npos] == LN or k in cache:
+        if oob(npos, sp) or map[npos] == LN or k in cache:
             npos = npos - dt
             break
         readed.add(map._compute_linear_offset(npos))
@@ -145,32 +153,42 @@ fn calc_new_pos(
     return npos, abs(mv[0]) + abs(mv[1])
 
 
-fn calc_energized[
-    W: Writer
-](map: FileTensor, owned pos: IndexList[2], owned dir: Dir, inout w: W,) -> Int:
-    readed = Set[Int](0)
+fn calc_energized(
+    map: FileTensor, sp: (Int, Int), owned pos: IndexList[2], owned dir: Dir
+) -> Int:
+    readed = Set[Int](map._compute_linear_offset(pos))
     cache = Set[Cache](Cache(pos, dir))
-    pos, _ = calc_new_pos(dir, pos, map, readed, cache)
+
+    if int(map[pos]) not in MIRRORS:
+        pos, _ = calc_new_pos(dir, pos, map, sp, readed, cache)
+
     queue = List[(Dir, IndexList[2])]((dir, pos))
 
     while queue:
         dir, pos = queue.pop()
         d1, d2 = reflect(opposite(dir), map[pos])
         if d1:
-            npos, _ = calc_new_pos(d1, pos, map, readed, cache)
+            npos, _ = calc_new_pos(d1, pos, map, sp, readed, cache)
             if npos != pos and int(map[npos]) in MIRRORS:
                 queue.append((d1, npos))
 
         if d2:
-            npos2, _ = calc_new_pos(d2, pos, map, readed, cache)
+            npos2, _ = calc_new_pos(d2, pos, map, sp, readed, cache)
             if npos2 != pos and int(map[npos2]) in MIRRORS:
                 queue.append((d2, npos2))
 
-    for i in range(map.num_elements()):
-        if i in readed:
-            w.write("#")
-            continue
-        w.write(chr(int(map[i])))
+    # @parameter
+    # if log:
+    #     try:
+    #         w = open("../mojo.txt", "w")
+    #         for i in range(map.num_elements()):
+    #             if i in readed:
+    #                 w.write("#")
+    #                 continue
+    #             w.write(chr(int(map[i])))
+    #         w.close()
+    #     except:
+    #         pass
 
     return len(readed)
 
@@ -183,9 +201,14 @@ struct Solution(TensorSolution):
         # 46 .. 7199
         pos = Index(0, 0)
         dir = RIGHT
-        w = String()
+        sp = map.shape()
 
-        return calc_energized(map, pos, dir, w)
+        return calc_energized(
+            map,
+            (sp[0], sp[1]),
+            pos,
+            dir,
+        )
 
     @staticmethod
     fn part_2(owned map: FileTensor) raises -> Scalar[Self.dtype]:
@@ -201,42 +224,43 @@ struct Solution(TensorSolution):
             indexes.append((Index(0, x), DOWN))
             indexes.append((Index(ym - 1, x), UP))
 
-        # test
-        tst = List[String]()
-        for _ in indexes:
-            tst.append("")
-        # test
+        # # test
+        # tst = List[String]()
+        # for _ in indexes:
+        #     tst.append("")
+        # # test
 
         results = SIMD[DType.int32, 2**14](0)
 
         @parameter
         fn calc_length(idx: Int):
             pos, dir = indexes[idx]
-            w = String()
-            results[idx] = calc_energized(map, pos, dir, w)
-            tst[idx] = w
+            results[idx] = calc_energized(map, (ym, xm + 1), pos, dir)
+            # tst[idx] = w
 
         parallelize[calc_length](indexes.size)
 
         # test
-        mx = 0
-        idxm = 0
-        for x in range(map.num_elements()):
-            print(chr(int(map[x])), end="")
+        # mx = 0
+        # idxm = 0
+        # for x in range(map.num_elements()):
+        #     print(chr(int(map[x])), end="")
 
-        for v in range(results.size):
-            if results[idxm] < results[v]:
-                idxm, mx = v, int(results[v])
+        # for v in range(results.size):
+        #     if results[idxm] < results[v]:
+        #         idxm, mx = v, int(results[v])
 
-        print(
-            "max count is: ",
-            mx,
-            " in position: ",
-            indexes[idxm][0],
-            " with map:\n",
-            tst[idxm],
-            sep="\n",
-        )
+        # print(
+        #     "max count is: ",
+        #     mx,
+        #     " in position: ",
+        #     indexes[idxm][0],
+        #     " and direction: ",
+        #     dir_repr(indexes[idxm][1]),
+        #     " with map:\n",
+        #     tst[idxm],
+        #     sep="\n",
+        # )
         # test
 
         return results.reduce_max()
