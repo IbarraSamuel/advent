@@ -156,8 +156,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-18.0.0-py312h7900ff3_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyarrow-core-18.0.0-py312h01725c0_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pycparser-2.22-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.10.0-pyh10f6f8f_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/pydantic-core-2.27.0-py312h12e396e_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.10.1-pyh10f6f8f_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/pydantic-core-2.27.1-py312h12e396e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.6.1-pyh3cfb1c2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pyinstrument-5.0.0-py312h66e93f0_0.conda
@@ -355,8 +355,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-18.0.0-py312h1f38498_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyarrow-core-18.0.0-py312hc40f475_1_cpu.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pycparser-2.22-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.10.0-pyh10f6f8f_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pydantic-core-2.27.0-py312hcd83bfe_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.10.1-pyh10f6f8f_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pydantic-core-2.27.1-py312hcd83bfe_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pydantic-settings-2.6.1-pyh3cfb1c2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pygments-2.18.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pyinstrument-5.0.0-py312h0bf5046_0.conda
@@ -4608,31 +4608,31 @@ packages:
   timestamp: 1711811634025
 - kind: conda
   name: pydantic
-  version: 2.10.0
+  version: 2.10.1
   build: pyh10f6f8f_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.10.0-pyh10f6f8f_0.conda
-  sha256: fbb18b5d24acad15c452d1d4467999d1a6cbc7b3a89771c0b2424031ddc303b4
-  md5: c8d0d99422d56d42185f43e1d4808cb5
+  url: https://conda.anaconda.org/conda-forge/noarch/pydantic-2.10.1-pyh10f6f8f_0.conda
+  sha256: b1872231d26ee3ded32bd1fe3ee1b3c7d9834ad72bf28aed70e5cd1235341584
+  md5: c15343c9dbdb30766a07e5b70e46c7d3
   depends:
   - annotated-types >=0.6.0
-  - pydantic-core 2.27.0
+  - pydantic-core 2.27.1
   - python >=3.9
   - typing-extensions >=4.6.1
   - typing_extensions >=4.12.2
   license: MIT
   license_family: MIT
-  size: 315366
-  timestamp: 1732174789708
+  size: 315991
+  timestamp: 1732286519715
 - kind: conda
   name: pydantic-core
-  version: 2.27.0
+  version: 2.27.1
   build: py312h12e396e_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/pydantic-core-2.27.0-py312h12e396e_0.conda
-  sha256: 711ce3ed4bfc1d5bdf452f78c14ff36befb3fef629a288c308861042fb8faf92
-  md5: 9729cebbd1ad13a592359001bf4408d9
+  url: https://conda.anaconda.org/conda-forge/linux-64/pydantic-core-2.27.1-py312h12e396e_0.conda
+  sha256: c89741f4eff395f8de70975f42e1f20591f0e0870929d440af35b13399976b09
+  md5: 114030cb28527db2c385f07038e914c8
   depends:
   - __glibc >=2.17,<3.0.a0
   - libgcc >=13
@@ -4642,16 +4642,16 @@ packages:
   constrains:
   - __glibc >=2.17
   license: MIT
-  size: 1631170
-  timestamp: 1732137352411
+  size: 1635156
+  timestamp: 1732254225040
 - kind: conda
   name: pydantic-core
-  version: 2.27.0
+  version: 2.27.1
   build: py312hcd83bfe_0
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/pydantic-core-2.27.0-py312hcd83bfe_0.conda
-  sha256: b636b735b955d7ba68544f6e970f6423466a6046ae4626a05117bf7e199b82cb
-  md5: 0c3f3cfb26ecaf470a41aae1af404265
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/pydantic-core-2.27.1-py312hcd83bfe_0.conda
+  sha256: 5bba8de2bbbbdb39390abb1e2aff310e8cfd49646ae5a0e0ea4d6582bd1d52ba
+  md5: 3847a96eaf24a877b6091150ff9c4955
   depends:
   - __osx >=11.0
   - python >=3.12,<3.13.0a0
@@ -4661,8 +4661,8 @@ packages:
   constrains:
   - __osx >=11.0
   license: MIT
-  size: 1445849
-  timestamp: 1732137735725
+  size: 1449057
+  timestamp: 1732254359451
 - kind: conda
   name: pydantic-settings
   version: 2.6.1
