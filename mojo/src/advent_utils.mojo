@@ -21,7 +21,24 @@ fn read_input[path: StringLiteral]() raises -> List[String]:
 
 fn read_input_as_tensor[path: StringLiteral]() raises -> FileTensor:
     p = _dir_of_current_file().joinpath("../" + path)
-    return FileTensor.fromfile(p)
+    t = FileTensor.fromfile(p)
+    # Adjusting Tensor
+    prev_y = t.bytecount()
+
+    i = 0
+    while True:
+        if t[i] == ord("\n"):
+            break
+        i += 1
+
+    map = FileTensor(
+        shape=((prev_y + 1) // (i + 1), i + 1),
+        ptr=t._take_data_ptr(),
+    )
+
+    map[prev_y] = ord("\n")
+    # End of Tensor Adjust
+    return map
 
 
 @always_inline("nodebug")

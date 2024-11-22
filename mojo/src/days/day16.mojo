@@ -3,8 +3,8 @@ from utils import IndexList, Index
 from tensor import TensorShape
 from collections import Dict
 from collections.set import Set
+from algorithm import parallelize
 import os
-import time
 
 alias Dir = Int
 alias RIGHT: Dir = 4
@@ -21,6 +21,7 @@ alias DIAG_135: Mirr = ord("\\")
 alias MIRRORS = (HORIZONTAL, VERTICAL, DIAG_135, DIAG_45)
 
 alias DOT = ord(".")
+alias LN = ord("\n")
 
 
 @always_inline("nodebug")
@@ -67,7 +68,6 @@ fn reflect(v: Dir, mirror: UInt8) -> (Dir, Dir):
     If we should have two reflections.
     """
     if int(mirror) not in MIRRORS:
-        print("!!ALERT!! WHY THIS IS HAPPENING?")
         return NO_DIR, NO_DIR
 
     if (mirror == HORIZONTAL and v in (LEFT, RIGHT)) or (
@@ -125,97 +125,118 @@ struct Cache(KeyElement):
 
 
 fn calc_new_pos(
-    dir: Dir, pos: IndexList[2], map: FileTensor, inout readed: Set[Int]
+    dir: Dir,
+    pos: IndexList[2],
+    map: FileTensor,
+    inout readed: Set[Int],
+    inout cache: Set[Cache],
 ) -> (IndexList[2], Int):
     dt = delta(dir)
     npos = pos
     while int(map[npos]) == DOT or npos == pos:
         npos = npos + dt
-        if oob(npos, map.shape()) or map._compute_linear_offset(npos) in readed:
+        k = Cache(npos, dir)
+        if oob(npos, map.shape()) or map[npos] == LN or k in cache:
             npos = npos - dt
             break
-        print(npos)
         readed.add(map._compute_linear_offset(npos))
-    print("Stopped!!")
+        cache.add(k)
     mv = pos - npos
     return npos, abs(mv[0]) + abs(mv[1])
+
+
+fn calc_energized[
+    W: Writer
+](map: FileTensor, owned pos: IndexList[2], owned dir: Dir, inout w: W,) -> Int:
+    readed = Set[Int](0)
+    cache = Set[Cache](Cache(pos, dir))
+    pos, _ = calc_new_pos(dir, pos, map, readed, cache)
+    queue = List[(Dir, IndexList[2])]((dir, pos))
+
+    while queue:
+        dir, pos = queue.pop()
+        d1, d2 = reflect(opposite(dir), map[pos])
+        if d1:
+            npos, _ = calc_new_pos(d1, pos, map, readed, cache)
+            if npos != pos and int(map[npos]) in MIRRORS:
+                queue.append((d1, npos))
+
+        if d2:
+            npos2, _ = calc_new_pos(d2, pos, map, readed, cache)
+            if npos2 != pos and int(map[npos2]) in MIRRORS:
+                queue.append((d2, npos2))
+
+    for i in range(map.num_elements()):
+        if i in readed:
+            w.write("#")
+            continue
+        w.write(chr(int(map[i])))
+
+    return len(readed)
 
 
 struct Solution(TensorSolution):
     alias dtype = DType.int32
 
     @staticmethod
-    fn part_1(owned lines: FileTensor) raises -> Scalar[Self.dtype]:
-        # Adjusting Tensor
-        prev_y = lines.bytecount()
-
-        i = 0
-        while True:
-            if lines[i] == ord("\n"):
-                break
-            i += 1
-
-        map = FileTensor(
-            shape=((prev_y + 1) // (i + 1), i + 1),
-            ptr=lines._take_data_ptr(),
-        )
-
-        map[prev_y] = ord("\n")
-        # End of Tensor Adjust
-
-        print(map)
-
+    fn part_1(owned map: FileTensor) raises -> Scalar[Self.dtype]:
+        # 46 .. 7199
         pos = Index(0, 0)
         dir = RIGHT
+        w = String()
 
-        readed = Set[Int](0)  # This may be better if it's a list
-        # TODO: Do not check collisions maybe
-        pos, _ = calc_new_pos(dir, pos, map, readed)
-        queue = List[(Dir, IndexList[2])]((dir, pos))
-
-        while queue:
-            dir, pos = queue.pop()
-            print(
-                "Starting on",
-                pos,
-                "with dir",
-                dir_repr(dir),
-                "and current:",
-                str(int(map[pos])),
-            )
-            d1, d2 = reflect(opposite(dir), map[pos])
-            if d1:
-                npos, _ = calc_new_pos(d1, pos, map, readed)
-                if npos != pos and int(map[npos]) in MIRRORS:
-                    queue.append((d1, npos))
-
-            if d2:
-                npos2, _ = calc_new_pos(d2, pos, map, readed)
-                if npos2 != pos and int(map[npos2]) in MIRRORS:
-                    queue.append((d2, npos2))
-
-        for y in range(map.shape()[0]):
-            for x in range(map.shape()[1] - 1):
-                idx = Index(y, x)
-                print(chr(int(map[idx])), end="")
-            print("", y)
-        for i in range(map.shape()[1] - 1):
-            print(i, end="")
-        print()
-
-        for y in range(map.shape()[0]):
-            for x in range(map.shape()[1] - 1):
-                idx = Index(y, x)
-                if map._compute_linear_offset(idx) in readed:
-                    print("#", end="")
-                    continue
-
-                print(chr(int(map[idx])), end="")
-            print("", y)
-        print()
-
-        return len(readed)
+        return calc_energized(map, pos, dir, w)
 
     @staticmethod
-    fn part_2(owned lines: FileTensor) raises -> Scalar[Self.dtype]:
-        return 0
+    fn part_2(owned map: FileTensor) raises -> Scalar[Self.dtype]:
+        # 51 .. 7438
+        sp = map.shape()
+        ym, xm = sp[0], sp[1] - 1
+        indexes = List[(IndexList[2], Dir)](capacity=(ym + xm) * 2)
+
+        for y in range(ym):
+            indexes.append((Index(y, 0), RIGHT))
+            indexes.append((Index(y, xm - 1), LEFT))
+        for x in range(xm):
+            indexes.append((Index(0, x), DOWN))
+            indexes.append((Index(ym - 1, x), UP))
+
+        # test
+        tst = List[String]()
+        for _ in indexes:
+            tst.append("")
+        # test
+
+        results = SIMD[DType.int32, 2**14](0)
+
+        @parameter
+        fn calc_length(idx: Int):
+            pos, dir = indexes[idx]
+            w = String()
+            results[idx] = calc_energized(map, pos, dir, w)
+            tst[idx] = w
+
+        parallelize[calc_length](indexes.size)
+
+        # test
+        mx = 0
+        idxm = 0
+        for x in range(map.num_elements()):
+            print(chr(int(map[x])), end="")
+
+        for v in range(results.size):
+            if results[idxm] < results[v]:
+                idxm, mx = v, int(results[v])
+
+        print(
+            "max count is: ",
+            mx,
+            " in position: ",
+            indexes[idxm][0],
+            " with map:\n",
+            tst[idxm],
+            sep="\n",
+        )
+        # test
+
+        return results.reduce_max()
