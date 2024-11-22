@@ -7,73 +7,20 @@ import os
 import time
 
 alias Dir = Int
-alias RIGHT: Dir = 0
+alias RIGHT: Dir = 4
 alias DOWN: Dir = 1
 alias LEFT: Dir = 2
 alias UP: Dir = 3
-alias NO_DIR: Dir = 4
+alias NO_DIR: Dir = 0
 
 alias Mirr = Int
 alias HORIZONTAL: Mirr = ord("-")
 alias VERTICAL: Mirr = ord("|")
 alias DIAG_45: Mirr = ord("/")
 alias DIAG_135: Mirr = ord("\\")
+alias MIRRORS = (HORIZONTAL, VERTICAL, DIAG_135, DIAG_45)
 
 alias DOT = ord(".")
-
-
-# @register_passable("trivial")
-# struct Mirror:
-#     alias HORIZONTAL = Self(HORIZONTAL)
-#     alias VERTICAL = Self(VERTICAL)
-#     alias DIAG_45 = Self(DIAG_45)
-#     alias DIAG_135 = Self(DIAG_135)
-#     var value: UInt8
-
-#     @implicit
-#     @always_inline("nodebug")
-#     fn __init__(out self, v: UInt8):
-#         self.value = v
-
-#     @always_inline("nodebug")
-#     fn __eq__(self, other: Self) -> Bool:
-#         return self.value == other.value
-
-#     @always_inline("nodebug")
-#     fn __ne__(self, other: Self) -> Bool:
-#         return not self == other
-
-
-# @register_passable("trivial")
-# struct Direction:
-#     alias UP = Self(UP)
-#     alias DOWN = Self(DOWN)
-#     alias LEFT = Self(LEFT)
-#     alias RIGHT = Self(RIGHT)
-#     alias NO_DIR = Self(NO_DIR)
-#     var value: UInt8
-
-#     @always_inline
-#     fn __str__(self) -> String:
-#         return (
-#             "UP" if self
-#             == Self.UP else "DOWN" if self
-#             == Self.DOWN else "LEFT" if self
-#             == Self.LEFT else "RIGHT"
-#         )
-
-#     @implicit
-#     @always_inline("nodebug")
-#     fn __init__(out self, v: UInt8):
-#         self.value = v
-
-#     @always_inline("nodebug")
-#     fn __eq__(self, other: Self) -> Bool:
-#         return self.value == other.value
-
-#     @always_inline("nodebug")
-#     fn __ne__(self, other: Self) -> Bool:
-#         return not self == other
 
 
 @always_inline("nodebug")
@@ -97,22 +44,6 @@ fn opposite(v: Int) -> Int:
     else:  # left
         return RIGHT
 
-    @always_inline
-    fn reflect_twice(self, mirror: Mirror) -> (Self, Self):
-        if mirror in (Mirror.DIAG_135, Mirror.DIAG_45):
-            os.abort("This cannot work with this type of mirrors.")
-
-        if mirror.value == VERTICAL and self in (
-            Direction.LEFT,
-            Direction.RIGHT,
-        ):
-            return Self.UP, Self.DOWN
-        if mirror == HORIZONTAL and self in (Direction.UP, Direction.DOWN):
-            return Self.LEFT, Self.RIGHT
-
-        os.abort("this should be unreachable. This should be reflecte once.")
-        return Self.NO_DIR, Self.NO_DIR
-
 
 @always_inline("nodebug")
 fn delta(v: Int) -> IndexList[2]:
@@ -135,7 +66,8 @@ fn reflect(v: Dir, mirror: UInt8) -> (Dir, Dir):
         The direction that an arrow would point to.
     If we should have two reflections.
     """
-    if v == NO_DIR:
+    if int(mirror) not in MIRRORS:
+        print("!!ALERT!! WHY THIS IS HAPPENING?")
         return NO_DIR, NO_DIR
 
     if (mirror == HORIZONTAL and v in (LEFT, RIGHT)) or (
@@ -188,88 +120,23 @@ struct Cache(KeyElement):
         return not self == other
 
     fn __hash__(self) -> UInt:
-        v = self.dir.value * 100000 + self.idx[0] * 1000 + self.idx[1]
+        v = self.dir.value * 1000000 + self.idx[0] * 1000 + self.idx[1]
         return int(v)
 
 
-# fn calc_next[
-#     override: Bool = False
-# ](
-#     pos: IndexList[2],
-#     dir: Direction,
-#     map: FileTensor,
-#     inout cache: Dict[Cache, Int],
-#     inout readed: Set[Cache],
-# ) -> Int:
-#     k = Cache(pos, dir)
-#     shape = map.shape()
-#     if pos_out_of_bounds(pos, shape):
-#         cache[k] = 0
-#         return 0
-
-#     v = cache.get(k)
-#     if override and v:
-#         return v.value()
-#     elif v:
-#         return 0
-
-#     mirr = map.load(pos)
-#     print(
-#         "Current mirror is:",
-#         chr(int(mirr)),
-#         "in position:",
-#         pos,
-#         "and direction",
-#         str(dir),
-#         "reflecting",
-#         "once" if not dir.will_reflect_twice(mirr) else "twice",
-#     )
-#     dirs = dir.reflect_twice(mirr) if dir.will_reflect_twice(mirr) else (
-#         dir.reflect_once(mirr),
-#         Direction.NO_DIR,
-#     )
-
-#     tot = 0
-
-#     @parameter
-#     for i in range(2):
-#         next_dir = dirs.get[i, Direction]()
-#         if next_dir == Direction.NO_DIR:
-#             continue
-#         delta = next_dir.delta()
-#         npos = pos + delta
-#         while map[npos] == DOT:
-#             if pos_out_of_bounds(npos, shape):
-#                 npos = npos - delta
-#                 break
-#             npos = npos + delta
-#         travel = pos - npos
-#         branch_res = abs(travel[0]) + abs(travel[1])
-#         if Cache(npos, next_dir.opposite()) in readed:
-#             tot += branch_res
-#             continue
-#         readed.add(k)
-#         tot += branch_res + calc_next(
-#             npos, next_dir.opposite(), map, cache, readed
-#         )
-
-#     cache[k] = tot
-#     return tot
-
-
-# TODO: Handle Borders, and check the readed coverage
 fn calc_new_pos(
     dir: Dir, pos: IndexList[2], map: FileTensor, inout readed: Set[Int]
 ) -> (IndexList[2], Int):
     dt = delta(dir)
-    npos = pos + dt
-    while int(map[npos]) not in (VERTICAL, HORIZONTAL, DIAG_45, DIAG_135):
+    npos = pos
+    while int(map[npos]) == DOT or npos == pos:
         npos = npos + dt
-        if oob(npos, map.shape()):
+        if oob(npos, map.shape()) or map._compute_linear_offset(npos) in readed:
             npos = npos - dt
             break
-
+        print(npos)
         readed.add(map._compute_linear_offset(npos))
+    print("Stopped!!")
     mv = pos - npos
     return npos, abs(mv[0]) + abs(mv[1])
 
@@ -294,63 +161,60 @@ struct Solution(TensorSolution):
         )
 
         map[prev_y] = ord("\n")
-        # End Tensor Adjustment
+        # End of Tensor Adjust
+
+        print(map)
 
         pos = Index(0, 0)
         dir = RIGHT
-        dt = delta(dir)
-        tot = 1
 
-        while int(map[pos]) not in (HORIZONTAL, VERTICAL, DIAG_135, DIAG_45):
-            pos = pos + dt
-            tot += 1
-
-        readed = Set[Int]()
+        readed = Set[Int](0)  # This may be better if it's a list
+        # TODO: Do not check collisions maybe
+        pos, _ = calc_new_pos(dir, pos, map, readed)
         queue = List[(Dir, IndexList[2])]((dir, pos))
-
-        @parameter
-        fn loff(pos: IndexList[2]) -> Int:
-            return map._compute_linear_offset(pos)
 
         while queue:
             dir, pos = queue.pop()
+            print(
+                "Starting on",
+                pos,
+                "with dir",
+                dir_repr(dir),
+                "and current:",
+                str(int(map[pos])),
+            )
             d1, d2 = reflect(opposite(dir), map[pos])
-            npos, v = calc_new_pos(d1, pos, map, readed)
-            queue.append((d1, npos))
-            tot += v
+            if d1:
+                npos, _ = calc_new_pos(d1, pos, map, readed)
+                if npos != pos and int(map[npos]) in MIRRORS:
+                    queue.append((d1, npos))
 
             if d2:
-                npos2, v = calc_new_pos(d2, pos, map, readed)
-                queue.append((d2, npos2))
-                tot += v
+                npos2, _ = calc_new_pos(d2, pos, map, readed)
+                if npos2 != pos and int(map[npos2]) in MIRRORS:
+                    queue.append((d2, npos2))
 
-    #     cache = Dict[Cache, Int]()
-    #     readed = Set[Cache]()
-    #     pos = Index(0, 0)
-    #     moving_to = Direction.RIGHT
-    #     delta = moving_to.delta()
-    #     init_val = 0
-    #     while Mirror(map[pos]) not in (
-    #         Mirror.VERTICAL,
-    #         Mirror.HORIZONTAL,
-    #         Mirror.DIAG_45,
-    #         Mirror.DIAG_135,
-    #     ):
-    #         print(
-    #             "Mirror",
-    #             map[pos],
-    #             "is not part of",
-    #             "(v: {}, h: {}, d45: {}, d135: {})".format(
-    #                 VERTICAL, HORIZONTAL, DIAG_45, DIAG_135
-    #             ),
-    #         )
-    #         pos = pos + delta
-    #         init_val += 1
-    #         print("index is:", pos, "and val is:", chr(int(map[pos])), "\n\n")
-    #         time.sleep(1)
-    #     return init_val + calc_next(
-    #         pos, moving_to.opposite(), map, cache, readed
-    #     )
+        for y in range(map.shape()[0]):
+            for x in range(map.shape()[1] - 1):
+                idx = Index(y, x)
+                print(chr(int(map[idx])), end="")
+            print("", y)
+        for i in range(map.shape()[1] - 1):
+            print(i, end="")
+        print()
+
+        for y in range(map.shape()[0]):
+            for x in range(map.shape()[1] - 1):
+                idx = Index(y, x)
+                if map._compute_linear_offset(idx) in readed:
+                    print("#", end="")
+                    continue
+
+                print(chr(int(map[idx])), end="")
+            print("", y)
+        print()
+
+        return len(readed)
 
     @staticmethod
     fn part_2(owned lines: FileTensor) raises -> Scalar[Self.dtype]:
