@@ -117,3 +117,10 @@ fn test_day16() raises:
         days.day16.Solution,
         ("../tests/day16.txt", (46, 51)),
     ]()
+
+
+fn test_day17() raises:
+    test_solution[
+        days.day17.Solution,
+        ("../tests/day17.txt", (102, -1)),
+    ]()

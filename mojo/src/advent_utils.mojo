@@ -22,6 +22,7 @@ fn read_input[path: StringLiteral]() raises -> List[String]:
 fn read_input_as_tensor[path: StringLiteral]() raises -> FileTensor:
     p = _dir_of_current_file().joinpath("../" + path)
     t = FileTensor.fromfile(p)
+
     # Adjusting Tensor
     prev_y = t.bytecount()
 

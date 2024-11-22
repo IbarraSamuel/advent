@@ -19,3 +19,4 @@ fn main() raises:
     run[days.day14.Solution, "../inputs/day14.txt"]()
     run[days.day15.Solution, "../inputs/day15.txt"]()
     run[days.day16.Solution, "../inputs/day16.txt"]()
+    run[days.day17.Solution, "../inputs/day17.txt"]()
