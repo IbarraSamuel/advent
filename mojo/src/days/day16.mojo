@@ -41,7 +41,7 @@ alias LN = ord("\n")
 
 
 # @always_inline("nodebug")
-fn opposite(v: Int) -> Int:
+fn opposite(v: Dir) -> Int:
     if v == DOWN:
         return UP
     elif v == UP:
@@ -230,7 +230,7 @@ struct Solution(TensorSolution):
         #     tst.append("")
         # # test
 
-        results = SIMD[DType.int32, 2**14](0)
+        results = SIMD[DType.int32, 512](0)
 
         @parameter
         fn calc_length(idx: Int):
