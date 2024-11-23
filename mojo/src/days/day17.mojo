@@ -1,7 +1,13 @@
 from advent_utils import TensorSolution, FileTensor
 
-fn calc_nums() -> List[UInt8]:
-    l = List[UInt8](capacity=10)
+# Ideas
+# 1. To invalidate other paths, you can store the init (x,y), end(x,y) and len(l) information
+# and you can discard other paths if both start and end at the same place, but one is larger than others.
+# We also need to consider direction and straight steps, to be fully compatible, because we might delete something we dont want.
+
+fn calc_nums() -> List[Int]:
+    # returns a list with uint8 from 0 - 9
+    l = List[Int](capacity=10)
     for i in range(10):
         l.append(ord(str(i)))
 
