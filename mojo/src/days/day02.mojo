@@ -1,4 +1,3 @@
-from advent_utils import AdventSolution
 from algorithm.functional import vectorize
 from algorithm.reduction import sum, _simd_sum
 
@@ -56,7 +55,7 @@ fn calc_max(game: Game, other: Game) -> Game:
     )
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.uint32
 
     @staticmethod

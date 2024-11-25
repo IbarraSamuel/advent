@@ -19,12 +19,6 @@ alias VERTICAL: Mirr = ord("|")
 alias DIAG_45: Mirr = ord("/")
 alias DIAG_135: Mirr = ord("\\")
 alias MIRRORS = (HORIZONTAL, VERTICAL, DIAG_135, DIAG_45)
-# alias MIRRORS = (
-#     UInt8(HORIZONTAL),
-#     UInt8(VERTICAL),
-#     UInt8(DIAG_45),
-#     UInt8(DIAG_45),
-# )
 
 alias DOT = ord(".")
 alias LN = ord("\n")

@@ -1,4 +1,3 @@
-from advent_utils import TensorSolution, FileTensor, AdventSolution
 from algorithm import parallelize
 import os
 from builtin.file import FileHandle
@@ -42,7 +41,7 @@ fn create_line(v: String) -> (Line, Int):
     return (line, values.size)
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.int64
 
     @staticmethod

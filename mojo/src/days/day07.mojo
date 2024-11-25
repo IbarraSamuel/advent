@@ -1,4 +1,3 @@
-from advent_utils import AdventSolution
 from collections import Dict
 from utils import Span
 import sys
@@ -145,7 +144,7 @@ fn parse_int(string: String) -> Int:
         return 0
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.uint32
     alias Hand1 = Hand[HandMode.First]
     alias Hand2 = Hand[HandMode.Second]

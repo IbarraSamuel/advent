@@ -1,4 +1,4 @@
-from advent_utils import AdventSolution, ceil_pow_of_two
+from advent_utils import ceil_pow_of_two
 from collections import Dict
 from utils import Span
 
@@ -55,7 +55,7 @@ fn add_elems(
         return
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.int32
 
     @staticmethod

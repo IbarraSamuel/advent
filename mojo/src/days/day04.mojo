@@ -1,8 +1,7 @@
-from advent_utils import AdventSolution
 from algorithm.functional import parallelize
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.uint32
 
     @staticmethod

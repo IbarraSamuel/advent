@@ -1,4 +1,3 @@
-from advent_utils import AdventSolution
 from math import sqrt, floor, ceil
 
 
@@ -17,7 +16,7 @@ fn races_winning(duration: Int, record: Int) -> UInt:
     lower_int, upper_int = int(lower), int(upper)
     return upper_int - lower_int + 1
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.uint32
 
     @staticmethod

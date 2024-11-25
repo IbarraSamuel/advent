@@ -1,4 +1,3 @@
-from advent_utils import SIMDResult, AdventSolution
 import sys
 from collections import Dict, Optional
 from utils import IndexList
@@ -33,7 +32,7 @@ fn key_in_list(k: Int, lstp: List[IndexList[2]]) -> Optional[Int]:
     return None
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.uint32
 
     @staticmethod

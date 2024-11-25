@@ -123,4 +123,4 @@ fn test_day17() raises:
     test_solution[
         days.day17.Solution,
         ("../tests/day17.txt", (102, -1)),
-    ]()
+   ]()

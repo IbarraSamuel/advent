@@ -90,7 +90,7 @@ fn map[
     return final
 
 
-trait AdventSolution:
+trait ListSolution:
     alias dtype: DType
 
     @staticmethod
@@ -101,6 +101,16 @@ trait AdventSolution:
     fn part_2(lines: List[String]) -> Scalar[dtype]:
         ...
 
+trait StringSolution:
+    alias dtype: DType
+
+    @staticmethod
+    fn part_1(lines: String) -> Scalar[dtype]:
+        ...
+
+    @staticmethod
+    fn part_2(lines: String) -> Scalar[dtype]:
+        ...
 
 trait TensorSolution:
     alias dtype: DType
@@ -114,7 +124,7 @@ trait TensorSolution:
         ...
 
 
-fn run[S: AdventSolution, path: StringLiteral]() raises:
+fn run[S: ListSolution, path: StringLiteral]() raises:
     var input = read_input[path=path]()
     print("From", path, "=>")
 
@@ -161,7 +171,7 @@ fn run[S: TensorSolution, path: StringLiteral]() raises:
 
 
 fn test_solution[
-    S: AdventSolution,
+    S: ListSolution,
     test_1: (StringLiteral, Int),
     test_2: (StringLiteral, Int),
 ]() raises:
@@ -179,7 +189,7 @@ fn test_solution[
 
 
 fn test_solution[
-    S: AdventSolution, *tests: (StringLiteral, (Int, Int))
+    S: ListSolution, *tests: (StringLiteral, (Int, Int))
 ]() raises:
     alias test_list = VariadicList(tests)
 

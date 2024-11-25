@@ -1,5 +1,4 @@
 from algorithm.functional import vectorize
-from advent_utils import AdventSolution
 from collections import Set
 from utils import IndexList
 
@@ -101,7 +100,7 @@ fn check_window[
     total += local_result[0] * local_result[1]
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.uint32
 
     @staticmethod

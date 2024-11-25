@@ -1,4 +1,3 @@
-from advent_utils import AdventSolution
 from collections import Optional
 from utils import IndexList
 
@@ -10,7 +9,7 @@ fn str_to_int(s: String) -> Optional[Int]:
         return None
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.uint32
 
     @staticmethod

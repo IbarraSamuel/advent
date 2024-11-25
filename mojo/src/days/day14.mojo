@@ -128,7 +128,6 @@
 
 
 # -------------- testing speed ------------------
-from advent_utils import AdventSolution
 from collections import Dict
 from algorithm.functional import parallelize
 from utils import Variant
@@ -223,7 +222,7 @@ fn tilt[times: Int = 1](inout maze: String):
         maze = "".join(lines^)
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.int32
 
     @staticmethod

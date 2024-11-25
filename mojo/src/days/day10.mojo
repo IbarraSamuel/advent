@@ -1,4 +1,3 @@
-from advent_utils import AdventSolution
 from utils import IndexList, StaticTuple
 from collections import Dict, OptionalReg, OptionalReg
 import os
@@ -78,7 +77,7 @@ fn find_connected_pipe(pos: Position, map: List[String]) -> Position:
     return EMPTY_POS
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.int32
 
     @staticmethod

@@ -1,4 +1,4 @@
-from advent_utils import SIMDResult, AdventSolution
+from advent_utils import SIMDResult
 from collections import Dict, Optional
 from algorithm.functional import parallelize
 
@@ -24,7 +24,7 @@ alias MapList = [
 ]
 
 
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.uint32
 
     @staticmethod

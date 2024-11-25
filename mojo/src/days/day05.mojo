@@ -1,7 +1,4 @@
-from advent_utils import AdventSolution
-
-
-struct Solution(AdventSolution):
+struct Solution:
     alias dtype = DType.uint32
 
     @staticmethod

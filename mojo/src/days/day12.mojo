@@ -87,7 +87,7 @@
 
 # Rust impl
 
-from advent_utils import AdventSolution, SIMDResult
+from advent_utils import SIMDResult
 from algorithm import parallelize
 from collections import Dict, InlineList
 import os
@@ -142,7 +142,7 @@ fn count(cfg: String, nums: List[Int], inout cache: Dict[CacheKey, Int]) -> Int:
     return result
 
 
-struct Solution(AdventSolution):
+struct Solution:
     """Solution for day 12."""
 
     alias dtype = DType.uint64
