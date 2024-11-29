@@ -97,6 +97,10 @@ fn indexof(dir: Dir) -> Int:
 fn move_pos(dir: Dir, pos: Pos) -> Pos:
     d = indexof(dir)
     df = DIFS[d]
+    try:
+        print("moving from {} to {}".format(str(pos), str(pos + df)))
+    except:
+        pass
     return pos + df
 
 
@@ -124,8 +128,10 @@ fn move(step: Step, inout cache: Dict[HStep, Int]) -> (Step, Step, Step):
     s1, s2 = move_sides(step, cache)
     sx = dir, move_pos(dir, pos), forward + 1
     cache[sx] = count + 1
+    # Cache update
     vx = cache.get(sx, count + 1)
     cache[sx] = vx * (vx < count + 1) + (count + 1) * (vx >= count + 1)
+    # Cache End
     print_step(sx)
     print()
     return s1, sx, s2
@@ -144,6 +150,7 @@ fn move_sides(step: Step, inout cache: Dict[HStep, Int]) -> (Step, Step):
     cache[s1] = v * (v < count + 1) + (count + 1) * (v >= count + 1)
     v2 = cache.get(s2, count + 1)
     cache[s2] = v2 * (v2 < count + 1) + (count + 1) * (v2 >= count + 1)
+    # Cache End
     print_step(s1)
     print_step(s2)
     return s1, s2
@@ -170,12 +177,17 @@ struct Solution(TensorSolution):
         _cache[(d2, pos, steps)] = count
 
         for tp in queue:
-            print(tp[][1])
             _, pos, forward = tp[]
-            if pos[0] > last[0] or pos[1] > last[1]:
+            # Its already calculated or it's last position or position oob
+            if (
+                tp[] in _cache
+                or pos == last
+                or pos[0] > last[0]
+                or pos[1] > last[1]
+            ):
                 continue
 
-            if forward == 2:
+            if forward == 2:  # Need to change direction
                 st1, st2 = move_sides(tp[], _cache)
                 print()
                 if st1 not in _cache:
