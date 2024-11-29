@@ -148,8 +148,7 @@ struct Solution(TensorSolution):
 
     @staticmethod
     fn part_1(owned data: FileTensor) raises -> Scalar[Self.dtype]:
-        _cache = Dict[HStep, Int]()
-        """each field could have 4 positions *  4 directions * 3 steps == 48"""
+        """Each field could have 4 positions *  4 directions * 3 steps == 48."""
         """Final count will be 48 * 141 * 141 = 954288"""
 
         pos = Pos(0, 0)
@@ -179,24 +178,24 @@ struct Solution(TensorSolution):
             if forward == 2:  # Need to change direction
                 st1, st2 = move_sides(tp[])
                 print()
-                _cache[st1] = count + 1
-                _cache[st2] = count + 1
+                counts[st1] = count + 1
+                counts[st2] = count + 1
                 queue.append(st1)
                 queue.append(st2)
                 readed.add(tp[])
                 continue
 
             st1, st2, st3 = move(tp[])
-            _cache[st1] = count + 1
-            _cache[st2] = count + 1
-            _cache[st3] = count + 1
+            counts[st1] = count + 1
+            counts[st2] = count + 1
+            counts[st3] = count + 1
             queue.append(st1)
             queue.append(st2)
             queue.append(st3)
             readed.add(tp[])
 
         mn = Int.MAX
-        for k in _cache.items():
+        for k in counts.items():
             if k[].key.step[1] == last:
                 mn = min(mn, k[].value)
 
