@@ -14,19 +14,19 @@ alias SIMDResult = SIMD[DType.uint32, 1024]
 
 
 fn read_input[path: StringLiteral]() raises -> String:
-    p = _dir_of_current_file().joinpath("../" + path)
+    p = _dir_of_current_file().joinpath("../../../" + path)
     with open(p, "rt") as f:
         return f.read()
 
 
 fn read_input_lines[path: StringLiteral]() raises -> List[String]:
-    p = _dir_of_current_file().joinpath("../" + path)
+    p = _dir_of_current_file().joinpath("../../../" + path)
     with open(p, "rt") as f:
         return f.read().splitlines()
 
 
 fn read_input_as_tensor[path: StringLiteral]() raises -> FileTensor:
-    p = _dir_of_current_file().joinpath("../" + path)
+    p = _dir_of_current_file().joinpath("../../../" + path)
     t = FileTensor.fromfile(p)
 
     # Adjusting Tensor
