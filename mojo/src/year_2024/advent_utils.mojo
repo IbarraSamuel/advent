@@ -2,6 +2,7 @@ from utils import StaticTuple
 from pathlib import Path
 from benchmark import run as bench
 from pathlib import _dir_of_current_file
+from testing import assert_equal
 
 
 trait Solution:
@@ -14,6 +15,20 @@ trait Solution:
     @staticmethod
     fn part_2(data: String) -> Scalar[Self.T]:
         ...
+
+
+@value
+@register_passable("trivial")
+struct Part:
+    alias part_1 = Self(1)
+    alias part_2 = Self(2)
+    var v: Int
+
+    fn __eq__(self, other: Self) -> Bool:
+        return self.v == other.v
+
+    fn __ne__(self, other: Self) -> Bool:
+        return not (self == other)
 
 
 fn run[input_path: StringLiteral, *solutions: Solution]() raises:
@@ -63,3 +78,22 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
         print("\tPart 2: {} in {} ns.".format(p2, int(b2)))
 
     print("---- END ----")
+
+
+fn test[
+    solution: Solution,
+    path: StringLiteral,
+    part: Part,
+    expected: Scalar[Solution.T],
+]() raises:
+    filepath = Path() / ".." / path
+    with open(filepath, "r") as f:
+        data = f.read()
+
+    @parameter
+    if part == Part.part_1:
+        res = solution.part_1(data)
+    else:
+        res = solution.part_2(data)
+
+    assert_equal(str(res), str(expected))
