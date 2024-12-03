@@ -7,9 +7,10 @@ platforms = ["linux-64", "osx-arm64"]
 version = "0.1.0"
 
 [tasks]
-tests_2023 = {cmd = "mojo test -I src/year_2023 src/year_2023/test_days.mojo"}
-2023 = {cmd = "mojo run src/year_2023/main.mojo"}
-2024 = {cmd = "mojo run src/year_2024/main.mojo"}
+tests_2023 = {cmd = "mojo test -I src/2023 src/2023/test_days.mojo"}
+tests_2024 = {cmd = "mojo test src/2024"}
+2023 = {cmd = "mojo run src/2023/main.mojo"}
+2024 = {cmd = "mojo run src/2024/main.mojo"}
 
 [dependencies]
 max = ">=24.6.0.dev2024092405,<25"

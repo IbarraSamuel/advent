@@ -1,8 +1,11 @@
-from utils import StaticTuple
 from pathlib import Path
-from benchmark import run as bench
+from time import time_function
 from pathlib import _dir_of_current_file
 from testing import assert_equal
+
+alias Part = Int
+alias PART_1 = 1
+alias PART_2 = 2
 
 
 trait Solution:
@@ -15,20 +18,6 @@ trait Solution:
     @staticmethod
     fn part_2(data: String) -> Scalar[Self.T]:
         ...
-
-
-@value
-@register_passable("trivial")
-struct Part:
-    alias part_1 = Self(1)
-    alias part_2 = Self(2)
-    var v: Int
-
-    fn __eq__(self, other: Self) -> Bool:
-        return self.v == other.v
-
-    fn __ne__(self, other: Self) -> Bool:
-        return not (self == other)
 
 
 fn run[input_path: StringLiteral, *solutions: Solution]() raises:
@@ -46,8 +35,7 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
 
         fmt = "0" + str(i + 1) if i < 9 else str(i + 1)
         file = filepath / "day{}.txt".format(fmt)
-        with open(file, "r") as f:
-            data = f.read()
+        data = file.read_text()
 
         var p1: Scalar[Sol.T] = 0
         var p2: Scalar[Sol.T] = 0
@@ -60,14 +48,16 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
         fn part_2():
             p2 = Sol.part_2(data)
 
-        rep_1 = bench[part_1]()
-        rep_2 = bench[part_2]()
+        # rep_1 = bench[part_1](max_iters=100, min_runtime_secs=0)
+        # rep_2 = bench[part_2](max_iters=100, min_runtime_secs=0)
 
         # Saving results
+        res_bench_1[i] = time_function[part_1]()
+        res_bench_2[i] = time_function[part_2]()
         res_part_1[i] = p1.cast[DType.int64]()
         res_part_2[i] = p2.cast[DType.int64]()
-        res_bench_1[i] = rep_1.mean("ns")
-        res_bench_2[i] = rep_2.mean("ns")
+        # res_bench_1[i] = rep_1.mean("ns")
+        # res_bench_2[i] = rep_2.mean("ns")
 
     for i in range(n_sols):
         fmt = "0" + str(i + 1) if i < 9 else str(i + 1)
@@ -81,19 +71,20 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
 
 
 fn test[
-    solution: Solution,
-    path: StringLiteral,
+    S: Solution,
+    day: Int,
     part: Part,
-    expected: Scalar[Solution.T],
+    expected: Int,
 ]() raises:
-    filepath = Path() / ".." / path
-    with open(filepath, "r") as f:
-        data = f.read()
+    fmt = "0" + str(day) if day < 10 else str(day)
+    path = "tests/2024/day{}.txt".format(fmt)
+    filepath = _dir_of_current_file() / "../../.." / path
+    data = filepath.read_text()
 
     @parameter
-    if part == Part.part_1:
-        res = solution.part_1(data)
+    if part == PART_1:
+        res = S.part_1(data)
     else:
-        res = solution.part_2(data)
+        res = S.part_2(data)
 
-    assert_equal(str(res), str(expected))
+    assert_equal(res, expected)
