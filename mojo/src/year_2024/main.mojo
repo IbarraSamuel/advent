@@ -1,2 +1,6 @@
+from advent_utils import run
+import days
+
+
 fn main() raises:
-    pass
+    run["inputs/2024", days.day01.Solution]()

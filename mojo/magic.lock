@@ -65,7 +65,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/noarch/httpcore-1.0.7-pyh29332c3_1.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/httptools-0.6.4-py312h66e93f0_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/httpx-0.28.0-pyhd8ed1ab_0.conda
-      - conda: https://repo.prefix.dev/conda-forge/noarch/huggingface_hub-0.26.2-pyh0610db2_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/noarch/huggingface_hub-0.26.3-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/hyperframe-6.0.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://repo.prefix.dev/conda-forge/noarch/idna-3.10-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/importlib-metadata-7.0.2-pyha770c72_0.conda
@@ -286,7 +286,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/noarch/httpcore-1.0.7-pyh29332c3_1.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/httptools-0.6.4-py312hea69d52_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/httpx-0.28.0-pyhd8ed1ab_0.conda
-      - conda: https://repo.prefix.dev/conda-forge/noarch/huggingface_hub-0.26.2-pyh0610db2_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/noarch/huggingface_hub-0.26.3-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/hyperframe-6.0.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://repo.prefix.dev/conda-forge/noarch/idna-3.10-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/importlib-metadata-7.0.2-pyha770c72_0.conda
@@ -2127,13 +2127,13 @@ packages:
   timestamp: 1732831049776
 - kind: conda
   name: huggingface_hub
-  version: 0.26.2
-  build: pyh0610db2_0
+  version: 0.26.3
+  build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://repo.prefix.dev/conda-forge/noarch/huggingface_hub-0.26.2-pyh0610db2_0.conda
-  sha256: fad5da1b0a0899dfb4d59bb4a4e4b58bade677ad44332beb608020e55f1bea53
-  md5: a7344f1612e61d1e1dcc90c758f71f8f
+  url: https://repo.prefix.dev/conda-forge/noarch/huggingface_hub-0.26.3-pyhd8ed1ab_0.conda
+  sha256: 66ffed967463e4a25f1dc4ca699d85dd55d1d150fed214c6380f11a981e0acb7
+  md5: 997fc223fbc616c262f2a32a22d433a4
   depends:
   - filelock
   - fsspec >=2023.5.0
@@ -2145,9 +2145,8 @@ packages:
   - typing-extensions >=3.7.4.3
   - typing_extensions >=3.7.4.3
   license: Apache-2.0
-  license_family: APACHE
-  size: 274216
-  timestamp: 1730211995421
+  size: 274858
+  timestamp: 1733170279930
 - kind: conda
   name: hyperframe
   version: 6.0.1
