@@ -1,24 +1,24 @@
 mod advent_utils;
-mod days;
+mod year_2023;
 
 use advent_utils::run;
 
 fn main() -> advent_utils::GenericResult<()> {
-    run::<days::day01::Solution>("../inputs/day01.txt")?;
-    run::<days::day02::Solution>("../inputs/day02.txt")?;
-    run::<days::day03::Solution>("../inputs/day03.txt")?;
-    run::<days::day04::Solution>("../inputs/day04.txt")?;
-    run::<days::day05::Solution>("../inputs/day05.txt")?;
-    run::<days::day06::Solution>("../inputs/day06.txt")?;
-    run::<days::day07::Solution>("../inputs/day07.txt")?;
-    run::<days::day08::Solution>("../inputs/day08.txt")?;
-    run::<days::day09::Solution>("../inputs/day09.txt")?;
-    run::<days::day10::Solution>("../inputs/day10.txt")?;
-    run::<days::day11::Solution>("../inputs/day11.txt")?;
-    run::<days::day12::Solution>("../inputs/day12.txt")?;
-    run::<days::day13::Solution>("../inputs/day13.txt")?;
-    run::<days::day14::Solution>("../inputs/day14.txt")?;
-    run::<days::day15::Solution>("../inputs/day15.txt")?;
-    run::<days::day16::Solution>("../inputs/day16.txt")?;
+    run::<year_2023::day01::Solution>("../inputs/day01.txt")?;
+    run::<year_2023::day02::Solution>("../inputs/day02.txt")?;
+    run::<year_2023::day03::Solution>("../inputs/day03.txt")?;
+    run::<year_2023::day04::Solution>("../inputs/day04.txt")?;
+    run::<year_2023::day05::Solution>("../inputs/day05.txt")?;
+    run::<year_2023::day06::Solution>("../inputs/day06.txt")?;
+    run::<year_2023::day07::Solution>("../inputs/day07.txt")?;
+    run::<year_2023::day08::Solution>("../inputs/day08.txt")?;
+    run::<year_2023::day09::Solution>("../inputs/day09.txt")?;
+    run::<year_2023::day10::Solution>("../inputs/day10.txt")?;
+    run::<year_2023::day11::Solution>("../inputs/day11.txt")?;
+    run::<year_2023::day12::Solution>("../inputs/day12.txt")?;
+    run::<year_2023::day13::Solution>("../inputs/day13.txt")?;
+    run::<year_2023::day14::Solution>("../inputs/day14.txt")?;
+    run::<year_2023::day15::Solution>("../inputs/day15.txt")?;
+    run::<year_2023::day16::Solution>("../inputs/day16.txt")?;
     Ok(())
 }
