@@ -2,6 +2,7 @@ from pathlib import Path
 from time import time_function
 from pathlib import _dir_of_current_file
 from testing import assert_equal
+from benchmark import run as bench
 
 alias Part = Int
 alias PART_1 = 1
@@ -37,37 +38,35 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
         file = filepath / "day{}.txt".format(fmt)
         data = file.read_text()
 
-        var p1: Scalar[Sol.T] = 0
-        var p2: Scalar[Sol.T] = 0
+        var p1: Scalar[Sol.T] = Sol.part_1(data)
+        var p2: Scalar[Sol.T] = Sol.part_2(data)
 
         @parameter
         fn part_1():
-            p1 = Sol.part_1(data)
+            _ = Sol.part_1(data)
 
         @parameter
         fn part_2():
-            p2 = Sol.part_2(data)
+            _ = Sol.part_2(data)
 
-        # rep_1 = bench[part_1](max_iters=100, min_runtime_secs=0)
-        # rep_2 = bench[part_2](max_iters=100, min_runtime_secs=0)
+        rep_1 = bench[part_1](max_iters=10000)
+        rep_2 = bench[part_2](max_iters=10000)
 
         # Saving results
-        res_bench_1[i] = time_function[part_1]()
-        res_bench_2[i] = time_function[part_2]()
+        # res_bench_1[i] = time_function[part_1]()
+        # res_bench_2[i] = time_function[part_2]()
         res_part_1[i] = p1.cast[DType.int64]()
         res_part_2[i] = p2.cast[DType.int64]()
-        # res_bench_1[i] = rep_1.mean("ns")
-        # res_bench_2[i] = rep_2.mean("ns")
+        res_bench_1[i] = rep_1.mean("ns")
+        res_bench_2[i] = rep_2.mean("ns")
 
     for i in range(n_sols):
         fmt = "0" + str(i + 1) if i < 9 else str(i + 1)
-        print("For file: {}/day{}.txt".format(filepath, fmt))
-        p1, p2 = res_part_1[i], res_part_2[i]
+        print("Day {} =>".format(fmt))
+        r1, r2 = res_part_1[i], res_part_2[i]
         b1, b2 = res_bench_1[i], res_bench_2[i]
-        print("\tPart 1: {} in {} ns.".format(p1, int(b1)))
-        print("\tPart 2: {} in {} ns.".format(p2, int(b2)))
-
-    print("---- END ----")
+        print("\tPart 1: {} in {} ns.".format(r1, int(b1)))
+        print("\tPart 2: {} in {} ns.\n".format(r2, int(b2)))
 
 
 fn test[
