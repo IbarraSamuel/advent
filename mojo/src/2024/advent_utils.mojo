@@ -49,16 +49,16 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
         fn part_2():
             _ = Sol.part_2(data)
 
-        rep_1 = bench[part_1](max_iters=10000)
-        rep_2 = bench[part_2](max_iters=10000)
+        # rep_1 = bench[part_1](max_iters=100)
+        # rep_2 = bench[part_2](max_iters=100)
 
         # Saving results
-        # res_bench_1[i] = time_function[part_1]()
-        # res_bench_2[i] = time_function[part_2]()
+        res_bench_1[i] = time_function[part_1]()
+        res_bench_2[i] = time_function[part_2]()
         res_part_1[i] = p1.cast[DType.int64]()
         res_part_2[i] = p2.cast[DType.int64]()
-        res_bench_1[i] = rep_1.mean("ns")
-        res_bench_2[i] = rep_2.mean("ns")
+        # res_bench_1[i] = rep_1.mean("ns")
+        # res_bench_2[i] = rep_2.mean("ns")
 
     for i in range(n_sols):
         fmt = "0" + str(i + 1) if i < 9 else str(i + 1)
@@ -71,13 +71,12 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
 
 fn test[
     S: Solution,
-    day: Int,
+    # day: Int,
+    file: StringLiteral,
     part: Part,
     expected: Int,
 ]() raises:
-    fmt = "0" + str(day) if day < 10 else str(day)
-    path = "tests/2024/day{}.txt".format(fmt)
-    filepath = _dir_of_current_file() / "../../.." / path
+    filepath = _dir_of_current_file() / "../../.." / file
     data = filepath.read_text()
 
     @parameter

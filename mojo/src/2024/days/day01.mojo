@@ -13,7 +13,7 @@ struct Solution:
         ```mojo
         from days.day01 import Solution, test
         from testing import assert_equal
-        test[Solution, day=1, part=1, expected=11]()
+        test[Solution, file="tests/2024/day01.txt", part=1, expected=11]()
         ```
         """
         lines = data.splitlines()
@@ -42,7 +42,7 @@ struct Solution:
         ```mojo
         from days.day01 import Solution, test
         from testing import assert_equal
-        test[Solution, day=1, part=2, expected=31]()
+        test[Solution, file="tests/2024/day01.txt", part=2, expected=31]()
         ```
         """
         lines = data.splitlines()
