@@ -1,4 +1,8 @@
 from collections import Optional
+from algorithm import parallelize
+from memory import pack_bits, bitcast
+from bit import bit_floor
+from math import log2
 
 
 fn to_int(v: String) -> Int:
@@ -36,19 +40,21 @@ struct Solution:
 
         ```"""
         lines = data.splitlines()
-        results = 0
+        results = SIMD[DType.int32, 1024](0)
 
-        for idx in range(len(lines)):
+        @parameter
+        fn calc_line(idx: Int):
             nums = lines[idx].split()
-            asc = to_int(nums[0]) < to_int(nums[1])
-            for i in range(len(nums) - 1):
-                f, l = to_int(nums[i]), to_int(nums[i + 1])
-                if (asc != (f < l)) or abs(f - l) > 3 or f == l:
-                    break
-            else:
-                results += 1
+            f = SIMD[DType.int8, 8](0)
+            for i in range(len(nums)):
+                f[i] = to_int(nums[i])
 
-        return results
+            pos, neg = calc_simd(f)
+            results[idx] = int(all(pos) or all(neg))
+
+        parallelize[calc_line](len(lines))
+
+        return results.reduce_add()
 
     @staticmethod
     fn part_2(data: String) -> Scalar[Self.T]:
@@ -75,34 +81,39 @@ struct Solution:
                 results[idx] = 1
                 continue
 
-            # Hey, validate
-            print("failed, exploring")
-            print((~pos))
-            print((~neg))
-            pos_one_bad = (
-                (~pos).select(Self.IdxSIMD, Self.ZeroSIMD).reduce_min()
-            )
-            if pos_one_bad == 7:
-                f = f.shift_right[1]()
-            if pos_one_bad == 0:
-                f = f.shift_left[1]()
+            # hey, validate
+            # If ~pos has less than 3 ones, or ~neg, we can calculate. Else just skip it.
+            # negative should be ~pos.reduce_add() > 2 or ~neg.reduce_add() > 2
+            # Why two? In the case of 3, 20, 4 >> we could still be valid if we remove 20
+            # This may not be needed, but could improve performance
+            if ~pos.reduce_add() > 2 or ~neg.reduce_add() > 2:
+                continue
 
-            pos, neg = calc_simd(f)
+            # Now, we can one thing >> get the one closest to the right, and simply remove the value and calc again.
+            # Why the closest to the right? It handles both cases of 1 bad or 2 bads.
+            # the process is:
+            # 1. pack the 1 and 0 to a integer number.
+            # 2. do bit floor to get the number closest to the right
+            # 3. log2 to get the index (need cast to float before)
+
+            s_pos = log2(float(bit_floor(pack_bits(pos)))).cast[DType.uint8]()
+            s_neg = log2(float(bit_floor(pack_bits(pos)))).cast[DType.uint8]()
+            print(s_pos)
+            print(s_neg)
+            fpos = bitcast[DType.bool, 8](s_pos - 1).select(
+                f, f.shift_left[1]()
+            )
+            fneg = bitcast[DType.bool, 8](s_neg - 1).select(
+                f, f.shift_left[1]()
+            )
+
+            pos, neg = calc_simd(fpos)
             if all(pos) or all(neg):
                 results[idx] = 1
                 continue
 
-            @parameter
-            for ci in range(1, 7):
-                if ci == int(pos_one_bad):
-                    f = f.insert[offset=ci](f)
-                    break
-
-            pos, neg = calc_simd(f)
-            if all(pos) or all(neg):
-                continue
-
-            # Negative missing
+            pos, neg = calc_simd(fneg)
+            results[idx] = int(all(pos) or all(neg))
 
         return results.reduce_add()
 
