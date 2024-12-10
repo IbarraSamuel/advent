@@ -15,6 +15,8 @@ fn to_int(v: String) -> Int:
 fn calc_simd(
     f: SIMD[DType.int8, 8]
 ) -> (SIMD[DType.bool, 8], SIMD[DType.bool, 8]):
+    """This could be improved to precisely show the place where the problem is.
+    """
     l = f.shift_left[1]()
     zero_msk = l == 0
     diff = l - f
@@ -129,21 +131,21 @@ struct Solution:
         return results.reduce_add()
 
 
-fn is_invalid(asc: Bool, pair: (Int, Int)) -> Bool:
-    f, l = pair
-    return (asc != (f < l)) or abs(f - l) > 3 or f == l
+# fn is_invalid(asc: Bool, pair: (Int, Int)) -> Bool:
+#     f, l = pair
+#     return (asc != (f < l)) or abs(f - l) > 3 or f == l
 
 
-fn should_retry_first(asc: Bool, i: Int, nums: List[String]) raises -> Bool:
-    print(
-        "nums",
-        nums[i],
-        nums[i + 1],
-        "failed but trying now to compare with",
-        nums[i + 2],
-        "in order asc:",
-        asc,
-    )
-    f, n = int(nums[i]), int(nums[i + 2])
-    ignore_middle = f, n
-    return not is_invalid(asc, ignore_middle)
+# fn should_retry_first(asc: Bool, i: Int, nums: List[String]) raises -> Bool:
+#     print(
+#         "nums",
+#         nums[i],
+#         nums[i + 1],
+#         "failed but trying now to compare with",
+#         nums[i + 2],
+#         "in order asc:",
+#         asc,
+#     )
+#     f, n = int(nums[i]), int(nums[i + 2])
+#     ignore_middle = f, n
+#     return not is_invalid(asc, ignore_middle)
