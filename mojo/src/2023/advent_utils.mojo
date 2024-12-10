@@ -3,7 +3,8 @@ from os import abort
 from testing import assert_equal
 from builtin.builtin_list import VariadicList
 from testing.testing import Testable
-from utils import Variant, Span
+from utils import Variant
+from memory import Span
 from tensor import Tensor
 from pathlib import Path, _dir_of_current_file
 from time import time_function

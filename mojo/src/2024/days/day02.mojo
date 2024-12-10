@@ -65,7 +65,7 @@ struct Solution:
         from days.day02 import Solution
 
         test[Solution, file="tests/2024/day02.txt", part=2, expected=4]()
-        test[Solution, file="tests/2024/day022.txt", part=2, expected=2]()
+        test[Solution, file="tests/2024/day022.txt", part=2, expected=28]()
         ```"""
         lines = data.splitlines()
         results = SIMD[DType.int32, 1024](0)
@@ -79,47 +79,53 @@ struct Solution:
             pos, neg = calc_simd(f)
             if all(pos) or all(neg):
                 results[idx] = 1
-                print("line no", idx, "completed!!")
+                print(idx, end=" ")
                 continue
 
-            s_pos = log2(float(bit_floor(pack_bits(~pos)))).cast[DType.uint8]()
-            s_neg = log2(float(bit_floor(pack_bits(~neg)))).cast[DType.uint8]()
+            s_pos = int(log2(float(bit_floor(pack_bits(~pos)))))
+            s_neg = int(log2(float(bit_floor(pack_bits(~neg)))))
 
-            print(
-                "for line",
-                lines[idx],
-                (~pos).cast[DType.uint8](),
-                s_pos,
-                "and",
-                (~neg).cast[DType.uint8](),
-                s_neg,
-            )
+            # TODO: Make it nicer, now it's kind of good but brute forced on two options.
 
             # calc for positive
             fpos_msk = SIMD[DType.bool, f.size](False)
-            while s_pos < f.size:
-                fpos_msk[int(s_pos)] = True
-                s_pos += 1
+            for i in range(s_pos, f.size):
+                fpos_msk[i] = True
 
             fpos = fpos_msk.select(f.shift_left[1](), f)
-            print("new pos line is:", fpos)
+            fpos2 = fpos
+            fpos2[s_pos] = f[s_pos]
             p, n = calc_simd(fpos)
             if all(p) or all(n):
                 results[idx] = 1
-                print("line no", idx, "completed!")
+                print(idx, end=" ")
+                continue
+            p, n = calc_simd(fpos2)
+            if all(p) or all(n):
+                results[idx] = 1
+                print(idx, end=" ")
                 continue
 
+            # Calc for negative
             fneg_msk = SIMD[DType.bool, f.size](False)
-            while s_neg < f.size:
-                fneg_msk[int(s_neg)] = True
-                s_neg += 1
+            for i in range(s_neg, f.size):
+                fneg_msk[i] = True
 
             fneg = fneg_msk.select(f.shift_left[1](), f)
-            print("new neg line is:", fneg)
+            fneg2 = fneg
+            fneg2[s_neg] = f[s_neg]
             p, n = calc_simd(fneg)
-            results[idx] = int(all(p) or all(n))
-            print("final for line", idx, "is:", results[idx])
+            if all(p) or all(n):
+                results[idx] = 1
+                print(idx, end=" ")
+                continue
+            p, n = calc_simd(fneg2)
+            if all(p) or all(n):
+                results[idx] = 1
+                print(idx, end=" ")
+                continue
 
+        print("")
         return results.reduce_add()
 
 
