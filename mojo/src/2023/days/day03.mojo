@@ -36,8 +36,8 @@ fn parse_number[dir: Int](s: String, pos: Int) -> Tuple[String, Int]:
 fn check_window(
     point: Point,
     input: List[String],
-    inout results: Set[Point],
-    inout total: Int,
+    mut results: Set[Point],
+    mut total: Int,
 ):
     var min_x = max(point.x - 1, 0)
     var max_x = min(point.x + 1, len(input[0]) - 1)
@@ -61,12 +61,7 @@ fn check_window(
 
 fn check_window[
     number_limit: Int
-](
-    point: Point,
-    input: List[String],
-    inout results: Set[Point],
-    inout total: Int,
-):
+](point: Point, input: List[String], mut results: Set[Point], mut total: Int):
     var min_x = max(point.x - 1, 0)
     var max_x = min(point.x + 1, len(input[0]) - 1)
     var min_y = max(point.y - 1, 0)

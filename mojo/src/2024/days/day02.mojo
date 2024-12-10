@@ -65,7 +65,7 @@ struct Solution:
         from days.day02 import Solution
 
         test[Solution, file="tests/2024/day02.txt", part=2, expected=4]()
-        test[Solution, file="tests/2024/day022.txt", part=2, expected=1]()
+        test[Solution, file="tests/2024/day022.txt", part=2, expected=2]()
         ```"""
         lines = data.splitlines()
         results = SIMD[DType.int32, 1024](0)
@@ -79,41 +79,46 @@ struct Solution:
             pos, neg = calc_simd(f)
             if all(pos) or all(neg):
                 results[idx] = 1
+                print("line no", idx, "completed!!")
                 continue
 
-            # hey, validate
-            # If ~pos has less than 3 ones, or ~neg, we can calculate. Else just skip it.
-            # negative should be ~pos.reduce_add() > 2 or ~neg.reduce_add() > 2
-            # Why two? In the case of 3, 20, 4 >> we could still be valid if we remove 20
-            # This may not be needed, but could improve performance
-            if ~pos.reduce_add() > 2 or ~neg.reduce_add() > 2:
-                continue
+            s_pos = log2(float(bit_floor(pack_bits(~pos)))).cast[DType.uint8]()
+            s_neg = log2(float(bit_floor(pack_bits(~neg)))).cast[DType.uint8]()
 
-            # Now, we can one thing >> get the one closest to the right, and simply remove the value and calc again.
-            # Why the closest to the right? It handles both cases of 1 bad or 2 bads.
-            # the process is:
-            # 1. pack the 1 and 0 to a integer number.
-            # 2. do bit floor to get the number closest to the right
-            # 3. log2 to get the index (need cast to float before)
-
-            s_pos = log2(float(bit_floor(pack_bits(pos)))).cast[DType.uint8]()
-            s_neg = log2(float(bit_floor(pack_bits(pos)))).cast[DType.uint8]()
-            print(s_pos)
-            print(s_neg)
-            fpos = bitcast[DType.bool, 8](s_pos - 1).select(
-                f, f.shift_left[1]()
-            )
-            fneg = bitcast[DType.bool, 8](s_neg - 1).select(
-                f, f.shift_left[1]()
+            print(
+                "for line",
+                lines[idx],
+                (~pos).cast[DType.uint8](),
+                s_pos,
+                "and",
+                (~neg).cast[DType.uint8](),
+                s_neg,
             )
 
-            pos, neg = calc_simd(fpos)
-            if all(pos) or all(neg):
+            # calc for positive
+            fpos_msk = SIMD[DType.bool, f.size](False)
+            while s_pos < f.size:
+                fpos_msk[int(s_pos)] = True
+                s_pos += 1
+
+            fpos = fpos_msk.select(f.shift_left[1](), f)
+            print("new pos line is:", fpos)
+            p, n = calc_simd(fpos)
+            if all(p) or all(n):
                 results[idx] = 1
+                print("line no", idx, "completed!")
                 continue
 
-            pos, neg = calc_simd(fneg)
-            results[idx] = int(all(pos) or all(neg))
+            fneg_msk = SIMD[DType.bool, f.size](False)
+            while s_neg < f.size:
+                fneg_msk[int(s_neg)] = True
+                s_neg += 1
+
+            fneg = fneg_msk.select(f.shift_left[1](), f)
+            print("new neg line is:", fneg)
+            p, n = calc_simd(fneg)
+            results[idx] = int(all(p) or all(n))
+            print("final for line", idx, "is:", results[idx])
 
         return results.reduce_add()
 

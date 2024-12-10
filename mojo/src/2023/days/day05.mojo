@@ -74,6 +74,7 @@ struct MapRange:
     fn __init__(out self, range: MapRangeTp):
         self.dest_start, self.src_start, self.length = range
 
+    @implicit
     fn __init__(out self, owned range: List[Int]):
         self.dest_start, self.src_start, self.length = (
             range[0],
@@ -102,7 +103,7 @@ fn map_number(range: MapRange, n: Int) -> Tuple[Int, Bool]:
         return n, False
 
 
-fn map_numbers(ranges: List[MapRange], inout numbers: List[Int]):
+fn map_numbers(ranges: List[MapRange], mut numbers: List[Int]):
     for i in range(len(numbers)):
         var mapped = False
         for map in ranges:

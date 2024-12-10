@@ -1,6 +1,6 @@
 from advent_utils import ceil_pow_of_two
 from collections import Dict
-from utils import Span
+from memory import Span
 
 alias COMMA = ord(",")
 
@@ -16,9 +16,9 @@ fn hash(v: Span[Byte]) -> Int:
 
 
 fn add_elems(
-    inout elems: Dict[Int, List[(String, Int)]],
+    mut elems: Dict[Int, List[(String, Int)]],
     data: String,
-    inout init: Int,
+    mut init: Int,
     end: Int,
 ):
     elem, init = data[init:end], end + 1

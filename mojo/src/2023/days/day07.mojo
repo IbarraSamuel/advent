@@ -1,5 +1,5 @@
 from collections import Dict
-from utils import Span
+from memory import Span
 import sys
 
 alias CardType = DType.uint8
@@ -37,7 +37,7 @@ struct Hand[mode: HandMode](ComparableCollectionElement):
         self._calc_level(s)
 
     @always_inline("nodebug")
-    fn _calc_level(inout self, s: String):
+    fn _calc_level(mut self, s: String):
         chars = Dict[String, Int](power_of_two_initial_capacity=Self.type.size)
 
         @parameter
@@ -132,7 +132,7 @@ struct Card[mode: HandMode]:
         elif v == "T":
             self = Self.T
         else:
-            self = parse_int(v)
+            self.value = parse_int(v)
 
 
 fn parse_int(string: String) -> Int:

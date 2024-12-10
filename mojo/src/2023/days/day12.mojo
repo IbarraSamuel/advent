@@ -114,7 +114,7 @@ struct CacheKey(KeyElement):
             return "repre raises"
 
 
-fn count(cfg: String, nums: List[Int], inout cache: Dict[CacheKey, Int]) -> Int:
+fn count(cfg: String, nums: List[Int], mut cache: Dict[CacheKey, Int]) -> Int:
     if (not cfg and not nums) or (not nums and "#" not in cfg):
         return 1
 

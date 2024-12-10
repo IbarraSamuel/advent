@@ -51,7 +51,7 @@
 #     return k, l
 
 
-# fn move[*DIR: Direction](rocks: STensor, inout rolls: STensor) -> UInt32:
+# fn move[*DIR: Direction](rocks: STensor, mut rolls: STensor) -> UInt32:
 #     alias dirs = VariadicList(DIR)
 
 #     @parameter
@@ -63,7 +63,7 @@
 
 
 # # @always_inline("nodebug")
-# fn single_move[DIR: Direction](rocks_list: STensor, inout rolls: STensor):
+# fn single_move[DIR: Direction](rocks_list: STensor, mut rolls: STensor):
 #     # rk = rocks_list[0] if DIR in [UP, DOWN] else rocks_list[1]
 #     # dir = 1 if DIR in [DOWN, RIGHT] else -1
 
@@ -186,7 +186,7 @@ fn calculate[direction: Direction](maze: String) -> Int:
     return tot
 
 
-fn tilt[times: Int = 1](inout maze: String):
+fn tilt[times: Int = 1](mut maze: String):
     x_max = maze.find("\n")
     y_max = len(maze) // (x_max + 1)
     lines = maze.splitlines()

@@ -26,7 +26,7 @@ struct Dir(Writable):
     fn __ne__(self, other: Self) -> Bool:
         return not (self == other)
 
-    fn write_to[W: Writer](self, inout writer: W):
+    fn write_to[W: Writer](self, mut writer: W):
         return writer.write(
             "UP" if self
             == Self.UP else "DOWN" if self

@@ -129,9 +129,9 @@ fn calc_new_pos(
     pos: IndexList[2],
     map: FileTensor,
     sp: (Int, Int),
-    inout readed: Set[Int],
-    inout cache: Set[Cache],
-    # inout s: String,
+    mut readed: Set[Int],
+    mut cache: Set[Cache],
+    # mut s: String,
 ) -> (IndexList[2], Int):
     dt = delta(dir)
     npos = pos
