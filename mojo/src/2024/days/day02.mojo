@@ -72,7 +72,9 @@ struct Solution:
         lines = data.splitlines()
         results = SIMD[DType.int32, 1024](0)
 
-        for idx in range(len(lines)):
+        @parameter
+        fn calc_line(idx: Int):
+            # for idx in range(len(lines)):
             nums = lines[idx].split()
             f = SIMD[DType.int8, 8](0)
             for i in range(len(nums)):
@@ -81,8 +83,7 @@ struct Solution:
             pos, neg = calc_simd(f)
             if all(pos) or all(neg):
                 results[idx] = 1
-                print(idx, end=" ")
-                continue
+                return
 
             s_pos = int(log2(float(bit_floor(pack_bits(~pos)))))
             s_neg = int(log2(float(bit_floor(pack_bits(~neg)))))
@@ -100,13 +101,11 @@ struct Solution:
             p, n = calc_simd(fpos)
             if all(p) or all(n):
                 results[idx] = 1
-                print(idx, end=" ")
-                continue
+                return
             p, n = calc_simd(fpos2)
             if all(p) or all(n):
                 results[idx] = 1
-                print(idx, end=" ")
-                continue
+                return
 
             # Calc for negative
             fneg_msk = SIMD[DType.bool, f.size](False)
@@ -119,15 +118,13 @@ struct Solution:
             p, n = calc_simd(fneg)
             if all(p) or all(n):
                 results[idx] = 1
-                print(idx, end=" ")
-                continue
+                return
             p, n = calc_simd(fneg2)
             if all(p) or all(n):
                 results[idx] = 1
-                print(idx, end=" ")
-                continue
+                return
 
-        print("")
+        parallelize[calc_line](len(lines))
         return results.reduce_add()
 
 

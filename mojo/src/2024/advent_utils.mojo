@@ -38,29 +38,23 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
         file = filepath / "day{}.txt".format(fmt)
         data = file.read_text()
 
-        var p1: Scalar[Sol.T] = Sol.part_1(data)
-        var p2: Scalar[Sol.T] = Sol.part_2(data)
+        var p1: Scalar[Sol.T] = 0
+        var p2: Scalar[Sol.T] = 0
 
         @parameter
         fn part_1():
-            _ = Sol.part_1(data)
+            p1 = Sol.part_1(data)
 
         @parameter
         fn part_2():
-            _ = Sol.part_2(data)
-
-        # rep_1 = bench[part_1](max_iters=100)
-        # rep_2 = bench[part_2](max_iters=100)
+            p2 = Sol.part_2(data)
 
         # Saving results
         res_bench_1[i] = time_function[part_1]()
         res_bench_2[i] = time_function[part_2]()
         res_part_1[i] = p1.cast[DType.int64]()
         res_part_2[i] = p2.cast[DType.int64]()
-        # res_bench_1[i] = rep_1.mean("ns")
-        # res_bench_2[i] = rep_2.mean("ns")
 
-    for i in range(n_sols):
         fmt = "0" + str(i + 1) if i < 9 else str(i + 1)
         print("Day {} =>".format(fmt))
         r1, r2 = res_part_1[i], res_part_2[i]
@@ -71,7 +65,6 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
 
 fn test[
     S: Solution,
-    # day: Int,
     file: StringLiteral,
     part: Part,
     expected: Int,
