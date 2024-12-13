@@ -6685,6 +6685,7 @@ packages:
   arch: x86_64
   platform: linux
   license: MIT
+  license_family: MIT
   size: 410432
   timestamp: 1733998892675
 - kind: conda
@@ -6706,6 +6707,7 @@ packages:
   arch: arm64
   platform: osx
   license: MIT
+  license_family: MIT
   size: 363162
   timestamp: 1733999215646
 - kind: conda
