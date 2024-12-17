@@ -13,4 +13,4 @@ version = "0.1.0"
 2024 = {cmd = "mojo run src/2024/main.mojo"}
 
 [dependencies]
-max = ">=24.6.0.dev2024092405,<25"
+max = "*"
