@@ -4,9 +4,25 @@ from pathlib import _dir_of_current_file
 from testing import assert_equal
 from benchmark import run as bench
 
-alias Part = Int
-alias PART_1 = 1
-alias PART_2 = 2
+
+struct Part(EqualityComparable):
+    alias one = Part(1)
+    alias two = Part(2)
+    alias bad = Part(-1)
+    var v: Int32
+
+    @implicit
+    fn __init__(out self, v: Int):
+        if v < 1 or v > 2:
+            self.v = -1
+
+        self.v = v
+
+    fn __eq__(self, other: Self) -> Bool:
+        return self.v == other.v
+
+    fn __ne__(self, other: Self) -> Bool:
+        return not (self == other)
 
 
 trait Solution:
@@ -65,17 +81,19 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
 
 fn test[
     S: Solution,
-    file: StringLiteral,
     part: Part,
+    file: StringLiteral,
     expected: Int,
 ]() raises:
     filepath = _dir_of_current_file() / "../../.." / file
     data = filepath.read_text()
 
     @parameter
-    if part == PART_1:
+    if part == Part.one:
         res = S.part_1(data)
-    else:
+    elif part == Part.two:
         res = S.part_2(data)
+    else:
+        raise Error("Part argument is incorrectly set.")
 
     assert_equal(res, expected)

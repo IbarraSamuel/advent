@@ -1,7 +1,7 @@
 from collections import Optional
 from algorithm import parallelize
 from memory import pack_bits, bitcast
-from bit import bit_floor
+from bit import prev_power_of_two
 from math import log2
 
 
@@ -85,8 +85,8 @@ struct Solution:
                 results[idx] = 1
                 return
 
-            s_pos = int(log2(float(bit_floor(pack_bits(~pos)))))
-            s_neg = int(log2(float(bit_floor(pack_bits(~neg)))))
+            s_pos = int(log2(float(prev_power_of_two(pack_bits(~pos)))))
+            s_neg = int(log2(float(prev_power_of_two(pack_bits(~neg)))))
 
             # TODO: Make it nicer, now it's kind of good but brute forced on two options.
 
