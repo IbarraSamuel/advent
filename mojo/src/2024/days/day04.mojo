@@ -1,3 +1,9 @@
+from max.graph import Graph, Type, TensorType, ops
+from max.tensor import Tensor, TensorShape
+
+alias TARGET = "XMAS".as_bytes()
+
+
 struct Solution:
     alias T = DType.int32
 
@@ -9,37 +15,55 @@ struct Solution:
         from advent_utils import test
         from days.day03 import Solution
 
-        test[Solution, file="tests/2024/day03.txt", part=1, expected=161]()
+        test[Solution, file="tests/2024/day04.txt", part=1, expected=18]()
         ```
         """
-        pos = 0
         tot = 0
-        while pos < len(data):
-            pi = data.find("mul(", pos)
-            if pi == -1:
-                break
-            pi += 4
-            pc = data.find(",", start=pi + 1)
-            if pc == -1:
-                break
-            try:
-                n1 = int(data[pi:pc])
-            except:
-                pos = pi + 1
-                continue
+        lines = data.splitlines()
 
-            pf = data.find(")", pc + 2)
-            if pf == -1:
-                break
+        # Vertical
+        for line in lines:
+            n = line[].find("XMAS")
+            r = line[].rfind("SAMX")
+            tot += n * (n > -1) + 0 * (n == -1)
+            tot += r * (r > -1) + 0 * (r == -1)
 
-            try:
-                n2 = int(data[pc + 1 : pf])
-            except:
-                pos = pc + 1
-                continue
+        # Horizontal
+        for col in range(len(lines[0])):
+            for row in range(len(lines)):
+                if len(lines) - row < 4:
+                    break
+                if (
+                        lines[row][col] == "X"
+                        and lines[row + 1][col] == "M"
+                        and lines[row + 2][col] == "A"
+                        and lines[row + 3][col] == "S"
+                    )
+                    or (
+                        lines[row][col] == "S"
+                        and lines[row + 1][col] == "A"
+                        and lines[row + 2][col] == "M"
+                        and lines[row + 3][col] == "X"
+                    ):
+                    tot += 1
 
-            pos = pf + 1
-            tot += n1 * n2
+        # how many diags?
+        diags = len(lines) + len(lines[0]) - 1 # repeated at corner
+
+        # Diagonal 45?
+        # Diagonal 135?
+        # ...
+
+        # TODO: Iterate on all 8 positibilites.
+        # Down to Up
+        # Up to Down
+        # Left to Right
+        # Right to Left
+        # 45 UP
+        # 45 DOWN
+        # 135 UP
+        # 135 DOWN
+        # This could be done on 8 threads.
         return tot
 
     @staticmethod
@@ -50,46 +74,8 @@ struct Solution:
         from advent_utils import test
         from days.day03 import Solution
 
-        test[Solution, file="tests/2024/day032.txt", part=2, expected=48]()
+        test[Solution, file="tests/2024/day032.txt", part=2, expected=0]()
         ```
         """
-        pos = 0
         tot = 0
-        n_dont = data.find("don't()")
-        while pos < len(data):
-            pi = data.find("mul(", pos)
-            if pi == -1:
-                print("mul( not found")
-                break
-
-            if n_dont > -1 and n_dont < pi:
-                do = data.find("do()", pos + 7)
-                if do == -1:
-                    break
-                pos = do + 4
-                n_dont = data.find("don't()", pos)
-                continue
-
-            pi += 4
-            pc = data.find(",", start=pi + 1)
-            if pc == -1:
-                break
-            try:
-                n1 = int(data[pi:pc])
-            except:
-                pos = pi + 1
-                continue
-
-            pf = data.find(")", pc + 2)
-            if pf == -1:
-                break
-
-            try:
-                n2 = int(data[pc + 1 : pf])
-            except:
-                pos = pc + 1
-                continue
-
-            pos = pf + 1
-            tot += n1 * n2
         return tot

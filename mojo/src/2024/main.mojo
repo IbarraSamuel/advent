@@ -8,4 +8,5 @@ fn main() raises:
         days.day01.Solution,
         days.day02.Solution,
         days.day03.Solution,
+        days.day04.Solution,
     ]()
