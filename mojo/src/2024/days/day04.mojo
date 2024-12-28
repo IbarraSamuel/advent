@@ -16,6 +16,7 @@ struct Solution:
         import days
 
         test[days.day04.Solution, file="tests/2024/day04.txt", part=1, expected=18]()
+        test[days.day04.Solution, file="tests/2024/day044.txt", part=1, expected=4]()
         ```
         """
         tot = 0
