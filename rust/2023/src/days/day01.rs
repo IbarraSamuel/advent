@@ -63,9 +63,9 @@ impl AdventSolution for Solution {
 
 crate::advent_tests!(
     part 1 => (
-        "../tests/day1_1.txt" => 142
+        "../../tests/2023/day1_1.txt" => 142
     ),
     part 2 => (
-        "../tests/day1_2.txt" => 281
+        "../../tests/2023/day1_2.txt" => 281
     )
 );
