@@ -1,11 +1,8 @@
-mod advent_utils;
-mod days;
-
-use advent_utils::Solver;
+use aoc2024::days;
 
 // TODO: Add library to be able to run doctests.
 fn main() {
-    Solver::builder()
-        .add::<days::day01::Solution>("../inputs/2024/day01.txt")
+    aoc2024::Solver::from("../inputs/2024")
+        .add::<days::day01::Solution>()
         .compute()
 }

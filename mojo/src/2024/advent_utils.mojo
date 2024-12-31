@@ -41,10 +41,6 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
     filepath = Path() / ".." / input_path
     alias sols = VariadicList(solutions)
     alias n_sols = len(sols)
-    res_part_1 = SIMD[DType.int64, 32](0)
-    res_part_2 = SIMD[DType.int64, 32](0)
-    res_bench_1 = SIMD[DType.float64, 32](0)
-    res_bench_2 = SIMD[DType.float64, 32](0)
 
     @parameter
     for i in range(n_sols):
@@ -66,15 +62,13 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
             p2 = Sol.part_2(data)
 
         # Saving results
-        res_bench_1[i] = time_function[part_1]()
-        res_bench_2[i] = time_function[part_2]()
-        res_part_1[i] = p1.cast[DType.int64]()
-        res_part_2[i] = p2.cast[DType.int64]()
+        b1 = time_function[part_1]()
+        b2 = time_function[part_2]()
+        r1 = p1.cast[DType.int64]()
+        r2 = p2.cast[DType.int64]()
 
         fmt = "0" + str(i + 1) if i < 9 else str(i + 1)
         print("Day {} =>".format(fmt))
-        r1, r2 = res_part_1[i], res_part_2[i]
-        b1, b2 = res_bench_1[i], res_bench_2[i]
         print("\tPart 1: {} in {} ns.".format(r1, int(b1)))
         print("\tPart 2: {} in {} ns.\n".format(r2, int(b2)))
 
