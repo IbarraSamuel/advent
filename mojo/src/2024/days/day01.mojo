@@ -46,24 +46,16 @@ struct Solution:
         ```
         """
         lines = data.splitlines()
-        lines_size = len(lines)
-        l1 = List[String](capacity=lines_size)
-        l2 = List[String](capacity=lines_size)
-        t = 0
+        vals = List[String]()
+        for line in lines:
+            vals.append(line[].split()[1])
 
-        try:
-            for line in lines:
-                ns = line[].split()
-                l1.append(ns[0])
-                l2.append(ns[1])
-
-            c1 = Counter[String](l1)
-            c2 = Counter[String](l2)
-
-            for v in c1.items():
-                t += int(v[].key) * v[].value * c2[v[].key]
-
-        except:
-            pass
-
-        return t
+        c = Counter[String](vals)
+        tot = 0
+        for line in lines:
+            k = line[].split()[0]
+            try:
+                tot += int(k) * c.get(k, 0)
+            except:
+                pass
+        return tot

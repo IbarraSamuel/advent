@@ -46,7 +46,10 @@ impl AdventSolution for Solution {
         }
 
         lines
-            .map(|line| map.get(line.split_once(" ").unwrap().0).unwrap_or(&0))
+            .map(|line| {
+                let v = line.split_once(" ").unwrap().0;
+                v.parse::<u32>().unwrap() * *map.get(line.split_once(" ").unwrap().0).unwrap_or(&0)
+            })
             .sum::<u32>()
     }
 }
