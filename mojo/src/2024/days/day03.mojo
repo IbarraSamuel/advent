@@ -59,7 +59,7 @@ struct Solution:
         while pos < len(data):
             pi = data.find("mul(", pos)
             if pi == -1:
-                print("mul( not found")
+                # print("mul( not found")
                 break
 
             if n_dont > -1 and n_dont < pi:

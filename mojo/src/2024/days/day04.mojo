@@ -1,7 +1,7 @@
 from max.graph import Graph, Type, TensorType, ops
 from max.tensor import Tensor, TensorShape
 
-alias TARGET = "XMAS".as_bytes()
+# alias TARGET = "XMAS".as_bytes()
 
 
 struct Solution:
@@ -28,12 +28,12 @@ struct Solution:
             while True:
                 n = lines[y].find("XMAS", y0)
                 if n > -1:
-                   print("Found at (", n, ",", y, ") with direction Horiz ", "L" if lines[y][n] == "S" else "R", sep="")
+                   # print("Found at (", n, ",", y, ") with direction Horiz ", "L" if lines[y][n] == "S" else "R", sep="")
                    y0 = n + 3
                    tot += 1
                 r = lines[y].find("SAMX", yy0)
                 if r > -1:
-                   print("Found at (", r, ",", y, ") with direction Horiz ", "L" if lines[y][r] == "S" else "R", sep="")
+                   # print("Found at (", r, ",", y, ") with direction Horiz ", "L" if lines[y][r] == "S" else "R", sep="")
                    yy0 = r + 3
                    tot += 1
 
@@ -57,7 +57,7 @@ struct Solution:
                         and lines[row + 2][col] == "M"
                         and lines[row + 3][col] == "X"
                     ):
-                    print("Found at (", col, ",", row, ") with direction Vertial ", "U" if lines[row][col] == "S" else "D", sep="")
+                    # print("Found at (", col, ",", row, ") with direction Vertial ", "U" if lines[row][col] == "S" else "D", sep="")
                     tot += 1
 
         # how many diags?
@@ -81,7 +81,7 @@ struct Solution:
                         and lines[y- 2][x+2] == "M"
                         and lines[y- 3][x+3] == "X"
                     ):
-                    print("Found at (", x, ",", y, ") with direction 45", "D" if lines[y][x] == "S" else "U", sep="")
+                    # print("Found at (", x, ",", y, ") with direction 45", "D" if lines[y][x] == "S" else "U", sep="")
                     tot += 1
 
                 x += 1
@@ -104,7 +104,7 @@ struct Solution:
                         and lines[y+ 2][x-2] == "M"
                         and lines[y+ 3][x-3] == "X"
                     ):
-                    print("Found at (", x, ",", y, ") with direction 135", "D" if lines[y][x] == "S" else "U", sep="")
+                    # print("Found at (", x, ",", y, ") with direction 135", "D" if lines[y][x] == "S" else "U", sep="")
                     tot += 1
 
                 x -= 1
