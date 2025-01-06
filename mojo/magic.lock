@@ -12,7 +12,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/linux-64/aiohttp-3.11.11-py312h178313f_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/aiosignal-1.3.2-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/annotated-types-0.7.0-pyhd8ed1ab_1.conda
-      - conda: https://repo.prefix.dev/conda-forge/noarch/anyio-4.7.0-pyhd8ed1ab_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/noarch/anyio-4.8.0-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/attrs-24.3.0-pyh71513ae_0.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/aws-c-auth-0.8.0-hb921021_15.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/aws-c-cal-0.8.1-h1a47875_3.conda
@@ -39,7 +39,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/linux-64/ca-certificates-2024.12.14-hbcca054_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/certifi-2024.12.14-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/cffi-1.17.1-py312h06ac9bb_0.conda
-      - conda: https://repo.prefix.dev/conda-forge/noarch/charset-normalizer-3.4.0-pyhd8ed1ab_1.conda
+      - conda: https://repo.prefix.dev/conda-forge/noarch/charset-normalizer-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/click-8.1.8-pyh707e725_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/datasets-2.14.4-pyhd8ed1ab_0.conda
@@ -76,7 +76,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/linux-64/lcms2-2.16-hb7c19ff_0.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/ld_impl_linux-64-2.43-h712a8e2_2.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/lerc-4.0.0-h27087fc_0.tar.bz2
-      - conda: https://repo.prefix.dev/conda-forge/linux-64/libabseil-20240722.0-cxx17_hbbce691_2.conda
+      - conda: https://repo.prefix.dev/conda-forge/linux-64/libabseil-20240722.0-cxx17_hbbce691_4.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/libarrow-18.1.0-hd595efa_7_cpu.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/libarrow-acero-18.1.0-hcb10f89_7_cpu.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/libarrow-dataset-18.1.0-hcb10f89_7_cpu.conda
@@ -143,7 +143,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/linux-64/ncurses-6.5-he02047a_1.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/numpy-1.26.4-py312heda63a1_0.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/openjpeg-2.5.3-h5fbd93e_0.conda
-      - conda: https://repo.prefix.dev/conda-forge/linux-64/openssl-3.4.0-hb9d3cd8_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/linux-64/openssl-3.4.0-h7b32b05_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/opentelemetry-api-1.29.0-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/opentelemetry-exporter-otlp-proto-common-1.29.0-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/opentelemetry-exporter-otlp-proto-http-1.29.0-pyhd8ed1ab_1.conda
@@ -155,7 +155,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/noarch/packaging-24.2-pyhd8ed1ab_2.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/pandas-2.2.3-py312hf9745cd_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/pathspec-0.12.1-pyhd8ed1ab_1.conda
-      - conda: https://repo.prefix.dev/conda-forge/linux-64/pillow-11.0.0-py312h7b63e92_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/linux-64/pillow-11.1.0-py312h80c1187_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/platformdirs-4.3.6-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/prometheus_client-0.21.1-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/propcache-0.2.1-py312h66e93f0_0.conda
@@ -188,7 +188,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/noarch/rich-13.9.4-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/rich-toolkit-0.11.3-pyh29332c3_0.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/s2n-1.5.10-hb5b8611_0.conda
-      - conda: https://repo.prefix.dev/conda-forge/linux-64/safetensors-0.4.5-py312h12e396e_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/linux-64/safetensors-0.5.0-py312h12e396e_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/shellingham-1.5.4-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/linux-64/snappy-1.2.1-h8bd8927_1.conda
@@ -228,7 +228,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/aiohttp-3.11.11-py312h998013c_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/aiosignal-1.3.2-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/annotated-types-0.7.0-pyhd8ed1ab_1.conda
-      - conda: https://repo.prefix.dev/conda-forge/noarch/anyio-4.7.0-pyhd8ed1ab_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/noarch/anyio-4.8.0-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/attrs-24.3.0-pyh71513ae_0.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/aws-c-auth-0.8.0-h8bc59a9_15.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/aws-c-cal-0.8.1-hc8a0bd2_3.conda
@@ -255,7 +255,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/ca-certificates-2024.12.14-hf0a4a13_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/certifi-2024.12.14-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/cffi-1.17.1-py312h0fad829_0.conda
-      - conda: https://repo.prefix.dev/conda-forge/noarch/charset-normalizer-3.4.0-pyhd8ed1ab_1.conda
+      - conda: https://repo.prefix.dev/conda-forge/noarch/charset-normalizer-3.4.1-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/click-8.1.8-pyh707e725_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/datasets-2.14.4-pyhd8ed1ab_0.conda
@@ -291,7 +291,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/krb5-1.21.3-h237132a_0.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/lcms2-2.16-ha0e7c42_0.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/lerc-4.0.0-h9a09cb3_0.tar.bz2
-      - conda: https://repo.prefix.dev/conda-forge/osx-arm64/libabseil-20240722.0-cxx17_h07bc746_2.conda
+      - conda: https://repo.prefix.dev/conda-forge/osx-arm64/libabseil-20240722.0-cxx17_h07bc746_4.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/libarrow-18.1.0-h0ad35bc_7_cpu.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/libarrow-acero-18.1.0-hf07054f_7_cpu.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/libarrow-dataset-18.1.0-hf07054f_7_cpu.conda
@@ -352,7 +352,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/ncurses-6.5-h7bae524_1.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/numpy-1.26.4-py312h8442bc7_0.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/openjpeg-2.5.3-h8a3d83b_0.conda
-      - conda: https://repo.prefix.dev/conda-forge/osx-arm64/openssl-3.4.0-h39f12f2_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/osx-arm64/openssl-3.4.0-h81ee809_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/opentelemetry-api-1.29.0-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/opentelemetry-exporter-otlp-proto-common-1.29.0-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/opentelemetry-exporter-otlp-proto-http-1.29.0-pyhd8ed1ab_1.conda
@@ -364,7 +364,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/noarch/packaging-24.2-pyhd8ed1ab_2.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/pandas-2.2.3-py312hcd31e36_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/pathspec-0.12.1-pyhd8ed1ab_1.conda
-      - conda: https://repo.prefix.dev/conda-forge/osx-arm64/pillow-11.0.0-py312haf37ca6_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/osx-arm64/pillow-11.1.0-py312h50aef2c_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/platformdirs-4.3.6-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/prometheus_client-0.21.1-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/propcache-0.2.1-py312hea69d52_0.conda
@@ -396,7 +396,7 @@ environments:
       - conda: https://repo.prefix.dev/conda-forge/noarch/requests-2.32.3-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/rich-13.9.4-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/rich-toolkit-0.11.3-pyh29332c3_0.conda
-      - conda: https://repo.prefix.dev/conda-forge/osx-arm64/safetensors-0.4.5-py312he431725_0.conda
+      - conda: https://repo.prefix.dev/conda-forge/osx-arm64/safetensors-0.5.0-py312hcd83bfe_0.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/shellingham-1.5.4-pyhd8ed1ab_1.conda
       - conda: https://repo.prefix.dev/conda-forge/noarch/six-1.17.0-pyhd8ed1ab_0.conda
       - conda: https://repo.prefix.dev/conda-forge/osx-arm64/snappy-1.2.1-h98b9ce2_1.conda
@@ -568,13 +568,13 @@ packages:
   timestamp: 1733247158254
 - kind: conda
   name: anyio
-  version: 4.7.0
+  version: 4.8.0
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://repo.prefix.dev/conda-forge/noarch/anyio-4.7.0-pyhd8ed1ab_0.conda
-  sha256: 687537ee3af30f8784986bf40cac30e88138770b16e51ca9850c9c23c09aeba1
-  md5: c88107912954a983c2caf25f7fd55158
+  url: https://repo.prefix.dev/conda-forge/noarch/anyio-4.8.0-pyhd8ed1ab_0.conda
+  sha256: f1455d2953e3eb6d71bc49881c8558d8e01888469dfd21061dd48afb6183e836
+  md5: 848d25bfbadf020ee4d4ba90e5668252
   depends:
   - exceptiongroup >=1.0.2
   - idna >=2.8
@@ -586,8 +586,8 @@ packages:
   - uvloop >=0.21
   license: MIT
   license_family: MIT
-  size: 112730
-  timestamp: 1733532678437
+  size: 115305
+  timestamp: 1736174485476
 - kind: conda
   name: attrs
   version: 24.3.0
@@ -1569,20 +1569,19 @@ packages:
   timestamp: 1725560813378
 - kind: conda
   name: charset-normalizer
-  version: 3.4.0
-  build: pyhd8ed1ab_1
-  build_number: 1
+  version: 3.4.1
+  build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://repo.prefix.dev/conda-forge/noarch/charset-normalizer-3.4.0-pyhd8ed1ab_1.conda
-  sha256: 63022ee2c6a157a9f980250a66f54bdcdf5abee817348d0f9a74c2441a6fbf0e
-  md5: 6581a17bba6b948bb60130026404a9d6
+  url: https://repo.prefix.dev/conda-forge/noarch/charset-normalizer-3.4.1-pyhd8ed1ab_0.conda
+  sha256: 4e0ee91b97e5de3e74567bdacea27f0139709fceca4db8adffbe24deffccb09b
+  md5: e83a31202d1c0a000fce3e9cf3825875
   depends:
   - python >=3.9
   license: MIT
   license_family: MIT
-  size: 47533
-  timestamp: 1733218182393
+  size: 47438
+  timestamp: 1735929811779
 - kind: conda
   name: click
   version: 8.1.8
@@ -2404,46 +2403,46 @@ packages:
 - kind: conda
   name: libabseil
   version: '20240722.0'
-  build: cxx17_h07bc746_2
-  build_number: 2
+  build: cxx17_h07bc746_4
+  build_number: 4
   subdir: osx-arm64
-  url: https://repo.prefix.dev/conda-forge/osx-arm64/libabseil-20240722.0-cxx17_h07bc746_2.conda
-  sha256: 12b85cd25bd82bb2255f329b37f974b3035a109d6345b6fb762b633c845014f9
-  md5: d97db28b64404efd1413d5c52f79cdae
+  url: https://repo.prefix.dev/conda-forge/osx-arm64/libabseil-20240722.0-cxx17_h07bc746_4.conda
+  sha256: 05fa5e5e908962b9c5aba95f962e2ca81d9599c4715aebe5e4ddb72b309d1770
+  md5: c2d95bd7aa8d564a9bd7eca5e571a5b3
   depends:
   - __osx >=11.0
   - libcxx >=18
   constrains:
-  - abseil-cpp =20240722.0
   - libabseil-static =20240722.0=cxx17*
+  - abseil-cpp =20240722.0
   arch: arm64
   platform: osx
   license: Apache-2.0
   license_family: Apache
-  size: 1173485
-  timestamp: 1735454097554
+  size: 1178260
+  timestamp: 1736008642885
 - kind: conda
   name: libabseil
   version: '20240722.0'
-  build: cxx17_hbbce691_2
-  build_number: 2
+  build: cxx17_hbbce691_4
+  build_number: 4
   subdir: linux-64
-  url: https://repo.prefix.dev/conda-forge/linux-64/libabseil-20240722.0-cxx17_hbbce691_2.conda
-  sha256: 7003c0df066df8a48586a44c35684ff52dead2b6c0812bb22243a0680a5f37a8
-  md5: 48099a5f37e331f5570abbf22b229961
+  url: https://repo.prefix.dev/conda-forge/linux-64/libabseil-20240722.0-cxx17_hbbce691_4.conda
+  sha256: 143a586aa67d50622ef703de57b9d43f44945836d6568e0e7aa174bd8c45e0d4
+  md5: 488f260ccda0afaf08acb286db439c2f
   depends:
   - __glibc >=2.17,<3.0.a0
   - libgcc >=13
   - libstdcxx >=13
   constrains:
-  - abseil-cpp =20240722.0
   - libabseil-static =20240722.0=cxx17*
+  - abseil-cpp =20240722.0
   arch: x86_64
   platform: linux
   license: Apache-2.0
   license_family: Apache
-  size: 1309370
-  timestamp: 1735453911208
+  size: 1311599
+  timestamp: 1736008414161
 - kind: conda
   name: libarrow
   version: 18.1.0
@@ -2485,6 +2484,7 @@ packages:
   arch: arm64
   platform: osx
   license: Apache-2.0
+  license_family: APACHE
   size: 5506699
   timestamp: 1735682962976
 - kind: conda
@@ -2530,6 +2530,7 @@ packages:
   arch: x86_64
   platform: linux
   license: Apache-2.0
+  license_family: APACHE
   size: 8770256
   timestamp: 1735684696564
 - kind: conda
@@ -2549,6 +2550,7 @@ packages:
   arch: x86_64
   platform: linux
   license: Apache-2.0
+  license_family: APACHE
   size: 612463
   timestamp: 1735684749868
 - kind: conda
@@ -2567,6 +2569,7 @@ packages:
   arch: arm64
   platform: osx
   license: Apache-2.0
+  license_family: APACHE
   size: 485185
   timestamp: 1735683071232
 - kind: conda
@@ -2588,6 +2591,7 @@ packages:
   arch: x86_64
   platform: linux
   license: Apache-2.0
+  license_family: APACHE
   size: 587497
   timestamp: 1735684880531
 - kind: conda
@@ -2608,6 +2612,7 @@ packages:
   arch: arm64
   platform: osx
   license: Apache-2.0
+  license_family: APACHE
   size: 491237
   timestamp: 1735684688308
 - kind: conda
@@ -2632,6 +2637,7 @@ packages:
   arch: x86_64
   platform: linux
   license: Apache-2.0
+  license_family: APACHE
   size: 521861
   timestamp: 1735684940668
 - kind: conda
@@ -2655,6 +2661,7 @@ packages:
   arch: arm64
   platform: osx
   license: Apache-2.0
+  license_family: APACHE
   size: 452385
   timestamp: 1735684993831
 - kind: conda
@@ -3704,6 +3711,7 @@ packages:
   arch: x86_64
   platform: linux
   license: Apache-2.0
+  license_family: APACHE
   size: 1205598
   timestamp: 1735684849150
 - kind: conda
@@ -3724,6 +3732,7 @@ packages:
   arch: arm64
   platform: osx
   license: Apache-2.0
+  license_family: APACHE
   size: 873251
   timestamp: 1735684582558
 - kind: conda
@@ -4834,28 +4843,12 @@ packages:
 - kind: conda
   name: openssl
   version: 3.4.0
-  build: h39f12f2_0
-  subdir: osx-arm64
-  url: https://repo.prefix.dev/conda-forge/osx-arm64/openssl-3.4.0-h39f12f2_0.conda
-  sha256: bd1d58ced46e75efa3b842c61642fd12272c69e9fe4d7261078bc082153a1d53
-  md5: df307bbc703324722df0293c9ca2e418
-  depends:
-  - __osx >=11.0
-  - ca-certificates
-  arch: arm64
-  platform: osx
-  license: Apache-2.0
-  license_family: Apache
-  size: 2935176
-  timestamp: 1731377561525
-- kind: conda
-  name: openssl
-  version: 3.4.0
-  build: hb9d3cd8_0
+  build: h7b32b05_1
+  build_number: 1
   subdir: linux-64
-  url: https://repo.prefix.dev/conda-forge/linux-64/openssl-3.4.0-hb9d3cd8_0.conda
-  sha256: 814b9dff1847b132c676ee6cc1a8cb2d427320779b93e1b6d76552275c128705
-  md5: 23cc74f77eb99315c0360ec3533147a9
+  url: https://repo.prefix.dev/conda-forge/linux-64/openssl-3.4.0-h7b32b05_1.conda
+  sha256: f62f6bca4a33ca5109b6d571b052a394d836956d21b25b7ffd03376abf7a481f
+  md5: 4ce6875f75469b2757a65e10a5d05e31
   depends:
   - __glibc >=2.17,<3.0.a0
   - ca-certificates
@@ -4864,8 +4857,26 @@ packages:
   platform: linux
   license: Apache-2.0
   license_family: Apache
-  size: 2947466
-  timestamp: 1731377666602
+  size: 2937158
+  timestamp: 1736086387286
+- kind: conda
+  name: openssl
+  version: 3.4.0
+  build: h81ee809_1
+  build_number: 1
+  subdir: osx-arm64
+  url: https://repo.prefix.dev/conda-forge/osx-arm64/openssl-3.4.0-h81ee809_1.conda
+  sha256: 97772762abc70b3a537683ca9fc3ff3d6099eb64e4aba3b9c99e6fce48422d21
+  md5: 22f971393637480bda8c679f374d8861
+  depends:
+  - __osx >=11.0
+  - ca-certificates
+  arch: arm64
+  platform: osx
+  license: Apache-2.0
+  license_family: Apache
+  size: 2936415
+  timestamp: 1736086108693
 - kind: conda
   name: opentelemetry-api
   version: 1.29.0
@@ -5129,49 +5140,22 @@ packages:
   timestamp: 1733233471940
 - kind: conda
   name: pillow
-  version: 11.0.0
-  build: py312h7b63e92_0
-  subdir: linux-64
-  url: https://repo.prefix.dev/conda-forge/linux-64/pillow-11.0.0-py312h7b63e92_0.conda
-  sha256: 13a464bea02c0df0199c20ef6bad24a6bc336aaf55bf8d6a133d0fe664463224
-  md5: 385f46a4df6f97892503a841121a9acf
-  depends:
-  - __glibc >=2.17,<3.0.a0
-  - freetype >=2.12.1,<3.0a0
-  - lcms2 >=2.16,<3.0a0
-  - libgcc >=13
-  - libjpeg-turbo >=3.0.0,<4.0a0
-  - libtiff >=4.7.0,<4.8.0a0
-  - libwebp-base >=1.4.0,<2.0a0
-  - libxcb >=1.17.0,<2.0a0
-  - libzlib >=1.3.1,<2.0a0
-  - openjpeg >=2.5.2,<3.0a0
-  - python >=3.12,<3.13.0a0
-  - python_abi 3.12.* *_cp312
-  - tk >=8.6.13,<8.7.0a0
-  arch: x86_64
-  platform: linux
-  license: HPND
-  size: 41948418
-  timestamp: 1729065846594
-- kind: conda
-  name: pillow
-  version: 11.0.0
-  build: py312haf37ca6_0
+  version: 11.1.0
+  build: py312h50aef2c_0
   subdir: osx-arm64
-  url: https://repo.prefix.dev/conda-forge/osx-arm64/pillow-11.0.0-py312haf37ca6_0.conda
-  sha256: 727b4c3faecdb6f6809cf20c5f32d2df4af34e0d5b9146b7588383bcba7990e8
-  md5: dc9b51fbd2b6f7fea9b5123458864dbb
+  url: https://repo.prefix.dev/conda-forge/osx-arm64/pillow-11.1.0-py312h50aef2c_0.conda
+  sha256: b29b7c915053e06a7a5b4118760202c572c9c35d23bd6ce8e73270b6a50e50ee
+  md5: 94d6ba8cd468668a9fb04193b0f4b36e
   depends:
   - __osx >=11.0
   - freetype >=2.12.1,<3.0a0
   - lcms2 >=2.16,<3.0a0
   - libjpeg-turbo >=3.0.0,<4.0a0
   - libtiff >=4.7.0,<4.8.0a0
-  - libwebp-base >=1.4.0,<2.0a0
+  - libwebp-base >=1.5.0,<2.0a0
   - libxcb >=1.17.0,<2.0a0
   - libzlib >=1.3.1,<2.0a0
-  - openjpeg >=2.5.2,<3.0a0
+  - openjpeg >=2.5.3,<3.0a0
   - python >=3.12,<3.13.0a0
   - python >=3.12,<3.13.0a0 *_cpython
   - python_abi 3.12.* *_cp312
@@ -5179,8 +5163,35 @@ packages:
   arch: arm64
   platform: osx
   license: HPND
-  size: 41737424
-  timestamp: 1729065920347
+  size: 42852329
+  timestamp: 1735930118976
+- kind: conda
+  name: pillow
+  version: 11.1.0
+  build: py312h80c1187_0
+  subdir: linux-64
+  url: https://repo.prefix.dev/conda-forge/linux-64/pillow-11.1.0-py312h80c1187_0.conda
+  sha256: 5c347962202b55ae4d8a463e0555c5c6ca33396266a08284bf1384399894e541
+  md5: d3894405f05b2c0f351d5de3ae26fa9c
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - freetype >=2.12.1,<3.0a0
+  - lcms2 >=2.16,<3.0a0
+  - libgcc >=13
+  - libjpeg-turbo >=3.0.0,<4.0a0
+  - libtiff >=4.7.0,<4.8.0a0
+  - libwebp-base >=1.5.0,<2.0a0
+  - libxcb >=1.17.0,<2.0a0
+  - libzlib >=1.3.1,<2.0a0
+  - openjpeg >=2.5.3,<3.0a0
+  - python >=3.12,<3.13.0a0
+  - python_abi 3.12.* *_cp312
+  - tk >=8.6.13,<8.7.0a0
+  arch: x86_64
+  platform: linux
+  license: HPND
+  size: 42749785
+  timestamp: 1735929845390
 - kind: conda
   name: platformdirs
   version: 4.3.6
@@ -6099,12 +6110,12 @@ packages:
   timestamp: 1734415467047
 - kind: conda
   name: safetensors
-  version: 0.4.5
+  version: 0.5.0
   build: py312h12e396e_0
   subdir: linux-64
-  url: https://repo.prefix.dev/conda-forge/linux-64/safetensors-0.4.5-py312h12e396e_0.conda
-  sha256: e44515f875c10efb5e041efcb250dfd18f2cb66ec3f268237549ead6284c6922
-  md5: 3b87a00bcaab069172d6cef8124b7142
+  url: https://repo.prefix.dev/conda-forge/linux-64/safetensors-0.5.0-py312h12e396e_0.conda
+  sha256: f9d0a4fbfbd2bcded116b81afd69d00aa5d5bac0d431dd47737cec1b1d24c2e2
+  md5: 4b33e7c3e9bbc3936e08150fc9e17708
   depends:
   - __glibc >=2.17,<3.0.a0
   - libgcc >=13
@@ -6116,16 +6127,16 @@ packages:
   platform: linux
   license: Apache-2.0
   license_family: APACHE
-  size: 402547
-  timestamp: 1725632183154
+  size: 424699
+  timestamp: 1735917812729
 - kind: conda
   name: safetensors
-  version: 0.4.5
-  build: py312he431725_0
+  version: 0.5.0
+  build: py312hcd83bfe_0
   subdir: osx-arm64
-  url: https://repo.prefix.dev/conda-forge/osx-arm64/safetensors-0.4.5-py312he431725_0.conda
-  sha256: 93a085d0d64237db7f4ff395c446f268c575dc2c324d8e3e5c5d7d836896295e
-  md5: ccb978cf1e3151c25a44c4ae65c1f20e
+  url: https://repo.prefix.dev/conda-forge/osx-arm64/safetensors-0.5.0-py312hcd83bfe_0.conda
+  sha256: 8992f78362793a465c3009be2fd80582c93e2151bc17d07ebd39ce7af757358a
+  md5: acbbbac2271653f4914cef842a84190f
   depends:
   - __osx >=11.0
   - python >=3.12,<3.13.0a0
@@ -6137,8 +6148,8 @@ packages:
   platform: osx
   license: Apache-2.0
   license_family: APACHE
-  size: 353606
-  timestamp: 1725632294079
+  size: 377533
+  timestamp: 1735918206452
 - kind: conda
   name: shellingham
   version: 1.5.4
