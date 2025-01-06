@@ -4,5 +4,6 @@ use aoc2024::days;
 fn main() {
     aoc2024::Solver::from("../inputs/2024")
         .add::<days::day01::Solution>()
+        .add::<days::day02::Solution>()
         .compute()
 }
