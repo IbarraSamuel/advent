@@ -13,15 +13,19 @@ pub fn main() {
 
 pub fn day1_test() {
   day01.solution
-  |> test_solution("../tests/day1_1.txt", option.Some(142), option.None)
+  |> test_solution("../tests/2023/day1_1.txt", option.Some(142), option.None)
 
   day01.solution
-  |> test_solution("../tests/day1_2.txt", option.None, option.Some(281))
+  |> test_solution("../tests/2023/day1_2.txt", option.None, option.Some(281))
 }
 
 pub fn day2_test() {
   day02.solution
-  |> test_solution("../tests/day2_1.txt", option.Some(8), option.Some(2286))
+  |> test_solution(
+    "../tests/2023/day2_1.txt",
+    option.Some(8),
+    option.Some(2286),
+  )
 }
 
 fn test_solution(
