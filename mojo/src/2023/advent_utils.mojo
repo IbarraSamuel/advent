@@ -174,7 +174,7 @@ fn run[S: ListSolution, path: StringLiteral]() raises:
         r2 = S.part_2(input)
 
     t2 = time_function[func=part_2]() // 10e3
-    print("\tPart 2:", r2, "in", t2, "us.", end="\n")
+    print("\tPart 2:", r2, "in", t2, "us.", end="\n\n")
 
 
 fn run[S: StringSolution, path: StringLiteral]() raises:
@@ -197,7 +197,7 @@ fn run[S: StringSolution, path: StringLiteral]() raises:
         r2 = S.part_2(input)
 
     t2 = time_function[func=part_2]() // 10e3
-    print("\tPart 2:", r2, "in", t2, "us.", end="\n")
+    print("\tPart 2:", r2, "in", t2, "us.", end="\n\n")
 
 
 fn run[S: TensorSolution, path: StringLiteral]() raises:
@@ -220,7 +220,7 @@ fn run[S: TensorSolution, path: StringLiteral]() raises:
         r2 = S.part_2(input)
 
     t2 = time_function[func=part_2]() // 10e3
-    print("\tPart 2:", r2, "in", t2, "us.", end="\n")
+    print("\tPart 2:", r2, "in", t2, "us.", end="\n\n")
 
 
 fn test_solution[
