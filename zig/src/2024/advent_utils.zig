@@ -1,47 +1,52 @@
 const std = @import("std");
 
-const Solution = struct {
-    part1: fn ([]u8) anyerror!i32,
-    part2: fn ([]u8) anyerror!i32,
+pub const Solution = struct {
+    part1: *const fn ([]u8) anyerror!i32,
+    part2: *const fn ([]u8) anyerror!i32,
 };
 
 const Solver = struct {
     path: []const u8,
-    solutions: [25]Solution,
+    solutions: [25]?Solution,
+    idx: usize = 0,
 
-    fn add(solver: *Solver, sol: Solution) *Solver {
-        const len = solver.solutions.len;
-        solver.solutions[len] = sol;
-        return solver;
+    pub fn add(solver: *const Solver, sol: Solution) Solver {
+        var s = solver.*;
+        s.solutions[solver.idx] = sol;
+        s.idx += 1;
+        return s;
     }
 
-    fn run(solver: *Solver) anyerror!void {
+    pub fn run(solver: Solver) anyerror!void {
         const writer = std.io.getStdOut().writer();
-        const gp_alloc = std.heap.GeneralPurposeAllocator(.{}){};
-        defer gp_alloc.deinit();
+        var gp_alloc = std.heap.GeneralPurposeAllocator(.{}){};
         const gpa = gp_alloc.allocator();
 
-        for (solver.solutions, 0..) |sol, i| {
-            var day = [2]u8{};
-            if (i < 10) {
-                day[0] = "0";
-                try std.fmt.formatInt(i, i, .{}, .{}, day);
-            } else {
-                try std.fmt.formatInt(i, i, .{}, .{}, day);
+        for (0..25) |i| {
+            if (solver.solutions[i] == null) {
+                continue;
             }
+            const sol = solver.solutions[i].?;
+            var buf: [2]u8 = undefined;
+            var day: []u8 = undefined;
 
-            const path = try std.fmt.allocPrint(gpa, "{s}/day{s}.txt", .{ solver.path, day });
+            if (i < 10) {
+                day = try std.fmt.bufPrint(&buf, "0{d}", .{i + 1});
+            } else {
+                day = try std.fmt.bufPrint(&buf, "{d}", .{i + 1});
+            }
+            const path = try std.fmt.allocPrint(gpa, "{s}day{s}.txt", .{ solver.path, day });
             const data = try getInput(path);
-            writer.print("Day {s} =>\n", .{day});
+            try writer.print("Day {s} =>\n", .{day});
             const res1 = try sol.part1(data);
-            writer.print("\tPart 1: {d}\n", .{res1});
+            try writer.print("\tPart 1: {d}\n", .{res1});
             const res2 = try sol.part2(data);
-            writer.print("\tPart 2: {d}\n\n", .{res2});
+            try writer.print("\tPart 2: {d}\n\n", .{res2});
         }
     }
 };
 
-fn getInput(comptime path: []const u8) ![]u8 {
+fn getInput(path: []const u8) ![]u8 {
     const file = try std.fs.cwd().openFile(path, .{});
     defer file.close();
 
@@ -53,6 +58,6 @@ fn getInput(comptime path: []const u8) ![]u8 {
     return try std.fs.cwd().readFileAlloc(gpa, path, file_size);
 }
 
-pub fn Runner(comptime path: []const u8) type {
-    return Solver{ .path = path };
+pub fn Runner(comptime path: []const u8) Solver {
+    return Solver{ .path = path, .solutions = [_](?Solution){null} ** 25 };
 }
