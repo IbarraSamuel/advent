@@ -7,7 +7,7 @@ from math import log2
 
 fn to_int(v: String) -> Int:
     try:
-        return int(v)
+        return Int(v)
     except:
         return 0
 
@@ -52,7 +52,7 @@ struct Solution:
                 f[i] = to_int(nums[i])
 
             pos, neg = calc_simd(f)
-            results[idx] = int(all(pos) or all(neg))
+            results[idx] = Int(all(pos) or all(neg))
 
         parallelize[calc_line](len(lines))
 
@@ -85,8 +85,8 @@ struct Solution:
                 results[idx] = 1
                 return
 
-            s_pos = int(log2(float(prev_power_of_two(pack_bits(~pos)))))
-            s_neg = int(log2(float(prev_power_of_two(pack_bits(~neg)))))
+            s_pos = Int(log2(float(prev_power_of_two(pack_bits(~pos)))))
+            s_neg = Int(log2(float(prev_power_of_two(pack_bits(~neg)))))
 
             # TODO: Make it nicer, now it's kind of good but brute forced on two options.
 

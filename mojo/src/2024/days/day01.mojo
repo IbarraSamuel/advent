@@ -24,8 +24,8 @@ struct Solution:
         try:
             for line in lines:
                 ns = line[].split()
-                l1.append(int(ns[0]))
-                l2.append(int(ns[1]))
+                l1.append(Int(ns[0]))
+                l2.append(Int(ns[1]))
             sort(l1)
             sort(l2)
 
@@ -55,7 +55,7 @@ struct Solution:
         for line in lines:
             k = line[].split()[0]
             try:
-                tot += int(k) * c.get(k, 0)
+                tot += Int(k) * c.get(k, 0)
             except:
                 pass
         return tot

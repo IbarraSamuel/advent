@@ -23,7 +23,7 @@ struct Solution:
             if pc == -1:
                 break
             try:
-                n1 = int(data[pi:pc])
+                n1 = Int(data[pi:pc])
             except:
                 pos = pi + 1
                 continue
@@ -33,7 +33,7 @@ struct Solution:
                 break
 
             try:
-                n2 = int(data[pc + 1 : pf])
+                n2 = Int(data[pc + 1 : pf])
             except:
                 pos = pc + 1
                 continue
@@ -75,7 +75,7 @@ struct Solution:
             if pc == -1:
                 break
             try:
-                n1 = int(data[pi:pc])
+                n1 = Int(data[pi:pc])
             except:
                 pos = pi + 1
                 continue
@@ -85,7 +85,7 @@ struct Solution:
                 break
 
             try:
-                n2 = int(data[pc + 1 : pf])
+                n2 = Int(data[pc + 1 : pf])
             except:
                 pos = pc + 1
                 continue
