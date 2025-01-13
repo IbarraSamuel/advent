@@ -126,23 +126,3 @@ struct Solution:
 
         parallelize[calc_line](len(lines))
         return results.reduce_add()
-
-
-# fn is_invalid(asc: Bool, pair: (Int, Int)) -> Bool:
-#     f, l = pair
-#     return (asc != (f < l)) or abs(f - l) > 3 or f == l
-
-
-# fn should_retry_first(asc: Bool, i: Int, nums: List[String]) raises -> Bool:
-#     print(
-#         "nums",
-#         nums[i],
-#         nums[i + 1],
-#         "failed but trying now to compare with",
-#         nums[i + 2],
-#         "in order asc:",
-#         asc,
-#     )
-#     f, n = int(nums[i]), int(nums[i + 2])
-#     ignore_middle = f, n
-#     return not is_invalid(asc, ignore_middle)

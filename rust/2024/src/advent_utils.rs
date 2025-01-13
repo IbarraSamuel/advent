@@ -1,9 +1,9 @@
 use std::path::Path;
-type DaySolution = (fn(&str) -> u32, fn(&str) -> u32);
+type DaySolution = (fn(&str) -> usize, fn(&str) -> usize);
 
 pub trait Solution {
-    fn part_1(data: &str) -> u32;
-    fn part_2(data: &str) -> u32;
+    fn part_1(data: &str) -> usize;
+    fn part_2(data: &str) -> usize;
 }
 
 pub struct Solver {
@@ -39,8 +39,8 @@ impl Solver {
 pub fn run(
     path: std::path::PathBuf,
     day: String,
-    part_1: fn(&str) -> u32,
-    part_2: fn(&str) -> u32,
+    part_1: fn(&str) -> usize,
+    part_2: fn(&str) -> usize,
 ) {
     if !path.exists() {
         return;
