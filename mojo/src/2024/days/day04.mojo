@@ -71,15 +71,15 @@ struct Solution:
             while y >= 3 and x < xmax - 3:
                 if (
                         lines[y][x] == "X"
-                        and lines[y- 1][x+1] == "M"
-                        and lines[y- 2][x+2] == "A"
-                        and lines[y- 3][x+3] == "S"
+                        and lines[y-1][x+1] == "M"
+                        and lines[y-2][x+2] == "A"
+                        and lines[y-3][x+3] == "S"
                     )
                     or (
                         lines[y][x] == "S"
-                        and lines[y- 1][x+1] == "A"
-                        and lines[y- 2][x+2] == "M"
-                        and lines[y- 3][x+3] == "X"
+                        and lines[y-1][x+1] == "A"
+                        and lines[y-2][x+2] == "M"
+                        and lines[y-3][x+3] == "X"
                     ):
                     # print("Found at (", x, ",", y, ") with direction 45", "D" if lines[y][x] == "S" else "U", sep="")
                     tot += 1
@@ -94,15 +94,15 @@ struct Solution:
             while x >= 3 and y < ymax - 3:
                 if (
                         lines[y][x] == "X"
-                        and lines[y+ 1][x-1] == "M"
-                        and lines[y+ 2][x-2] == "A"
-                        and lines[y+ 3][x-3] == "S"
+                        and lines[y+1][x-1] == "M"
+                        and lines[y+2][x-2] == "A"
+                        and lines[y+3][x-3] == "S"
                     )
                     or (
                         lines[y][x] == "S"
-                        and lines[y+ 1][x-1] == "A"
-                        and lines[y+ 2][x-2] == "M"
-                        and lines[y+ 3][x-3] == "X"
+                        and lines[y+1][x-1] == "A"
+                        and lines[y+2][x-2] == "M"
+                        and lines[y+3][x-3] == "X"
                     ):
                     # print("Found at (", x, ",", y, ") with direction 135", "D" if lines[y][x] == "S" else "U", sep="")
                     tot += 1

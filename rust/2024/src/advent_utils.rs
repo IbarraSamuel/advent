@@ -29,17 +29,23 @@ impl Solver {
 
     pub fn compute(self) {
         for (n, (part_1, part_2)) in self.solutions.into_iter().enumerate() {
-            let fname = format!("day{:02}.txt", n + 1);
+            let day = format!("{:02}", n + 1);
+            let fname = format!("day{day}.txt");
             let path = self.path.join(fname);
-            run(path, part_1, part_2);
+            run(path, day, part_1, part_2);
         }
     }
 }
-pub fn run(path: std::path::PathBuf, part_1: fn(&str) -> u32, part_2: fn(&str) -> u32) {
+pub fn run(
+    path: std::path::PathBuf,
+    day: String,
+    part_1: fn(&str) -> u32,
+    part_2: fn(&str) -> u32,
+) {
     if !path.exists() {
         return;
     }
-    println!("From {:?} =>", path);
+    println!("Day {day} =>");
     let data = std::fs::read_to_string(path).expect("Error while reading the file. Aborting.");
     let data = data.trim();
 
@@ -47,5 +53,5 @@ pub fn run(path: std::path::PathBuf, part_1: fn(&str) -> u32, part_2: fn(&str) -
     println!("\tPart 1: {result_1}");
 
     let result_2 = part_2(data);
-    println!("\tPart 2: {result_2}");
+    println!("\tPart 2: {result_2}\n");
 }
