@@ -1,7 +1,8 @@
 import gleam/int
 import gleam/io
 
-// import gleam/list
+import gleam/list
+
 // import gleam/result
 // import gleam/string
 import simplifile.{read}
@@ -19,13 +20,13 @@ pub fn runner(path: String) -> Solver {
 }
 
 pub fn add(solver: Solver, solution: Solution) -> Solver {
-  Solver(solver.idx + 1, [solution, ..solver.solutions], solver.path)
+  Solver(solver.idx, [solution, ..solver.solutions], solver.path)
 }
 
 pub fn run(solver: Solver) {
-  case solver.solutions {
+  case solver.solutions |> list.reverse {
     [first, ..rest] -> {
-      let day = case solver.idx {
+      let day = case solver.idx + 1 {
         i if i < 10 -> "0" <> int.to_string(i)
         i -> int.to_string(i)
       }
@@ -37,7 +38,7 @@ pub fn run(solver: Solver) {
       { "\tPart 1: " <> int.to_string(r1) } |> io.println
       let r2 = first.part_2(data)
       { "\tPart 2: " <> int.to_string(r2) } |> io.println
-      run(Solver(solver.idx - 1, rest, solver.path))
+      run(Solver(solver.idx + 1, rest |> list.reverse, solver.path))
     }
     _ -> Nil
   }
