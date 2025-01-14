@@ -2,11 +2,7 @@ use crate::advent_utils::Solution as AdventSolution;
 
 pub struct Solution;
 
-fn check_correctness(nums: &[i32]) -> bool {
-    let diffs = nums.windows(2).map(|v| v[1] - v[0]).collect::<Vec<_>>();
-    diffs.iter().all(|d| (1..3).contains(&d.abs()))
-        && (diffs.iter().all(|d| d.signum() == -1) || diffs.iter().all(|d| d.signum() == 1))
-}
+type Validator = fn(&Vec<i32>, fn(&Vec<i32>) -> Vec<i32>) -> bool;
 
 impl AdventSolution for Solution {
     /// ```
@@ -59,60 +55,44 @@ impl AdventSolution for Solution {
     fn part_2(data: &str) -> usize {
         data.lines()
             .filter(|l| {
-                let nums = l
+                let diff: fn(&Vec<i32>) -> Vec<i32> =
+                    |lst| lst.windows(2).map(|sl| sl[0] - sl[1]).collect();
+                let validate: Validator = |lst, diff| {
+                    let df = diff(lst);
+                    df.iter().all(|&v| (1..=3).contains(&v.abs()))
+                        && (df.iter().all(|v| v.is_positive())
+                            || df.iter().all(|v| v.is_negative()))
+                };
+
+                let mut nums: Vec<i32> = l
                     .split_ascii_whitespace()
-                    .filter_map(|v| v.parse::<i32>().ok())
-                    .collect::<Vec<_>>();
-                let diffs = nums.windows(2).map(|v| v[1] - v[0]).collect::<Vec<_>>();
-                if check_correctness(&nums) {
+                    .filter_map(|s| s.parse().ok())
+                    .collect();
+
+                if validate(&nums, diff) {
                     return true;
                 }
-                // Then here drop the bad one and try again.
-                // Start with magnitude since it's more precise.
-                // 1. Find the number.
-                // 2. Change both the prev and the next.
-                // 3. If nothing found, go with the next rule.
-                if let Some(bad) = diffs.iter().find(|v| !(1..3).contains(*v)) {
-                    let first = nums
-                        .iter()
-                        .enumerate()
-                        .filter(|(idx, _)| (*idx as i32) == *bad)
-                        .map(|(_, b)| *b)
-                        .collect::<Vec<_>>();
-                    let second = nums
-                        .iter()
-                        .enumerate()
-                        .filter(|(idx, _)| (*idx as i32) == *bad + 1)
-                        .map(|(_, b)| *b)
-                        .collect::<Vec<_>>();
-                    if check_correctness(&first) || check_correctness(&second) {
-                        return true;
-                    }
-                }
-                let dir_plus_v = diffs.iter().map(|&d| d.is_positive()).collect::<Vec<_>>();
-                let p = dir_plus_v.iter().filter(|&&v| v).count();
-                let n = dir_plus_v.len() - p;
-                let bad = dir_plus_v
+
+                let difs = diff(&nums);
+                let mags = difs
+                    .iter()
+                    .map(|&v| ((1..=3).contains(&v.abs()), v > 0, v < 0))
+                    .collect::<Vec<_>>();
+                let pos = mags.iter().filter(|(_, b, _)| *b).count();
+                let neg = mags.iter().filter(|(_, _, c)| *c).count();
+                let failed = mags
                     .iter()
                     .enumerate()
-                    .find(|(_, &b)| b == (p > n))
+                    .find(|(_, &(a, b, c))| !(a && (if pos > neg { b } else { c })))
                     .unwrap()
                     .0;
-                let first = nums
-                    .iter()
-                    .enumerate()
-                    .filter(|(idx, _)| (*idx) == bad)
-                    .map(|(_, b)| *b)
-                    .collect::<Vec<_>>();
-                let second = nums
-                    .iter()
-                    .enumerate()
-                    .filter(|(idx, _)| (*idx) == bad + 1)
-                    .map(|(_, b)| *b)
-                    .collect::<Vec<_>>();
-                if check_correctness(&first) || check_correctness(&second) {
+                let mut v1 = nums.clone();
+                v1.remove(failed);
+                nums.remove((failed + 1).min(nums.len() - 1));
+                if validate(&v1, diff) || validate(&nums, diff) {
                     return true;
-                }
+                };
+
                 false
             })
             .count()

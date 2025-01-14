@@ -37,3 +37,8 @@ ignore = [
     "S608", # SQL Injection Warning
     "CPY001",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+]
