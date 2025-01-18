@@ -31,3 +31,20 @@ def run(path: str, *solutions: Solution) -> None:
             print("\tPart 1:", p1)  # noqa: T201
             p2 = sol.part_2(data)
             print("\tPart 2:", p2, end="\n\n")  # noqa: T201
+
+
+def test(path: str, solution: type[Solution], part: int) -> int:
+    """
+    Test the solution. It will return the result.
+
+    Returns
+    -------
+    The part result.
+
+    """
+    fpath = Path(__file__).parent.parent.parent.parent / path
+    with fpath.open("rt") as f:
+        data = f.read()
+
+    fn = solution.part_1 if part == 1 else solution.part_2
+    return fn(data)

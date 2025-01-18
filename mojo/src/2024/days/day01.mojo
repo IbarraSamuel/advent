@@ -1,5 +1,3 @@
-from pathlib import Path
-from advent_utils import test, Part
 from collections import Counter
 
 
@@ -11,8 +9,8 @@ struct Solution:
         """Part 1 test.
 
         ```mojo
-        from days.day01 import Solution, test
-        from testing import assert_equal
+        from days.day01 import Solution
+        from advent_utils import test
         test[Solution, file="tests/2024/day01.txt", part=1, expected=11]()
         ```
         """
@@ -41,7 +39,6 @@ struct Solution:
 
         ```mojo
         from days.day01 import Solution, test
-        from testing import assert_equal
         test[Solution, file="tests/2024/day01.txt", part=2, expected=31]()
         ```
         """

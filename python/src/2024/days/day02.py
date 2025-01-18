@@ -13,8 +13,7 @@ class Solution:
 
         ```python3
         >>> f = open("../tests/2024/day02.txt")
-        >>> res = Solution.part_1(f.read())
-        >>> print(res)
+        >>> Solution.part_1(f.read())
         2
 
         ```
@@ -42,12 +41,10 @@ class Solution:
 
         ```python3
         >>> f = open("../tests/2024/day02.txt")
-        >>> res = Solution.part_2(f.read())
-        >>> print(res)
+        >>> Solution.part_2(f.read())
         4
         >>> f2 = open("../tests/2024/day022.txt")
-        >>> res2 = Solution.part_2(f2.read())
-        >>> print(res2)
+        >>> Solution.part_2(f2.read())
         28
         >>> f.close(); f2.close()
 

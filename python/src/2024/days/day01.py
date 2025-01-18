@@ -9,6 +9,13 @@ class Solution:
         """
         Day 1 solution.
 
+        ```python3
+        >>> from advent_utils import test
+        >>> test("tests/2024/day01.txt", Solution, 1)
+        11
+
+        ```
+
         Returns
         -------
         The result
@@ -26,6 +33,11 @@ class Solution:
     def part_2(data: str) -> int:
         """
         Day 2 solution.
+
+        ```python3
+        >>> from advent_utils import test
+        >>> test("tests/2024/day01.txt", solution, 2)
+        31
 
         Returns
         -------
