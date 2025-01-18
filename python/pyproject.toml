@@ -7,7 +7,7 @@ requires-python = ">=3.13"
 dependencies = []
 
 [tool.basedpyright]
-include = [".", "days", "python"]
+include = ["2023", "2024"]
 pythonPlatform = "All"
 typeCheckingMode = "all"
 pythonVersion = "3.13"
@@ -37,6 +37,10 @@ ignore = [
     "S608", # SQL Injection Warning
     "CPY001",
 ]
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+testpaths = ["src/2024"]
 
 [dependency-groups]
 dev = [
