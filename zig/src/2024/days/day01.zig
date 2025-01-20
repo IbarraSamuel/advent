@@ -43,6 +43,38 @@ fn part1(data: []u8) anyerror!i32 {
     return @intCast(t);
 }
 fn part2(data: []u8) anyerror!i32 {
-    _ = data;
-    return 0;
+    var lines = std.mem.splitScalar(u8, data, '\n');
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const alloc = gpa.allocator();
+    var l1 = std.ArrayList(usize).init(alloc);
+    defer l1.deinit();
+    var l2 = std.ArrayList(usize).init(alloc);
+    defer l2.deinit();
+
+    while (lines.next()) |line| {
+        const sep = std.mem.indexOfScalar(u8, line, ' ') orelse continue;
+        var idx: usize = 1;
+        while (line[sep + idx] == ' ') {
+            idx += 1;
+        }
+        const next = sep + idx;
+        const f = try std.fmt.parseInt(usize, line[0..sep], 10);
+        const l = try std.fmt.parseInt(usize, line[next..], 10);
+        try l1.append(f);
+        try l2.append(l);
+    }
+
+    var tot: usize = 0;
+    for (l1.items) |v| {
+        var count: usize = 0;
+        for (l2.items) |v2| {
+            if (v2 == v) {
+                count += 1;
+            }
+        }
+        count *= v;
+        tot += count;
+    }
+
+    return @intCast(tot);
 }
