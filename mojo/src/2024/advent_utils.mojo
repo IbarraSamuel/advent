@@ -37,7 +37,7 @@ trait Solution:
 
 
 fn run[input_path: StringLiteral, *solutions: Solution]() raises:
-    filepath = _dir_of_current_file() / "../../.." / input_path
+    var filepath = _dir_of_current_file() / "../../.." / input_path
     alias sols = VariadicList(solutions)
     alias n_sols = len(sols)
 
@@ -45,8 +45,8 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
     for i in range(n_sols):
         alias Sol = solutions[i]
 
-        fmt = "0" + str(i + 1) if i < 9 else str(i + 1)
-        file = filepath / "day{}.txt".format(fmt)
+        day = String("0" if i < 9 else "", i + 1)
+        file = filepath / "day{}.txt".format(day)
         data = file.read_text()
 
         var p1: Scalar[Sol.T] = 0
@@ -66,8 +66,7 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
         b1m = (b1 // 100) / 10
         b2m = (b2 // 100) / 10
 
-        fmt = "0" + str(i + 1) if i < 9 else str(i + 1)
-        print("Day {} =>".format(fmt))
+        print("Day {} =>".format(day))
         print("\tPart 1: {} in {} us.".format(p1, b1m))
         print("\tPart 2: {} in {} us.\n".format(p2, b2m))
 
@@ -78,7 +77,7 @@ fn test[
     file: StringLiteral,
     expected: Int,
 ]() raises:
-    filepath = _dir_of_current_file() / "../../.." / file
+    var filepath = _dir_of_current_file() / "../../.." / file
     data = filepath.read_text()
 
     @parameter

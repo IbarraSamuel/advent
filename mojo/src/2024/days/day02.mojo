@@ -85,8 +85,8 @@ struct Solution:
                 results[idx] = 1
                 return
 
-            s_pos = Int(log2(float(prev_power_of_two(pack_bits(~pos)))))
-            s_neg = Int(log2(float(prev_power_of_two(pack_bits(~neg)))))
+            s_pos = Int(log2(Float64(prev_power_of_two(pack_bits(~pos)))))
+            s_neg = Int(log2(Float64(prev_power_of_two(pack_bits(~neg)))))
 
             # TODO: Make it nicer, now it's kind of good but brute forced on two options.
 

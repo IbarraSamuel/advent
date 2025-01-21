@@ -38,7 +38,8 @@ struct Solution:
         """Part 2 test.
 
         ```mojo
-        from days.day01 import Solution, test
+        from days.day01 import Solution
+        from advent_utils import test
         test[Solution, file="tests/2024/day01.txt", part=2, expected=31]()
         ```
         """
