@@ -61,3 +61,15 @@ fn getInput(path: []const u8) ![]u8 {
 pub fn Runner(comptime path: []const u8) Solver {
     return Solver{ .path = path, .solutions = [_](?Solution){null} ** 25 };
 }
+
+pub fn run_test(comptime path: []const u8, comptime solution: Solution, comptime part: usize, comptime expected: i32) anyerror!void {
+    const data = try getInput(path);
+    const result: i32 = undefined;
+    if (part == 1) {
+        result = try solution.part1(data);
+    } else if (part == 2) {
+        result = try solution.part2(data);
+    }
+
+    std.debug.assert(result == expected);
+}
