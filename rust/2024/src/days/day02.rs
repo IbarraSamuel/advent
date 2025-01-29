@@ -13,34 +13,18 @@ impl AdventSolution for Solution {
     /// ```
     fn part_1(data: &str) -> usize {
         data.lines()
+            .map(|l| {
+                l.split_whitespace()
+                    .filter_map(|s| s.parse::<i32>().ok())
+                    .collect::<Vec<_>>()
+                    .windows(2)
+                    .map(|w| w[0] - w[1])
+                    .collect::<Vec<_>>()
+            })
             .filter(|l| {
-                let mut prev = 0;
-                let mut orig_diff = 0;
-                for i in l
-                    .split_ascii_whitespace()
-                    .filter_map(|v| v.parse::<i32>().ok())
-                {
-                    let diff = prev - i;
-                    if prev == 0 {
-                        prev = i;
-                        continue;
-                    }
-                    if orig_diff == 0 {
-                        orig_diff = diff.signum();
-                        prev = i;
-                        continue;
-                    }
-                    if orig_diff != diff.signum() {
-                        return false;
-                    }
-
-                    if diff.abs() > 3 || diff.abs() < 1 {
-                        return false;
-                    }
-                    prev = i;
-                }
-
-                true
+                !l.is_empty()
+                    && (l.iter().all(|v| v.abs() <= 3))
+                    && (l.iter().all(|&i| i < 0) || l.iter().all(|&i| i > 0))
             })
             .count()
     }
