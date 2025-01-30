@@ -1,8 +1,38 @@
 from max.graph import Graph, Type, TensorType, ops
 from max.tensor import Tensor, TensorShape
+from os import abort
 
 # alias TARGET = "XMAS".as_bytes()
 
+@value
+struct Dir[v: StringLiteral = "auto"]:
+    alias up = Dir["up"]
+    alias down = Dir["down"]
+    alias left = Dir["left"]
+    alias right = Dir["right"]
+
+fn check(data: String, dir: Dir[].up = Dir[].up()) -> Int:
+    return 0
+fn check(data: String, dir: Dir[].down = Dir[].down()) -> Int:
+    return 0
+fn check(data: String, dir: Dir[].left = Dir[].left()) -> Int:
+    return 0
+fn check(data: String, dir: Dir[].right = Dir[].right()) -> Int:
+    return 0
+
+fn check[S: StringLiteral](data: String) -> Int:
+    @parameter
+    if S == "up":
+        return check(data, Dir["up"]())
+    if S == "down":
+        return check(data, Dir["down"]())
+    if S == "left":
+        return check(data, Dir["left"]())
+    if S == "right":
+        return check(data, Dir["right"]())
+    
+    abort("this should not happen")
+    return 0
 
 struct Solution:
     alias T = DType.int32
@@ -16,7 +46,7 @@ struct Solution:
         import days
 
         test[days.day04.Solution, file="tests/2024/day04.txt", part=1, expected=18]()
-        test[days.day04.Solution, file="tests/2024/day044.txt", part=1, expected=4]()
+        test[days.day04.Solution, file="tests/2024/day044.txt", part=1, expected=0]()
         ```
         """
         tot = 0
