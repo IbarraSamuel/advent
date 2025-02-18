@@ -51,7 +51,7 @@ fn read_input_as_tensor[path: StringLiteral]() raises -> FileTensor:
 
 @always_inline("nodebug")
 fn ceil_pow_of_two(v: Int) -> Int:
-    return int(ceil(sqrt(float(v))) ** 2)
+    return Int(ceil(sqrt(Float32(v))) ** 2)
 
 
 fn filter[
@@ -252,11 +252,11 @@ fn test_solution[S: ListSolution, *tests: (StringLiteral, (Int, Int))]() raises:
 
         input = read_input_lines[path=path]()
 
-        if str(expected_result_1) != "-1":
+        if expected_result_1 != -1:
             result_1 = S.part_1(input)
             assert_equal(result_1, expected_result_1)
 
-        if str(expected_result_2) != "-1":
+        if expected_result_2 != -1:
             result_2 = S.part_2(input)
             assert_equal(result_2, expected_result_2)
 
@@ -292,11 +292,11 @@ fn test_solution[
 
         input = read_input[path=path]()
 
-        if str(expected_result_1) != "-1":
+        if expected_result_1 != -1:
             result_1 = S.part_1(input)
             assert_equal(result_1, expected_result_1)
 
-        if str(expected_result_2) != "-1":
+        if expected_result_2 != -1:
             result_2 = S.part_2(input)
             assert_equal(result_2, expected_result_2)
 
@@ -332,10 +332,10 @@ fn test_solution[
 
         input = read_input_as_tensor[path=path]()
 
-        if str(expected_result_1) != "-1":
+        if expected_result_1 != -1:
             result_1 = S.part_1(input)
             assert_equal(result_1, expected_result_1)
 
-        if str(expected_result_2) != "-1":
+        if expected_result_2 != -1:
             result_2 = S.part_2(input)
             assert_equal(result_2, expected_result_2)

@@ -130,8 +130,6 @@
 # -------------- testing speed ------------------
 from collections import Dict
 from algorithm.functional import parallelize
-from utils import Variant
-from utils.loop import _ZeroStartingRange, _StridedRange
 
 alias Direction = Int
 alias UP = 1
