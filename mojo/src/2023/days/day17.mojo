@@ -82,6 +82,19 @@ fn calc_costs(
     return lower_neighbour
 
 
+fn _print_board[
+    linear: fn (Pos) capturing -> Int
+](shape: (Int, Int), map: FileTensor, visited: List[Int]) -> None:
+    for x in range(shape[1]):
+        for y in range(shape[0]):
+            if linear(Pos(x, y)) in visited:
+                print("X", end="")
+            else:
+                print(map[Pos(x, y)] - CONST_OFFSET, end="")
+        print()
+    print()
+
+
 struct Solution(TensorSolution):
     alias dtype = DType.int32
 
@@ -108,20 +121,28 @@ struct Solution(TensorSolution):
         costs = Dict[Int, Int]()
         costs[lcurrent] = 0
 
-        final = Pos(cols, rows)
+        final = Pos(cols - 1, rows - 1)
 
         while current != final:
             print(current)
             nb = neighbours[linear](data, current, visited)
             print(nb.__str__())
             if len(nb) == 0:
-                ...
+                print("No neighbours.. current map:")
+                _print_board[linear]((rows, cols), data, visited)
+                lower_cost = Int.MAX
+                lower_pos = 0
+                for tp in costs.items():
+                    if tp[].value < lower_cost and tp[].key not in visited:
+                        lower_pos = tp[].key
+
+                nb = List(lower_pos)
 
             lcurrent = calc_costs(data, nb, costs[lcurrent], costs)
             current = toidx(lcurrent)
             visited.append(lcurrent)
             # print(visited.__str__())
-            print(costs.__str__())
+            # print(costs.__str__())
 
             # break
 
