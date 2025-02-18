@@ -1,6 +1,7 @@
 from advent_utils import TensorSolution, FileTensor, ceil_pow_of_two
 from collections import Dict, Set
 from utils import IndexList, Index
+import os
 
 # Ideas
 # 1. To invalidate other paths, you can store the init (x,y), end(x,y) and len(l) information
@@ -18,6 +19,8 @@ struct Dir(Writable):
 
     @implicit
     fn __init__(out self, v: Int):
+        if 1 > v > 4:
+            os.abort("not valid dir")
         self.v = v
 
     fn __eq__(self, other: Self) -> Bool:
@@ -42,7 +45,7 @@ fn calc_nums() -> List[Int]:
     # returns a list with uint8 from 0 - 9
     l = List[Int](capacity=10)
     for i in range(10):
-        l.append(ord(str(i)))
+        l.append(ord(String(i)))
 
     return l
 
@@ -71,8 +74,8 @@ struct HStep(KeyElement):
         return (
             self.step[2] * 1000000
             + self.step[0].v * 100000
-            + int(self.step[1][0] * 100)
-            + int(self.step[1][1])
+            + Int(self.step[1][0] * 100)
+            + Int(self.step[1][1])
         )
 
 
@@ -98,7 +101,7 @@ fn move_pos(dir: Dir, pos: Pos) -> Pos:
     d = indexof(dir)
     df = DIFS[d]
     try:
-        print("moving from {} to {}".format(str(pos), str(pos + df)))
+        print("moving from {} to {}".format(String(pos), String(pos + df)))
     except:
         pass
     return pos + df

@@ -160,7 +160,7 @@ struct Solution:
             try:
                 splitted_nums = nums_chr.split(",")
                 for num in splitted_nums:
-                    nums.append(int(num[]))
+                    nums.append(Int(num[]))
             except:
                 os.abort("This should never happen")
             cache = Dict[CacheKey, Int]()
@@ -182,7 +182,7 @@ struct Solution:
             try:
                 splitted_nums = nums_chr.split(",")
                 for num in splitted_nums:
-                    nums.append(int(num[]))
+                    nums.append(Int(num[]))
             except:
                 os.abort("This should never happen")
             cfg = (("?" + cfg) * 5)[1:]

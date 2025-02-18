@@ -60,12 +60,12 @@ fn first_numeric(line: String) -> (Int, Int):
     while pos <= end:
         if not fval:
             try:
-                fval = int(line[pos])
+                fval = Int(line[pos])
             except:
                 pass
         if not lval:
             try:
-                lval = int(line[end - pos])
+                lval = Int(line[end - pos])
             except:
                 pass
 

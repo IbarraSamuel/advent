@@ -20,7 +20,7 @@ fn lcm[tp: DType, //](first: Scalar[tp], second: Scalar[tp]) -> Scalar[tp]:
 
 @always_inline
 fn ceil_2pow(v: Int) -> Int:
-    return 2 ** int(ceil(log(Float64(v)) / log(Float64(2))))
+    return 2 ** Int(ceil(log(Float64(v)) / log(Float64(2))))
 
 
 @always_inline
@@ -47,7 +47,7 @@ struct Solution:
 
         loop_on = True
         while loop_on:
-            for chr in lines[0]:
+            for chr in lines[0].codepoint_slices():
                 iterations += 1
                 low, up = (7, 10) if chr == LEFT else (12, 15)
                 line = lines[dct.get(key, 0)]

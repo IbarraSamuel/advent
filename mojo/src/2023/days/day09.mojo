@@ -33,7 +33,7 @@ fn create_line(v: String) -> (Line, Int):
         for i in range(21):
             if i >= values.size:
                 break
-            line[i] = int(values[i])
+            line[i] = Int(values[i])
     except:
         os.abort("bad bad on create line")
         pass

@@ -67,7 +67,7 @@ fn reflect(v: Dir, mirror: UInt8) -> (Dir, Dir):
         The direction that an arrow would point to.
     If we should have two reflections.
     """
-    if int(mirror) not in MIRRORS:
+    if Int(mirror) not in MIRRORS:
         return NO_DIR, NO_DIR
 
     if (mirror == HORIZONTAL and v in (LEFT, RIGHT)) or (
@@ -121,7 +121,7 @@ struct Cache(KeyElement):
 
     fn __hash__(self) -> UInt:
         v = self.dir.value * 1000000 + self.idx[0] * 1000 + self.idx[1]
-        return int(v)
+        return Int(v)
 
 
 fn calc_new_pos(
@@ -153,7 +153,7 @@ fn calc_energized(
     readed = Set[Int](map._compute_linear_offset(pos))
     cache = Set[Cache](Cache(pos, dir))
 
-    if int(map[pos]) not in MIRRORS:
+    if Int(map[pos]) not in MIRRORS:
         pos, _ = calc_new_pos(dir, pos, map, sp, readed, cache)
 
     queue = List[(Dir, IndexList[2])]((dir, pos))
@@ -163,12 +163,12 @@ fn calc_energized(
         d1, d2 = reflect(opposite(dir), map[pos])
         if d1:
             npos, _ = calc_new_pos(d1, pos, map, sp, readed, cache)
-            if npos != pos and int(map[npos]) in MIRRORS:
+            if npos != pos and Int(map[npos]) in MIRRORS:
                 queue.append((d1, npos))
 
         if d2:
             npos2, _ = calc_new_pos(d2, pos, map, sp, readed, cache)
-            if npos2 != pos and int(map[npos2]) in MIRRORS:
+            if npos2 != pos and Int(map[npos2]) in MIRRORS:
                 queue.append((d2, npos2))
 
     # @parameter

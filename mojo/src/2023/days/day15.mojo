@@ -11,7 +11,7 @@ alias Elem = (String, Int)
 fn hash(v: Span[Byte]) -> Int:
     acc = 0
     for i in v:
-        acc = ((acc + int(i[])) * 17) % 256
+        acc = ((acc + Int(i[])) * 17) % 256
     return acc
 
 
@@ -28,7 +28,7 @@ fn add_elems(
     chr = elem[:idx]
     h = hash(chr.as_bytes())
     try:
-        n = int(elem[idx + 1 :]) if is_add else -1
+        n = Int(elem[idx + 1 :]) if is_add else -1
         for it in elems.items():
             if it[].key == h:
                 for idx in range(len(it[].value)):
@@ -64,10 +64,10 @@ struct Solution:
         acc = 0
         for v in data[0].as_bytes():
             if v[] == COMMA:
-                t += int(acc)
+                t += Int(acc)
                 acc = 0
                 continue
-            acc = ((acc + int(v[])) * 17) % 256
+            acc = ((acc + Int(v[])) * 17) % 256
         return t + acc
 
     @staticmethod

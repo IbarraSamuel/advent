@@ -251,7 +251,7 @@ struct Solution:
             mazes[maze] = idx
             idx += 1
 
-        valid_idx = (int(1e9) - iteration - 1) % cycles + (iteration - cycles)
+        valid_idx = (Int(1e9) - iteration - 1) % cycles + (iteration - cycles)
         for i in mazes.items():
             if i[].value == valid_idx:
                 maze = i[].key

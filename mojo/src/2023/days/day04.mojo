@@ -20,7 +20,7 @@ struct Solution:
             var winner_amnt = 0
 
             var accm: String = ""
-            for nm in win_str:
+            for nm in win_str.codepoint_slices():
                 if nm.isspace() and len(accm) > 0:
                     winners.append(accm)
                     accm = ""
@@ -30,7 +30,7 @@ struct Solution:
             winners.append(accm)
             accm = ""
 
-            for nm in num_str:
+            for nm in num_str.codepoint_slices():
                 if nm.isspace() and len(accm) > 0:
                     if accm in winners:
                         winner_amnt += 1
@@ -64,7 +64,7 @@ struct Solution:
             var winner_amnt = 0
 
             var accm: String = ""
-            for nm in win_str:
+            for nm in win_str.codepoint_slices():
                 if nm.isspace() and len(accm) > 0:
                     winners.append(accm)
                     accm = ""
@@ -74,7 +74,7 @@ struct Solution:
             winners.append(accm)
             accm = ""
 
-            for nm in num_str:
+            for nm in num_str.codepoint_slices():
                 if nm.isspace() and len(accm) > 0:
                     if accm in winners:
                         winner_amnt += 1

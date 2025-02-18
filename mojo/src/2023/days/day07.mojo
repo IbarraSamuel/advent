@@ -137,7 +137,7 @@ struct Card[mode: HandMode]:
 
 fn parse_int(string: String) -> Int:
     try:
-        return int(string)
+        return Int(string)
     except:
         print("Error parsing int")
         sys.exit(1)
@@ -159,7 +159,7 @@ struct Solution:
 
         sort(cards)
         for idx in range(len(cards)):
-            total += (idx + 1) * int(cards[idx].bid)
+            total += (idx + 1) * Int(cards[idx].bid)
 
         return total
 
@@ -173,6 +173,6 @@ struct Solution:
 
         sort(cards)
         for idx in range(len(cards)):
-            total += (idx + 1) * int(cards[idx].bid)
+            total += (idx + 1) * Int(cards[idx].bid)
 
         return total
