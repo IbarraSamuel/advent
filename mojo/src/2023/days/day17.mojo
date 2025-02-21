@@ -1,5 +1,7 @@
 from advent_utils import TensorSolution, FileTensor
 from collections import Dict
+
+# from memory.arc import ArcPointer
 from utils import IndexList, Index
 import os
 
@@ -136,16 +138,16 @@ struct Solution(TensorSolution):
         final = Pos(cols - 1, rows - 1)
 
         while len(visited) < rows * cols:
-            sleep(0.1)
             nb = neighbours[linear](data, shape, current, visited)
-            print(current)
-            # This is temp
-            print("[", end="")
-            for p in nb:
-                print(toidx(p[]), ", ", sep="", end="")
-            print("]")
-            # print(nb.__str__())
-            _print_board[linear](shape, data, visited, current)
+            # sleep(0.1)
+            # print(current)
+            # # This is temp
+            # print("[", end="")
+            # for p in nb:
+            #     print(toidx(p[]), ", ", sep="", end="")
+            # print("]")
+            # # print(nb.__str__())
+            # _print_board[linear](shape, data, visited, current)
             if len(nb) == 0:
                 # print("No neighbours.. current map:")
                 # _print_board[linear](shape, data, visited, current)
@@ -154,23 +156,30 @@ struct Solution(TensorSolution):
                     if ix[] not in visited:
                         nv = ix[]
                         break
-                # nb = List()
-                # os.abort("No neighbours.. current map:")
-                # lower_cost = Int.MAX
-                # lower_pos = 0
-                # for tp in costs.items():
-                #     if tp[].value < lower_cost and tp[].key not in visited:
-                #         lower_pos = tp[].key
-
                 nb = List(nv)
 
             lcurrent = calc_costs(data, nb, costs[lcurrent], costs)
             current = toidx(lcurrent)
             visited.append(lcurrent)
-            # print(visited.__str__())
-            # print(costs.__str__())
 
-            # break
+        cpos = Pos(0, 0)
+        final_path = List[Int](linear(cpos))
+        # _print_board[linear](shape, data, final_path, cpos)
+        while True:
+            # sleep(0.1)
+            nb = neighbours[linear](data, shape, cpos, final_path)
+            if len(nb) == 0:
+                break
+            min_n = nb[0]
+            for n in nb:
+                if costs[n[]] < costs[min_n] and n[] not in final_path:
+                    min_n = n[]
+
+            final_path.append(min_n)
+            cpos = toidx(min_n)
+            if cpos == final:
+                _print_board[linear](shape, data, final_path, cpos)
+                break
 
         return costs[linear(final)]
 
