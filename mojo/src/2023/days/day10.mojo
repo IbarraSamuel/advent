@@ -60,7 +60,7 @@ fn next_position(
 
 
 fn find_connected_pipe(pos: Position, map: List[String]) -> Position:
-    xr, yr = map[0].byte_length(), map.size
+    xr, yr = map[0].byte_length(), len(map)
     xi, yi = pos[0], pos[1]
     xmin, xmax = max(0, xi - 1), min(xr - 1, xi + 1)
     ymin, ymax = max(0, yi - 1), min(yr - 1, yi + 1)
@@ -83,7 +83,7 @@ struct Solution:
     @staticmethod
     fn part_1(lines: List[String]) -> Int32:
         prev = EMPTY_POS
-        for y in range(lines.size):
+        for y in range(len(lines)):
             for x in range(lines[0].byte_length()):
                 c = lines[y][x]
                 if c == Start:
@@ -108,7 +108,7 @@ struct Solution:
     fn part_2(lines: List[String]) -> Int32:
         p1 = EMPTY_POS
 
-        for y in range(lines.size):
+        for y in range(len(lines)):
             for x in range(lines[0].byte_length()):
                 if lines[y][x] == Start:
                     p1 = (x, y)

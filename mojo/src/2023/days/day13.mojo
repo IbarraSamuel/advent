@@ -39,10 +39,10 @@ struct Solution:
         total = SIMD[Self.dtype, 128]()
         # total = Scalar[Self.dtype]()
         spaces = List[Int](-1)
-        for i in range(lines.size):
+        for i in range(len(lines)):
             if not lines[i]:
                 spaces.append(i)
-        spaces.append(lines.size)
+        spaces.append(len(lines))
 
         @parameter
         fn calc_line(i: Int):
@@ -57,15 +57,15 @@ struct Solution:
             new_len = group[0].byte_length()
             new_group = List[String](capacity=new_len)
             for j in range(new_len):
-                new_str = String(capacity=group.size)
-                for k in range(group.size):
+                new_str = String(capacity=len(group))
+                for k in range(len(group)):
                     new_str.write(group[k][j])
                 new_group.append(new_str)
 
             # total += is_mirror(new_group).value()
             total[i] = is_mirror(new_group).value()
 
-        parallelize[calc_line](spaces.size - 1)
+        parallelize[calc_line](len(spaces) - 1)
         return total.reduce_add()
 
     @staticmethod
@@ -73,10 +73,10 @@ struct Solution:
         total = SIMD[Self.dtype, 128]()
         # total = Scalar[Self.dtype]()
         spaces = List[Int](-1)
-        for i in range(lines.size):
+        for i in range(len(lines)):
             if not lines[i]:
                 spaces.append(i)
-        spaces.append(lines.size)
+        spaces.append(len(lines))
 
         # for i in range(spaces.size - 1):
         @parameter
@@ -91,15 +91,15 @@ struct Solution:
             new_len = group[0].byte_length()
             new_group = List[String](capacity=new_len)
             for j in range(new_len):
-                new_str = String(capacity=group.size)
-                for k in range(group.size):
+                new_str = String(capacity=len(group))
+                for k in range(len(group)):
                     new_str.write(group[k][j])
                 new_group.append(new_str)
 
             # total += almost_a_mirror(new_group).value()
             total[i] = almost_a_mirror(new_group).value()
 
-        parallelize[calc_line](spaces.size - 1)
+        parallelize[calc_line](len(spaces) - 1)
 
         return total.reduce_add()
 

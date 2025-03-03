@@ -60,7 +60,7 @@ fn filter[
     negate: Bool = False,
 ](owned list: List[elem]) -> List[elem]:
     alias fltrs = VariadicList(filters)
-    i = list.size - 1
+    i = len(list) - 1
     while i >= 0:
         to_delete = False
 
@@ -80,7 +80,7 @@ fn map[
     out: CollectionElement, //,
     mapper: fn (elem) -> out,
 ](list: List[elem]) -> List[out]:
-    final = List[out](capacity=list.size)
+    final = List[out](capacity=len(list))
     for value in list:
         final.append(mapper(value[]))
     return final
@@ -91,7 +91,7 @@ fn map[
     out: CollectionElement, //,
     mapper: fn (elem) raises -> out,
 ](list: List[elem]) raises -> List[out]:
-    final = List[out](capacity=list.size)
+    final = List[out](capacity=len(list))
     for value in list:
         final.append(mapper(value[]))
     return final

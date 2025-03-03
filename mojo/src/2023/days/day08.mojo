@@ -37,12 +37,12 @@ struct Solution:
 
     @staticmethod
     fn part_1(lines: List[String]) -> UInt32:
-        data_len = lines.size - 2
+        data_len = len(lines) - 2
         dct = Indexer(power_of_two_initial_capacity=ceil_2pow(data_len))
         key = String("AAA")
         iterations = 0
 
-        for idx in range(2, lines.size):
+        for idx in range(2, len(lines)):
             dct[lines[idx][:3]] = idx
 
         loop_on = True
@@ -61,12 +61,12 @@ struct Solution:
 
     @staticmethod
     fn part_2(lines: List[String]) -> UInt32:
-        data_len = lines.size
+        data_len = len(lines)
         iter_len = lines[0].byte_length()
         dct = Indexer(power_of_two_initial_capacity=ceil_2pow(data_len - 2))
         init_nodes = List[Int](capacity=8)
 
-        for idx in range(2, lines.size):
+        for idx in range(2, len(lines)):
             dct[lines[idx][:3]] = idx
             if lines[idx][2] == "A":
                 init_nodes.append(idx)
@@ -97,9 +97,9 @@ struct Solution:
                     break
                 loop_no += 1
 
-        parallelize[calc_cycles](init_nodes.size)
+        parallelize[calc_cycles](len(init_nodes))
 
         first = results[0]
-        for v in range(init_nodes.size - 1):
+        for v in range(len(init_nodes) - 1):
             first = lcm(first, results[v + 1])
         return first

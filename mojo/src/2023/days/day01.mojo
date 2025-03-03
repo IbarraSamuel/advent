@@ -37,7 +37,7 @@ struct Solution:
             f, l = first_numeric(lines[idx])
             total[idx] = f * 10 + l
 
-        parallelize[calc_line](lines.size)
+        parallelize[calc_line](len(lines))
         return total.reduce_add()
 
     @staticmethod
@@ -46,10 +46,9 @@ struct Solution:
 
         @parameter
         fn calc_line(idx: Int):
-            # for idx in range(lines.size):
             total[idx] = line_value(lines[idx])
 
-        parallelize[calc_line](lines.size)
+        parallelize[calc_line](len(lines))
         return total.reduce_add()
 
 

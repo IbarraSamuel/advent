@@ -34,7 +34,7 @@ fn add_elems(
                 for idx in range(len(it[].value)):
                     if it[].value[idx][0] == chr:
                         if not is_add:
-                            if it[].value.size == 1:
+                            if len(it[].value) == 1:
                                 _ = elems.pop(h)
                                 return
                             _ = it[].value.pop(idx)

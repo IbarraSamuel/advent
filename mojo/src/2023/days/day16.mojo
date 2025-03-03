@@ -232,7 +232,7 @@ struct Solution(TensorSolution):
             results[idx] = calc_energized(map, (ym, xm + 1), pos, dir)
             # tst[idx] = w
 
-        parallelize[calc_length](indexes.size)
+        parallelize[calc_length](len(indexes))
 
         # test
         # mx = 0

@@ -31,14 +31,14 @@ fn create_line(v: String) -> (Line, Int):
 
         @parameter
         for i in range(21):
-            if i >= values.size:
+            if i >= len(values):
                 break
             line[i] = Int(values[i])
     except:
         os.abort("bad bad on create line")
         pass
 
-    return (line, values.size)
+    return (line, len(values))
 
 
 struct Solution:
@@ -54,7 +54,7 @@ struct Solution:
             _, l = calc_prev_and_next(line, last)
             tot[idx] = l
 
-        parallelize[calc](lines.size)
+        parallelize[calc](len(lines))
         return tot.reduce_add()
 
     @staticmethod
@@ -67,5 +67,5 @@ struct Solution:
             f, _ = calc_prev_and_next(line, last)
             tot[idx] = f
 
-        parallelize[calc](lines.size)
+        parallelize[calc](len(lines))
         return tot.reduce_add()

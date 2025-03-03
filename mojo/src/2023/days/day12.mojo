@@ -167,7 +167,7 @@ struct Solution:
             total[idx] = count(cfg, nums, cache)
             # total[idx] = count(cfg, nums)
 
-        parallelize[calc_line](lines.size)
+        parallelize[calc_line](len(lines))
         return total.reduce_add().cast[DType.uint64]()
 
     @staticmethod
@@ -191,5 +191,5 @@ struct Solution:
             total[idx] = count(cfg, nums, cache)
             # total[idx] = count(cfg, nums)
 
-        parallelize[calc_line](lines.size)
+        parallelize[calc_line](len(lines))
         return total.reduce_add()
