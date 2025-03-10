@@ -1,14 +1,7 @@
-from collections.optional import Optional
-from os import abort
 from testing import assert_equal
-from builtin.builtin_list import VariadicList
-from testing.testing import Testable
-from utils import Variant
-from memory import Span
 from tensor import Tensor
-from pathlib import Path, _dir_of_current_file
+from pathlib import _dir_of_current_file
 from time import time_function
-from math import sqrt, ceil
 
 alias FileTensor = Tensor[DType.uint8]
 alias SIMDResult = SIMD[DType.uint32, 1024]
@@ -47,11 +40,6 @@ fn read_input_as_tensor[path: StringLiteral]() raises -> FileTensor:
     map[prev_y] = ord("\n")
     # End of Tensor Adjust
     return map
-
-
-@always_inline("nodebug")
-fn ceil_pow_of_two(v: Int) -> Int:
-    return Int(ceil(sqrt(Float32(v))) ** 2)
 
 
 fn filter[

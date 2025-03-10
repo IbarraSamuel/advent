@@ -1,10 +1,7 @@
-from advent_utils import ceil_pow_of_two
 from collections import Dict
 from memory import Span
 
 alias COMMA = ord(",")
-
-alias Elem = (String, Int)
 
 
 @always_inline("nodebug")

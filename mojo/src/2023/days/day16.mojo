@@ -1,4 +1,4 @@
-from advent_utils import TensorSolution, FileTensor, ceil_pow_of_two
+from advent_utils import TensorSolution, FileTensor
 from utils import IndexList, Index
 from tensor import TensorShape
 from collections import Dict
