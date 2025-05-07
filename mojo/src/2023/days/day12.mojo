@@ -87,9 +87,9 @@
 
 # Rust impl
 
-from advent_utils import SIMDResult
+from advent_utils import SIMDResult, ListSolution
 from algorithm import parallelize
-from collections import Dict, InlineList
+from collections import Dict
 import os
 
 
@@ -109,7 +109,9 @@ struct CacheKey(KeyElement):
 
     fn __repr__(self) -> String:
         try:
-            return "(cfg: {}, nums: {})".format(self.cfg, self.nums.__str__())
+            return StringSlice("(cfg: {}, nums: {})").format(
+                self.cfg, self.nums.__str__()
+            )
         except:
             return "repre raises"
 
@@ -142,7 +144,7 @@ fn count(cfg: String, nums: List[Int], mut cache: Dict[CacheKey, Int]) -> Int:
     return result
 
 
-struct Solution:
+struct Solution(ListSolution):
     """Solution for day 12."""
 
     alias dtype = DType.uint64

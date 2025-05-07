@@ -1,5 +1,7 @@
 from collections import Dict
 from memory import Span
+from advent_utils import ListSolution
+
 
 alias COMMA = ord(",")
 
@@ -52,7 +54,7 @@ fn add_elems(
         return
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod

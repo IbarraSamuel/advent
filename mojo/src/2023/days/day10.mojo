@@ -3,19 +3,20 @@ from collections import Dict, OptionalReg, OptionalReg
 import os
 from algorithm import parallelize
 from testing import assert_equal, assert_true, assert_false
+from advent_utils import ListSolution
 
 alias Position = IndexList[2]
 alias EMPTY_POS = Position()
 alias Movement = StaticTuple[Position, 2]
 
-alias Vertical = "|"
-alias Horizontal = "-"
-alias UpRight = "L"
-alias UpLeft = "J"
-alias DownLeft = "7"
-alias DownRight = "F"
-alias Ground = "."
-alias Start = "S"
+alias Vertical: StaticString = "|"
+alias Horizontal: StaticString = "-"
+alias UpRight: StaticString = "L"
+alias UpLeft: StaticString = "J"
+alias DownLeft: StaticString = "7"
+alias DownRight: StaticString = "F"
+alias Ground: StaticString = "."
+alias Start: StaticString = "S"
 
 alias VALID_PIPES = [Vertical, Horizontal, UpRight, UpLeft, DownRight, DownLeft]
 alias INVALID_PIPES = [Ground, Start]
@@ -38,15 +39,15 @@ alias PIPE_TO_MOV = [
 ]
 
 
-fn get_pipe_and_mov(char: String) -> (StringLiteral, Movement):
+fn get_pipe_and_mov(char: String) -> (StaticString, Movement):
     @parameter
     for idx in range(len(PIPE_TO_MOV)):
-        alias pp = PIPE_TO_MOV.get[idx, (StringLiteral, Movement)]()
+        alias pp = PIPE_TO_MOV.get[idx, (StaticString, Movement)]()
         if char == pp[0]:
             return pp
 
     os.abort("This should never happen")
-    return ("bad", Movement())
+    return (StaticString("bad"), Movement())
 
 
 @always_inline
@@ -77,7 +78,7 @@ fn find_connected_pipe(pos: Position, map: List[String]) -> Position:
     return EMPTY_POS
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod

@@ -1,30 +1,30 @@
-from advent_utils import SIMDResult
+from advent_utils import SIMDResult, ListSolution
 from collections import Dict, Optional
 from algorithm.functional import parallelize
 
 alias MapList = [
-    ("one", 1),
-    ("two", 2),
-    ("three", 3),
-    ("four", 4),
-    ("five", 5),
-    ("six", 6),
-    ("seven", 7),
-    ("eight", 8),
-    ("nine", 9),
-    ("1", 1),
-    ("2", 2),
-    ("3", 3),
-    ("4", 4),
-    ("5", 5),
-    ("6", 6),
-    ("7", 7),
-    ("8", 8),
-    ("9", 9),
+    (StaticString("one"), 1),
+    (StaticString("two"), 2),
+    (StaticString("three"), 3),
+    (StaticString("four"), 4),
+    (StaticString("five"), 5),
+    (StaticString("six"), 6),
+    (StaticString("seven"), 7),
+    (StaticString("eight"), 8),
+    (StaticString("nine"), 9),
+    (StaticString("1"), 1),
+    (StaticString("2"), 2),
+    (StaticString("3"), 3),
+    (StaticString("4"), 4),
+    (StaticString("5"), 5),
+    (StaticString("6"), 6),
+    (StaticString("7"), 7),
+    (StaticString("8"), 8),
+    (StaticString("9"), 9),
 ]
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
@@ -52,21 +52,23 @@ struct Solution:
         return total.reduce_add()
 
 
+@always_inline("nodebug")
+fn to_int(v: String, mut o: Int):
+    try:
+        o = Int(v)
+    except:
+        pass
+
+
 fn first_numeric(line: String) -> (Int, Int):
     pos, end = 0, len(line) - 1
     fval, lval = 0, 0
 
     while pos <= end:
-        if not fval:
-            try:
-                fval = Int(line[pos])
-            except:
-                pass
+        if fval == 0:
+            to_int(line[pos], fval)
         if not lval:
-            try:
-                lval = Int(line[end - pos])
-            except:
-                pass
+            to_int(line[end - pos], lval)
 
         if not fval or not lval:
             pos += 1
@@ -84,7 +86,7 @@ fn line_value(line: String) -> Int:
 
     @parameter
     for idx in range(len(MapList)):
-        k, v = MapList.get[idx, (StringLiteral, Int)]()
+        k, v = MapList.get[idx, (StaticString, Int)]()
         var mn = line.find(k)
         var mx = line.rfind(k)
 

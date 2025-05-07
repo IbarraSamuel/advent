@@ -1,6 +1,7 @@
 from collections import Dict
 from memory import Span
 import sys
+from advent_utils import ListSolution
 
 alias CardType = DType.uint8
 
@@ -18,7 +19,7 @@ struct HandMode:
 
 
 @register_passable("trivial")
-struct Hand[mode: HandMode](ComparableCollectionElement):
+struct Hand[mode: HandMode](Comparable & Copyable & Movable):
     alias type = SIMD[CardType, 8]
     var value: Self.type
     var level: UInt8
@@ -144,7 +145,7 @@ fn parse_int(string: String) -> Int:
         return 0
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.uint32
     alias Hand1 = Hand[HandMode.First]
     alias Hand2 = Hand[HandMode.Second]

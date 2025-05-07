@@ -3,6 +3,7 @@ from collections import Dict, Optional
 from utils import IndexList
 from math import log, ceil
 from algorithm import parallelize
+from advent_utils import ListSolution
 
 alias LEFT = "L"
 alias RIGHT = "R"
@@ -32,7 +33,7 @@ fn key_in_list(k: Int, lstp: List[IndexList[2]]) -> Optional[Int]:
     return None
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod

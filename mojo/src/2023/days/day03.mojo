@@ -1,6 +1,7 @@
 from algorithm.functional import vectorize
 from collections import Set
 from utils import IndexList
+from advent_utils import ListSolution
 
 
 @value
@@ -23,12 +24,12 @@ fn parse_number[dir: Int](s: String, pos: Int) -> Tuple[String, Int]:
     var left: String = ""
     var lpos: Int = pos
     var right: String = ""
-    var rpos: Int = pos
+
     if pos > 0 and s[pos - 1].isdigit() and dir <= 0:
         left, lpos = parse_number[-1](s, pos - 1)
 
     if pos < len(s) - 1 and s[pos + 1].isdigit() and dir >= 0:
-        right, rpos = parse_number[+1](s, pos + 1)
+        right, _ = parse_number[+1](s, pos + 1)
     current = left + current + right
     return current, lpos
 
@@ -95,7 +96,7 @@ fn check_window[
     total += local_result[0] * local_result[1]
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod

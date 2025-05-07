@@ -1,8 +1,9 @@
-from collections import Optional
 from algorithm import parallelize
 from memory import pack_bits, bitcast
 from bit import prev_power_of_two
 from math import log2
+
+from advent_utils import Solution as S
 
 
 fn to_int(v: String) -> Int:
@@ -25,7 +26,7 @@ fn calc_simd(
     return is_positive_in_bounds, is_negative_in_bounds
 
 
-struct Solution:
+struct Solution(S):
     alias T = DType.int32
     alias IdxSIMD = SIMD[DType.int8, 8](0, 1, 2, 3, 4, 5, 6, 7)
     alias ZeroSIMD = SIMD[DType.int8, 8](0)

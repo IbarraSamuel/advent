@@ -1,4 +1,7 @@
-struct Solution:
+from advent_utils import Solution as S
+
+
+struct Solution(S):
     alias T = DType.int32
 
     @staticmethod

@@ -1,40 +1,41 @@
 from max.graph import Graph, Type, TensorType, ops
 from max.tensor import Tensor, TensorShape
 from os import abort
+from advent_utils import Solution as S
 
 # alias TARGET = "XMAS".as_bytes()
 
 @value
-struct Dir[v: StringLiteral = "auto"]:
+struct Dir[v: StaticString = "auto"]:
     alias up = Dir["up"]
     alias down = Dir["down"]
     alias left = Dir["left"]
     alias right = Dir["right"]
 
-fn check(data: String, dir: Dir[].up = Dir[].up()) -> Int:
-    return 0
-fn check(data: String, dir: Dir[].down = Dir[].down()) -> Int:
-    return 0
-fn check(data: String, dir: Dir[].left = Dir[].left()) -> Int:
-    return 0
-fn check(data: String, dir: Dir[].right = Dir[].right()) -> Int:
-    return 0
+# fn check(data: String, dir: Dir[].up = Dir[].up()) -> Int:
+#     return 0
+# fn check(data: String, dir: Dir[].down = Dir[].down()) -> Int:
+#     return 0
+# fn check(data: String, dir: Dir[].left = Dir[].left()) -> Int:
+#     return 0
+# fn check(data: String, dir: Dir[].right = Dir[].right()) -> Int:
+#     return 0
 
-fn check[S: StringLiteral](data: String) -> Int:
-    @parameter
-    if S == "up":
-        return check(data, Dir["up"]())
-    if S == "down":
-        return check(data, Dir["down"]())
-    if S == "left":
-        return check(data, Dir["left"]())
-    if S == "right":
-        return check(data, Dir["right"]())
+# fn check[S: StringLiteral](data: String) -> Int:
+#     @parameter
+#     if S == "up":
+#         return check(data, Dir["up"]())
+#     if S == "down":
+#         return check(data, Dir["down"]())
+#     if S == "left":
+#         return check(data, Dir["left"]())
+#     if S == "right":
+#         return check(data, Dir["right"]())
     
-    abort("this should not happen")
-    return 0
+#     abort("this should not happen")
+#     return 0
 
-struct Solution:
+struct Solution(S):
     alias T = DType.int32
 
     @staticmethod
@@ -119,7 +120,7 @@ struct Solution:
 
             
             # 135 deg
-            x, y = p, 0
+            # x, y = p, 0
             x, y = p if p < xmax else xmax - 1, 0 if p < xmax else p - xmax + 1
             while x >= 3 and y < ymax - 3:
                 if (

@@ -1,6 +1,7 @@
 from collections.string import StringSlice
 from collections.optional import OptionalReg
 from algorithm import parallelize
+from advent_utils import ListSolution
 
 
 fn is_mirror(values: List[String]) -> OptionalReg[Int]:
@@ -31,7 +32,7 @@ fn almost_a_mirror(values: List[String]) -> OptionalReg[Int]:
     return None
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod

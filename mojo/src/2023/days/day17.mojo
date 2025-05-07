@@ -112,8 +112,10 @@ struct Solution(TensorSolution):
 
     @staticmethod
     fn part_1(owned data: FileTensor) raises -> Scalar[Self.dtype]:
-        """Each field could have 4 positions *  4 directions * 3 steps == 48."""
-        """Final count will be 48 * 141 * 141 = 954288"""
+        """Each field could have 4 positions *  4 directions * 3 steps.
+
+        It means == 48.
+        Final count will be 48 * 141 * 141 = 954288"""
         print(data)
 
         sp = data.shape()

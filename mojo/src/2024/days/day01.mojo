@@ -1,7 +1,8 @@
 from collections import Counter
+from advent_utils import Solution as S
 
 
-struct Solution:
+struct Solution(S):
     alias T = DType.int32
 
     @staticmethod

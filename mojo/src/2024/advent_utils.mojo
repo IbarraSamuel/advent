@@ -4,22 +4,23 @@ from pathlib import _dir_of_current_file
 from testing import assert_equal
 
 
+@register_passable("trivial")
 struct Part(EqualityComparable):
     alias one = Part(1)
     alias two = Part(2)
     alias bad = Part(-1)
-    var v: Int32
+    var v: Int
 
     @implicit
-    fn __init__(out self, v: Int):
-        if v < 1 or v > 2:
-            self.v = -1
+    @always_inline("builtin")
+    fn __init__(out self, v: IntLiteral):
+        self.v = v if v == 1 or v == 2 else -1
 
-        self.v = v
-
+    @always_inline("builtin")
     fn __eq__(self, other: Self) -> Bool:
         return self.v == other.v
 
+    @always_inline("builtin")
     fn __ne__(self, other: Self) -> Bool:
         return not (self == other)
 
@@ -46,7 +47,7 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
         alias Sol = solutions[i]
 
         day = String("0" if i < 9 else "", i + 1)
-        file = filepath / "day{}.txt".format(day)
+        file = filepath / String("day", day, ".txt")
         data = file.read_text()
 
         var p1: Scalar[Sol.T] = 0
@@ -66,16 +67,16 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
         b1m = (b1 // 100) / 10
         b2m = (b2 // 100) / 10
 
-        print("Day {} =>".format(day))
-        print("\tPart 1: {} in {} us.".format(p1, b1m))
-        print("\tPart 2: {} in {} us.\n".format(p2, b2m))
+        print("Day", day, "=>")
+        print("\tPart 1:", p1, "in", b1m, "us.")
+        print("\tPart 2:", p2, "in", b2m, "us.\n")
 
 
 fn test[
     S: Solution,
     part: Part,
     file: StringLiteral,
-    expected: Int,
+    expected: IntLiteral,
 ]() raises:
     var filepath = _dir_of_current_file() / "../../.." / file
     data = filepath.read_text()

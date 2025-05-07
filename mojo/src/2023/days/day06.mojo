@@ -1,4 +1,5 @@
 from math import sqrt, floor, ceil
+from advent_utils import ListSolution
 
 
 @always_inline
@@ -17,7 +18,7 @@ fn races_winning(duration: Int, record: Int) -> UInt:
     return upper_int - lower_int + 1
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
@@ -37,8 +38,8 @@ struct Solution:
 
     @staticmethod
     fn part_2(input: List[String]) -> UInt32:
-        duration = "".join(input[0].split()[1:])
-        record = "".join(input[1].split()[1:])
+        duration = StaticString("").join(input[0].split()[1:])
+        record = StaticString("").join(input[1].split()[1:])
         try:
             duration_int = Int(duration)
             record_int = Int(record)

@@ -1,5 +1,6 @@
 from algorithm.functional import vectorize
 from algorithm.reduction import sum, _simd_sum
+from advent_utils import ListSolution
 
 alias Game = (Int, Int, Int)
 alias max_game: Game = (12, 13, 14)
@@ -55,7 +56,7 @@ fn calc_max(game: Game, other: Game) -> Game:
     )
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
@@ -82,7 +83,7 @@ struct Solution:
 
     @staticmethod
     fn part_2(input: List[String]) -> Scalar[Self.dtype]:
-        var simd = SIMD[DType.uint32, 128](value=0)
+        var simd = SIMD[DType.uint32, 128]()
 
         @parameter
         fn set_result[v: Int](idx: Int):

@@ -2,13 +2,13 @@ from algorithm import parallelize
 import os
 from builtin.file import FileHandle
 from collections import Optional
+from advent_utils import ListSolution
 
 alias Size = 32
 alias Line = SIMD[DType.int64, Size]
 
 
 fn calc_prev_and_next(owned value: Line, last: Int) -> (Int64, Int64):
-    idx = 0
     idx, frst, lst = 0, Int64(0), Int64(0)
     while not (value == 0).reduce_and():
         frst = value[0] - frst
@@ -41,7 +41,7 @@ fn create_line(v: String) -> (Line, Int):
     return (line, len(values))
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.int64
 
     @staticmethod

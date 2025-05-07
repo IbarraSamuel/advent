@@ -5,25 +5,28 @@ from time import time_function
 
 alias FileTensor = Tensor[DType.uint8]
 alias SIMDResult = SIMD[DType.uint32, 1024]
+alias CollectionElement = Copyable & Movable
 
 
-fn read_input[path: StringLiteral]() raises -> String:
+fn read_input[path: StaticString]() raises -> String:
     p = _dir_of_current_file().joinpath("../../../" + path)
     with open(p, "rt") as f:
         return f.read()
 
 
-fn read_input_lines[path: StringLiteral]() raises -> List[String]:
+fn read_input_lines[path: StaticString]() raises -> List[String]:
     p = _dir_of_current_file().joinpath("../../../" + path)
     with open(p, "rt") as f:
         return f.read().splitlines()
 
 
-fn read_input_as_tensor[path: StringLiteral]() raises -> FileTensor:
+fn read_input_as_tensor[path: StaticString]() raises -> FileTensor:
     p = _dir_of_current_file().joinpath("../../../" + path)
-    t = FileTensor.fromfile(p)
+    bts = p.read_bytes()
+    # var t = FileTensor()
+    t = FileTensor(bts)
 
-    # Adjusting Tensor
+    # Adjusting Tensor to not use last space
     prev_y = t.bytecount()
 
     i = 0
@@ -121,25 +124,27 @@ trait TensorSolution:
         ...
 
 
-# fn get_solutions[S: ListSolution, I: StringLiteral]() raises -> (Int, Int):
-#     input = read_input_lines[I]()
-#     p1 = S.part_1(input)
-#     p2 = S.part_2(input)
-#     return int(p1), int(p2)
+fn get_solutions[S: ListSolution, I: StringLiteral]() raises -> (Int, Int):
+    input = read_input_lines[I]()
+    p1 = S.part_1(input)
+    p2 = S.part_2(input)
+    return Int(p1), Int(p2)
 
 
-# fn get_solutions[S: StringSolution, I: StringLiteral]() raises -> (Int, Int):
-#     input = read_input[I]()
-#     p1 = S.part_1(input)
-#     p2 = S.part_2(input)
-#     return int(p1), int(p2)
+fn get_solutions[S: StringSolution, I: StringLiteral]() raises -> (Int, Int):
+    input = read_input[I]()
+    p1 = S.part_1(input)
+    p2 = S.part_2(input)
+    return Int(p1), Int(p2)
 
 
-# fn get_solutions[S: TensorSolution, I: StringLiteral]() raises -> (Int, Int):
-#     input = read_input_as_tensor[I]()
-#     p1 = S.part_1(input)
-#     p2 = S.part_2(input)
-#     return int(p1), int(p2)
+fn get_solutions[S: TensorSolution, I: StringLiteral]() raises -> (Int, Int):
+    input = read_input_as_tensor[I]()
+    p1 = S.part_1(input)
+    p2 = S.part_2(input)
+    var intp1 = Int(p1)
+    var intp2 = Int(p2)
+    return intp1, intp2
 
 
 fn run[S: ListSolution, path: StringLiteral]() raises:
@@ -188,7 +193,7 @@ fn run[S: StringSolution, path: StringLiteral]() raises:
     print("\tPart 2:", r2, "in", t2, "us.", end="\n\n")
 
 
-fn run[S: TensorSolution, path: StringLiteral]() raises:
+fn run[S: TensorSolution, path: StaticString]() raises:
     var input = read_input_as_tensor[path=path]()
     print("From", path, "=>")
 
@@ -213,8 +218,8 @@ fn run[S: TensorSolution, path: StringLiteral]() raises:
 
 fn test_solution[
     S: ListSolution,
-    test_1: (StringLiteral, Int),
-    test_2: (StringLiteral, Int),
+    test_1: (StaticString, Int),
+    test_2: (StaticString, Int),
 ]() raises:
     alias path_1 = test_1[0]
     alias expected_result_1 = test_1[1]
@@ -229,7 +234,7 @@ fn test_solution[
     assert_equal(result_2, expected_result_2)
 
 
-fn test_solution[S: ListSolution, *tests: (StringLiteral, (Int, Int))]() raises:
+fn test_solution[S: ListSolution, *tests: (StaticString, (Int, Int))]() raises:
     alias test_list = VariadicList(tests)
 
     @parameter
@@ -251,8 +256,8 @@ fn test_solution[S: ListSolution, *tests: (StringLiteral, (Int, Int))]() raises:
 
 fn test_solution[
     S: StringSolution,
-    test_1: (StringLiteral, Int),
-    test_2: (StringLiteral, Int),
+    test_1: (StaticString, Int),
+    test_2: (StaticString, Int),
 ]() raises:
     alias path_1 = test_1[0]
     alias expected_result_1 = test_1[1]
@@ -268,7 +273,7 @@ fn test_solution[
 
 
 fn test_solution[
-    S: StringSolution, *tests: (StringLiteral, (Int, Int))
+    S: StringSolution, *tests: (StaticString, (Int, Int))
 ]() raises:
     alias test_list = VariadicList(tests)
 
@@ -291,8 +296,8 @@ fn test_solution[
 
 fn test_solution[
     S: TensorSolution,
-    test_1: (StringLiteral, Int),
-    test_2: (StringLiteral, Int),
+    test_1: (StaticString, Int),
+    test_2: (StaticString, Int),
 ]() raises:
     alias path_1 = test_1[0]
     alias expected_result_1 = test_1[1]
@@ -308,7 +313,7 @@ fn test_solution[
 
 
 fn test_solution[
-    S: TensorSolution, *tests: (StringLiteral, (Int, Int))
+    S: TensorSolution, *tests: (StaticString, (Int, Int))
 ]() raises:
     alias test_list = VariadicList(tests)
 

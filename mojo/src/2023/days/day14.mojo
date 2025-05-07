@@ -130,6 +130,7 @@
 # -------------- testing speed ------------------
 from collections import Dict
 from algorithm.functional import parallelize
+from advent_utils import ListSolution
 
 alias Direction = Int
 alias UP = 1
@@ -217,25 +218,23 @@ fn tilt[times: Int = 1](mut maze: String):
             lines[x] = line^
 
         parallelize[calc_line](x_max)
-        maze = "".join(lines^)
+        maze = StringSlice("").join(lines^)
 
 
-struct Solution:
+struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod
     fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
-        maze = "\n".join(lines) + "\n"
+        maze = StringSlice("\n").join(lines) + "\n"
         tilt[1](maze)
         return calculate[RIGHT](maze)
 
     @staticmethod
     fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
-        maze = "\n".join(lines) + "\n"
-        cycles, iteration = 0, 0
+        maze = StringSlice("\n").join(lines) + "\n"
         mazes = Dict[String, Int](power_of_two_initial_capacity=256)
 
-        cycles = 0
         idx = 0
         while True:
             tilt[4](maze)

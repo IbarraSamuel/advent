@@ -1,4 +1,7 @@
-struct Solution:
+from advent_utils import ListSolution
+
+
+struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
@@ -105,7 +108,6 @@ fn map_number(range: MapRange, n: Int) -> Tuple[Int, Bool]:
 
 fn map_numbers(ranges: List[MapRange], mut numbers: List[Int]):
     for i in range(len(numbers)):
-        var mapped = False
         for map in ranges:
             numbers[i], mapped = map_number(map[], numbers[i])
 
@@ -167,8 +169,7 @@ fn map_ranges(
 
     """
     var used_ranges = List[NumRange]()
-    var new_numbers = List[NumRange]()
-    var mask = List[Bool]()
+
     while len(numbers) > 0:
         var num = numbers.pop(0)
 
