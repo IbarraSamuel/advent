@@ -1,12 +1,12 @@
 from collections import Counter
-from advent_utils import Solution as S
+from advent_utils import AdventSolution
 
 
-struct Solution(S):
+struct Solution(AdventSolution):
     alias T = DType.int32
 
     @staticmethod
-    fn part_1(data: String) -> Scalar[Self.T]:
+    fn part_1[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
         """Part 1 test.
 
         ```mojo
@@ -15,27 +15,54 @@ struct Solution(S):
         test[Solution, file="tests/2024/day01.txt", part=1, expected=11]()
         ```
         """
-        lines = data.splitlines()
-        lines_size = len(lines)
+        alias ordoff = ord("0")
+        alias spaceord = ord(" ")
+        pos = 0
+        lines_size = 1
+
+        spaces = SIMD[DType.uint32, 1024]()
+
+        while True:
+            pos = data.find("\n", pos)
+            if pos == -1:
+                break
+
+            spaces[lines_size] = pos + 1
+            pos += 1
+            lines_size += 1
+
+        if not data.endswith("\n"):
+            spaces[lines_size] = data.byte_length()
+
         l1 = List[Int](capacity=lines_size)
         l2 = List[Int](capacity=lines_size)
-        t = 0
-        try:
-            for line in lines:
-                ns = line[].split()
-                l1.append(Int(ns[0]))
-                l2.append(Int(ns[1]))
-            sort(l1)
-            sort(l2)
 
-            for i in range(lines_size):
-                t += abs(l2[i] - l1[i])
-        except:
-            pass
+        for line_idx in range(lines_size - 1):
+            init = Int(spaces[line_idx])
+            end = Int(spaces[line_idx + 1])
+            line = data[init : end - 1]
+            v1, v2 = 0, 0
+            for chr in line.as_bytes():
+                if v2 == 0 and chr[] == spaceord:
+                    continue
+                if chr[] == spaceord:
+                    v1, v2 = v2, 0
+                    continue
+
+                v2 += v2 * 10 + (Int(chr[]) - ordoff)
+            l1.append(v1)
+            l2.append(v2)
+
+        sort(l1)
+        sort(l2)
+
+        t = 0
+        for i in range(lines_size):
+            t += abs(l2[i] - l1[i])
         return t
 
     @staticmethod
-    fn part_2(data: String) -> Scalar[Self.T]:
+    fn part_2[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
         """Part 2 test.
 
         ```mojo
@@ -45,11 +72,12 @@ struct Solution(S):
         ```
         """
         lines = data.splitlines()
-        vals = List[String]()
+        vals = List[StringSlice[data.origin]]()
         for line in lines:
-            vals.append(line[].split()[1])
+            lst = line[].split()[1]
+            vals.append(lst)
 
-        c = Counter[String](vals)
+        c = Counter[StringSlice[data.origin]](vals)
         tot = 0
         for line in lines:
             k = line[].split()[0]

@@ -25,19 +25,19 @@ struct Part(EqualityComparable):
         return not (self == other)
 
 
-trait Solution:
+trait AdventSolution:
     alias T: DType
 
     @staticmethod
-    fn part_1(data: String) -> Scalar[Self.T]:
+    fn part_1[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
         ...
 
     @staticmethod
-    fn part_2(data: String) -> Scalar[Self.T]:
+    fn part_2[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
         ...
 
 
-fn run[input_path: StringLiteral, *solutions: Solution]() raises:
+fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
     var filepath = _dir_of_current_file() / "../../.." / input_path
     alias sols = VariadicList(solutions)
     alias n_sols = len(sols)
@@ -48,7 +48,7 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
 
         day = String("0" if i < 9 else "", i + 1)
         file = filepath / String("day", day, ".txt")
-        data = file.read_text()
+        data = file.read_text().as_string_slice()
 
         var p1: Scalar[Sol.T] = 0
         var p2: Scalar[Sol.T] = 0
@@ -73,13 +73,13 @@ fn run[input_path: StringLiteral, *solutions: Solution]() raises:
 
 
 fn test[
-    S: Solution,
+    S: AdventSolution,
     part: Part,
     file: StringLiteral,
     expected: IntLiteral,
 ]() raises:
     var filepath = _dir_of_current_file() / "../../.." / file
-    data = filepath.read_text()
+    data = filepath.read_text().as_string_slice()
 
     @parameter
     if part == Part.one:
