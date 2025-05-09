@@ -65,9 +65,9 @@ impl AdventSolution for Solution {
                 let pos = mags.iter().filter(|(_, b, _)| *b).count();
                 let neg = mags.iter().filter(|(_, _, c)| *c).count();
                 let failed = mags
-                    .iter()
+                    .into_iter()
                     .enumerate()
-                    .find(|(_, &(a, b, c))| !(a && (if pos > neg { b } else { c })))
+                    .find(|&(_, (a, b, c))| !(a && (if pos > neg { b } else { c })))
                     .unwrap()
                     .0;
                 let mut v1 = nums.clone();

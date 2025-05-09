@@ -3,10 +3,10 @@ from memory import pack_bits, bitcast
 from bit import prev_power_of_two
 from math import log2
 
-from advent_utils import Solution as S
+from advent_utils import AdventSolution
 
 
-fn to_int(v: String) -> Int:
+fn to_int(v: StringSlice) -> Int:
     try:
         return Int(v)
     except:
@@ -26,13 +26,13 @@ fn calc_simd(
     return is_positive_in_bounds, is_negative_in_bounds
 
 
-struct Solution(S):
+struct Solution(AdventSolution):
     alias T = DType.int32
     alias IdxSIMD = SIMD[DType.int8, 8](0, 1, 2, 3, 4, 5, 6, 7)
     alias ZeroSIMD = SIMD[DType.int8, 8](0)
 
     @staticmethod
-    fn part_1(data: String) -> Scalar[Self.T]:
+    fn part_1[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
         """Part 1 test.
 
         ```mojo
@@ -60,7 +60,7 @@ struct Solution(S):
         return results.reduce_add()
 
     @staticmethod
-    fn part_2(data: String) -> Scalar[Self.T]:
+    fn part_2[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
         """Part 2 test.
 
         ```mojo

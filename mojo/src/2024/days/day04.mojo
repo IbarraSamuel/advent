@@ -1,9 +1,9 @@
 from max.graph import Graph, Type, TensorType, ops
 from max.tensor import Tensor, TensorShape
 from os import abort
-from advent_utils import Solution as S
+from advent_utils import AdventSolution
 
-# alias TARGET = "XMAS".as_bytes()
+alias TARGET = "XMAS".as_bytes()
 
 @value
 struct Dir[v: StaticString = "auto"]:
@@ -35,11 +35,11 @@ struct Dir[v: StaticString = "auto"]:
 #     abort("this should not happen")
 #     return 0
 
-struct Solution(S):
+struct Solution(AdventSolution):
     alias T = DType.int32
 
     @staticmethod
-    fn part_1(data: String) -> Scalar[Self.T]:
+    fn part_1[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
         """Part 1 solution.
 
         ```mojo
@@ -144,7 +144,7 @@ struct Solution(S):
         return tot
 
     @staticmethod
-    fn part_2(data: String) -> Scalar[Self.T]:
+    fn part_2[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
         """Part 2 solution.
 
         ```mojo
