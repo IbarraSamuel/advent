@@ -18,8 +18,10 @@ alias DownRight: StaticString = "F"
 alias Ground: StaticString = "."
 alias Start: StaticString = "S"
 
-alias VALID_PIPES = [Vertical, Horizontal, UpRight, UpLeft, DownRight, DownLeft]
-alias INVALID_PIPES = [Ground, Start]
+alias VALID_PIPES = List(
+    Vertical, Horizontal, UpRight, UpLeft, DownRight, DownLeft
+)
+alias INVALID_PIPES = List(Ground, Start)
 # alias VALID_DIAG = [Horizontal, Vertical, UpRight, DownLeft]
 
 alias UP: Position = (0, -1)
@@ -27,7 +29,7 @@ alias DOWN: Position = (0, 1)
 alias LEFT: Position = (-1, 0)
 alias RIGHT: Position = (1, 0)
 
-alias PIPE_TO_MOV = [
+alias PIPE_TO_MOV = List(
     (Vertical, Movement(DOWN, UP)),
     (Horizontal, Movement(LEFT, RIGHT)),
     (UpRight, Movement(UP, RIGHT)),
@@ -36,13 +38,13 @@ alias PIPE_TO_MOV = [
     (DownLeft, Movement(DOWN, LEFT)),
     (Ground, Movement(UP, UP)),
     (Start, Movement(UP, UP)),
-]
+)
 
 
 fn get_pipe_and_mov(char: String) -> (StaticString, Movement):
     @parameter
     for idx in range(len(PIPE_TO_MOV)):
-        alias pp = PIPE_TO_MOV.get[idx, (StaticString, Movement)]()
+        alias pp = PIPE_TO_MOV[idx]
         if char == pp[0]:
             return pp
 

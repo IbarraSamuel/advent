@@ -2,7 +2,7 @@ from advent_utils import SIMDResult, ListSolution
 from collections import Dict, Optional
 from algorithm.functional import parallelize
 
-alias MapList = [
+alias MapList = List[(StaticString, Int)](
     (StaticString("one"), 1),
     (StaticString("two"), 2),
     (StaticString("three"), 3),
@@ -21,7 +21,7 @@ alias MapList = [
     (StaticString("7"), 7),
     (StaticString("8"), 8),
     (StaticString("9"), 9),
-]
+)
 
 
 struct Solution(ListSolution):
@@ -86,7 +86,7 @@ fn line_value(line: String) -> Int:
 
     @parameter
     for idx in range(len(MapList)):
-        k, v = MapList.get[idx, (StaticString, Int)]()
+        k, v = MapList[idx]
         var mn = line.find(k)
         var mx = line.rfind(k)
 
