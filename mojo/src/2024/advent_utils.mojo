@@ -6,9 +6,9 @@ from testing import assert_equal
 
 @register_passable("trivial")
 struct Part(EqualityComparable):
-    alias one = Part(1)
-    alias two = Part(2)
-    alias bad = Part(-1)
+    alias one: Part = 1
+    alias two: Part = 2
+    alias bad: Part = -1
     var v: Int
 
     @implicit
