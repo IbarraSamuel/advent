@@ -163,3 +163,5 @@ cython_debug/
 zig/.zig-cache
 inputs
 input
+
+.vscode
