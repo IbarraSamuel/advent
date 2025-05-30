@@ -29,11 +29,11 @@ trait AdventSolution:
     alias T: Intable
 
     @staticmethod
-    fn part_1(data: StringSlice) -> T:
+    fn part_1[o: ImmutableOrigin](data: StringSlice[o]) -> T:
         ...
 
     @staticmethod
-    fn part_2(data: StringSlice) -> T:
+    fn part_2[o: ImmutableOrigin](data: StringSlice[o]) -> T:
         ...
 
 
@@ -51,12 +51,12 @@ fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
         data = file.read_text().as_string_slice()
 
         init = perf_counter_ns()
-        p1 = Sol.part_1(data)
+        var p1: Sol.T = Sol.part_1(data)
         end = perf_counter_ns()
         b1 = end - init
 
         init = perf_counter_ns()
-        p2 = Sol.part_2(data)
+        var p2: Sol.T = Sol.part_2(data)
         end = perf_counter_ns()
         b2 = end - init
 

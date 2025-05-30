@@ -32,7 +32,7 @@ struct Solution(AdventSolution):
     alias ZeroSIMD = SIMD[DType.int8, 8](0)
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Self.T:
+    fn part_1[o: ImmutableOrigin](data: StringSlice[o]) -> Self.T:
         """Part 1 test.
 
         ```mojo
@@ -60,7 +60,7 @@ struct Solution(AdventSolution):
         return results.reduce_add()
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Self.T:
+    fn part_2[o: ImmutableOrigin](data: StringSlice[o]) -> Self.T:
         """Part 2 test.
 
         ```mojo

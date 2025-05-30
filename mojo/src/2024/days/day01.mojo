@@ -6,7 +6,7 @@ struct Solution(AdventSolution):
     alias T = Int32
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Self.T:
+    fn part_1[o: ImmutableOrigin](data: StringSlice[o]) -> Self.T:
         """Part 1 test.
 
         ```mojo
@@ -62,7 +62,7 @@ struct Solution(AdventSolution):
         return t
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Self.T:
+    fn part_2[o: ImmutableOrigin](data: StringSlice[o]) -> Self.T:
         """Part 2 test.
 
         ```mojo
@@ -74,19 +74,15 @@ struct Solution(AdventSolution):
         lines = data.splitlines()
         var vals = [line[].split(maxsplit=1)[1] for line in lines]
 
-        var dct = Dict[StringSlice[data.origin], Int]()
-
+        var dct = Dict[StringSlice[o], Int]()
         for val in vals:
-            inner = val[]
-            dct.setdefault(inner, 0)
+            dct[val[]] = dct.get(val[], 0) + 1
 
-        c = Counter(vals)
-
+        tot = 0
         for line in lines:
             k = line[].split(maxsplit=1)[0]
             try:
-                count = c.get(String(k))
-                tot += Int(k) * c[k]
+                tot += Int(k) * dct.get(k, 0)
             except:
                 pass
         return tot
