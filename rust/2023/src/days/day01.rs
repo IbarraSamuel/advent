@@ -9,9 +9,9 @@ impl AdventSolution for Solution {
         let result = input
             .into_iter()
             .map(|line| {
-                let values = line.chars().filter(|c| c.is_ascii_digit());
+                let mut values = line.chars().filter(|c| c.is_ascii_digit());
                 values.clone().next().unwrap().to_digit(10).unwrap() * 10
-                    + values.last().unwrap().to_digit(10).unwrap()
+                    + values.next_back().unwrap().to_digit(10).unwrap()
             })
             .sum::<u32>();
         Ok(result)

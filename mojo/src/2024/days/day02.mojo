@@ -27,12 +27,12 @@ fn calc_simd(
 
 
 struct Solution(AdventSolution):
-    alias T = DType.int32
+    alias T = Int32
     alias IdxSIMD = SIMD[DType.int8, 8](0, 1, 2, 3, 4, 5, 6, 7)
     alias ZeroSIMD = SIMD[DType.int8, 8](0)
 
     @staticmethod
-    fn part_1[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_1(data: StringSlice) -> Self.T:
         """Part 1 test.
 
         ```mojo
@@ -60,7 +60,7 @@ struct Solution(AdventSolution):
         return results.reduce_add()
 
     @staticmethod
-    fn part_2[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_2(data: StringSlice) -> Self.T:
         """Part 2 test.
 
         ```mojo

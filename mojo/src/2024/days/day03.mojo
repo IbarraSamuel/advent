@@ -2,10 +2,10 @@ from advent_utils import AdventSolution
 
 
 struct Solution(AdventSolution):
-    alias T = DType.int32
+    alias T = Int32
 
     @staticmethod
-    fn part_1[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_1(data: StringSlice) -> Self.T:
         """Part 1 solution.
 
         ```mojo
@@ -46,7 +46,7 @@ struct Solution(AdventSolution):
         return tot
 
     @staticmethod
-    fn part_2[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_2(data: StringSlice) -> Self.T:
         """Part 2 solution.
 
         ```mojo

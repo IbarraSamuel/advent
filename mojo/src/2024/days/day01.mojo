@@ -3,10 +3,10 @@ from advent_utils import AdventSolution
 
 
 struct Solution(AdventSolution):
-    alias T = DType.int32
+    alias T = Int32
 
     @staticmethod
-    fn part_1[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_1(data: StringSlice) -> Self.T:
         """Part 1 test.
 
         ```mojo
@@ -62,7 +62,7 @@ struct Solution(AdventSolution):
         return t
 
     @staticmethod
-    fn part_2[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_2(data: StringSlice) -> Self.T:
         """Part 2 test.
 
         ```mojo
@@ -72,17 +72,21 @@ struct Solution(AdventSolution):
         ```
         """
         lines = data.splitlines()
-        vals = List[StringSlice[data.origin]]()
-        for line in lines:
-            lst = line[].split()[1]
-            vals.append(lst)
+        var vals = [line[].split(maxsplit=1)[1] for line in lines]
 
-        c = Counter[StringSlice[data.origin]](vals)
-        tot = 0
+        var dct = Dict[StringSlice[data.origin], Int]()
+
+        for val in vals:
+            inner = val[]
+            dct.setdefault(inner, 0)
+
+        c = Counter(vals)
+
         for line in lines:
-            k = line[].split()[0]
+            k = line[].split(maxsplit=1)[0]
             try:
-                tot += Int(k) * c.get(k, 0)
+                count = c.get(String(k))
+                tot += Int(k) * c[k]
             except:
                 pass
         return tot

@@ -1,5 +1,5 @@
 from pathlib import Path
-from time import time_function
+from time import perf_counter_ns
 from pathlib import _dir_of_current_file
 from testing import assert_equal
 
@@ -26,14 +26,14 @@ struct Part(EqualityComparable):
 
 
 trait AdventSolution:
-    alias T: DType
+    alias T: Intable
 
     @staticmethod
-    fn part_1[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_1(data: StringSlice) -> T:
         ...
 
     @staticmethod
-    fn part_2[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_2(data: StringSlice) -> T:
         ...
 
 
@@ -50,26 +50,23 @@ fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
         file = filepath / String("day", day, ".txt")
         data = file.read_text().as_string_slice()
 
-        var p1: Scalar[Sol.T] = 0
-        var p2: Scalar[Sol.T] = 0
+        init = perf_counter_ns()
+        p1 = Sol.part_1(data)
+        end = perf_counter_ns()
+        b1 = end - init
 
-        @parameter
-        fn part_1():
-            p1 = Sol.part_1(data)
-
-        @parameter
-        fn part_2():
-            p2 = Sol.part_2(data)
+        init = perf_counter_ns()
+        p2 = Sol.part_2(data)
+        end = perf_counter_ns()
+        b2 = end - init
 
         # Saving results
-        b1 = time_function[part_1]()
-        b2 = time_function[part_2]()
         b1m = (b1 // 100) / 10
         b2m = (b2 // 100) / 10
 
         print("Day", day, "=>")
-        print("\tPart 1:", p1, "in", b1m, "us.")
-        print("\tPart 2:", p2, "in", b2m, "us.\n")
+        print("\tPart 1:", Int(p1), "in", b1m, "us.")
+        print("\tPart 2:", Int(p2), "in", b2m, "us.\n")
 
 
 fn test[
@@ -89,4 +86,4 @@ fn test[
     else:
         raise Error("Part argument is incorrectly set.")
 
-    assert_equal(res, expected)
+    assert_equal(Int(res), expected)

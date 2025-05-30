@@ -1,9 +1,6 @@
-from max.graph import Graph, Type, TensorType, ops
-from max.tensor import Tensor, TensorShape
-from os import abort
 from advent_utils import AdventSolution
 
-alias TARGET = "XMAS".as_bytes()
+alias TARGET = "XMAS"
 
 @value
 struct Dir[v: StaticString = "auto"]:
@@ -12,34 +9,12 @@ struct Dir[v: StaticString = "auto"]:
     alias left = Dir["left"]
     alias right = Dir["right"]
 
-# fn check(data: String, dir: Dir[].up = Dir[].up()) -> Int:
-#     return 0
-# fn check(data: String, dir: Dir[].down = Dir[].down()) -> Int:
-#     return 0
-# fn check(data: String, dir: Dir[].left = Dir[].left()) -> Int:
-#     return 0
-# fn check(data: String, dir: Dir[].right = Dir[].right()) -> Int:
-#     return 0
-
-# fn check[S: StringLiteral](data: String) -> Int:
-#     @parameter
-#     if S == "up":
-#         return check(data, Dir["up"]())
-#     if S == "down":
-#         return check(data, Dir["down"]())
-#     if S == "left":
-#         return check(data, Dir["left"]())
-#     if S == "right":
-#         return check(data, Dir["right"]())
-    
-#     abort("this should not happen")
-#     return 0
 
 struct Solution(AdventSolution):
-    alias T = DType.int32
+    alias T = Int32
 
     @staticmethod
-    fn part_1[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_1(data: StringSlice) -> Self.T:
         """Part 1 solution.
 
         ```mojo
@@ -144,7 +119,7 @@ struct Solution(AdventSolution):
         return tot
 
     @staticmethod
-    fn part_2[o: ImmutableOrigin, //](data: StringSlice[o]) -> Scalar[Self.T]:
+    fn part_2(data: StringSlice) -> Self.T:
         """Part 2 solution.
 
         ```mojo
