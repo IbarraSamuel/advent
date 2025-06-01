@@ -214,6 +214,7 @@ packages:
   - zipp >=3.20
   - python
   license: Apache-2.0
+  license_family: APACHE
   size: 34641
   timestamp: 1747934053147
 - conda: https://repo.prefix.dev/conda-forge/noarch/jupyter_client-8.6.3-pyhd8ed1ab_1.conda
@@ -556,6 +557,7 @@ packages:
   depends:
   - __osx >=11.0
   license: BSD-2-Clause
+  license_family: BSD
   size: 71829
   timestamp: 1748393749336
 - conda: https://repo.prefix.dev/conda-forge/linux-64/libnsl-2.0.1-hd590300_0.conda
@@ -697,6 +699,7 @@ packages:
   constrains:
   - openmp 20.1.6|20.1.6.*
   license: Apache-2.0 WITH LLVM-exception
+  license_family: APACHE
   size: 282698
   timestamp: 1748570308073
 - conda: https://conda.modular.com/max-nightly/noarch/max-25.4.0.dev2025053005-release.conda
