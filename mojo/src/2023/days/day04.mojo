@@ -55,13 +55,13 @@ struct Solution(ListSolution):
         for _ in range(len(input)):
             amount.append(1)
 
-        fn calc_line(line: Pointer[String]) -> Int:
+        fn calc_line(read line: String) -> Int:
             var winners = List[String]()
-            var inp = line[].find(": ") + 2
-            var pipe = line[].find("|")
+            var inp = line.find(": ") + 2
+            var pipe = line.find("|")
 
-            var win_str = line[][inp : pipe - 1]
-            var num_str = line[][pipe + 2 :]
+            var win_str = line[inp : pipe - 1]
+            var num_str = line[pipe + 2 :]
             var winner_amnt = 0
 
             var accm: String = ""
@@ -90,7 +90,7 @@ struct Solution(ListSolution):
 
             return winner_amnt
 
-        for line in input:
+        for ref line in input:
             var amnt = calc_line(line)
             var times = amount.pop(0) if len(amount) > 0 else 1
             total += times

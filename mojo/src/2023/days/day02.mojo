@@ -71,8 +71,8 @@ struct Solution(ListSolution):
             except:
                 return
 
-            for card in cards:
-                var gm = create_game(card[])
+            for ref card in cards:
+                var gm = create_game(card)
                 if not less_than_max(gm):
                     return
             total += idx + 1
@@ -95,8 +95,8 @@ struct Solution(ListSolution):
             except:
                 return
 
-            for card in cards:
-                var gm = create_game(card[])
+            for ref card in cards:
+                var gm = create_game(card)
                 max_card = calc_max(max_card, gm)
 
             simd[idx] = max_card[0] * max_card[1] * max_card[2]

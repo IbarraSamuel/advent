@@ -1,92 +1,3 @@
-# from collections import Dict
-# from collections.string import StringSlice
-# from advent_utils import AdventSolution, SIMDResult, map
-# import os
-# from algorithm.functional import parallelize
-
-
-# fn should_instert_it(
-#     footprint: String,
-#     group_size: Int,
-#     groups_len: Int,
-#     current_position: Int,
-#     group_idx: Int,
-# ) -> Bool:
-#     i = current_position
-#     contains_hash = False
-
-#     while i < len(footprint):
-#         if footprint[i] == "." and i < current_position + group_size:
-#             return False
-#         if footprint[i] == "#" and i >= current_position + group_size:
-#             contains_hash = True
-#             break
-#         i += 1
-
-#     return current_position + group_size - 1 < len(footprint) and (
-#         (group_idx == groups_len - 1 and not contains_hash)
-#         or (
-#             group_idx < groups_len - 1
-#             and current_position + group_size < len(footprint)
-#             and footprint[current_position + group_size] != "#"
-#         )
-#     )
-
-
-# fn count(footprint: String, groups: List[Int]) -> Int:
-#     groups_len = len(groups)
-#     acc = List((0, 1))
-#     rem_group_size = 0
-
-#     for g in groups:
-#         rem_group_size += g[]
-
-#     for group_idx in range(len(groups)):
-#         group_size = groups[group_idx]
-
-#         new_positions = List[(Int, Int)](capacity=30)
-#         for a in acc:
-#             k, v = a[]
-#             for current_position in range(
-#                 k,
-#                 len(footprint)
-#                 - rem_group_size
-#                 + group_size
-#                 + groups_len
-#                 - group_idx
-#                 - 1,
-#             ):
-#                 if should_instert_it(
-#                     footprint,
-#                     group_size,
-#                     groups_len,
-#                     current_position,
-#                     group_idx,
-#                 ):
-#                     for tp in new_positions:
-#                         pos, nxt = tp[]
-#                         if pos == current_position + group_size + 1:
-#                             tp[] = pos, nxt + v
-#                             break
-#                     else:
-#                         new_positions.append(
-#                             (current_position + group_size + 1, v)
-#                         )
-
-#                 if footprint[current_position : current_position + 1] == "#":
-#                     break
-
-#         acc, rem_group_size = new_positions, rem_group_size - group_size
-
-#     tot = 0
-#     for a in acc:
-#         tot += a[][1]
-
-#     return tot
-
-
-# Rust impl
-
 from advent_utils import SIMDResult, ListSolution
 from algorithm import parallelize
 from collections import Dict
@@ -161,8 +72,8 @@ struct Solution(ListSolution):
             nums = List[Int]()
             try:
                 splitted_nums = nums_chr.split(",")
-                for num in splitted_nums:
-                    nums.append(Int(num[]))
+                for ref num in splitted_nums:
+                    nums.append(Int(num))
             except:
                 os.abort("This should never happen")
             cache = Dict[CacheKey, Int]()
@@ -183,8 +94,8 @@ struct Solution(ListSolution):
             nums = List[Int]()
             try:
                 splitted_nums = nums_chr.split(",")
-                for num in splitted_nums:
-                    nums.append(Int(num[]))
+                for ref num in splitted_nums:
+                    nums.append(Int(num))
             except:
                 os.abort("This should never happen")
             cfg = (("?" + cfg) * 5)[1:]

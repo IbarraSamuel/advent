@@ -42,14 +42,14 @@ struct Solution(AdventSolution):
             end = Int(spaces[line_idx + 1])
             line = data[init : end - 1]
             v1, v2 = 0, 0
-            for chr in line.as_bytes():
-                if v2 == 0 and chr[] == spaceord:
+            for ref chr in line.as_bytes():
+                if v2 == 0 and chr == spaceord:
                     continue
-                if chr[] == spaceord:
+                if chr == spaceord:
                     v1, v2 = v2, 0
                     continue
 
-                v2 += v2 * 10 + (Int(chr[]) - ordoff)
+                v2 += v2 * 10 + (Int(chr) - ordoff)
             l1.append(v1)
             l2.append(v2)
 
@@ -72,15 +72,15 @@ struct Solution(AdventSolution):
         ```
         """
         lines = data.splitlines()
-        var vals = [line[].split(maxsplit=1)[1] for line in lines]
+        var vals = [line.split(maxsplit=1)[1] for ref line in lines]
 
         var dct = Dict[StringSlice[o], Int]()
-        for val in vals:
-            dct[val[]] = dct.get(val[], 0) + 1
+        for ref val in vals:
+            dct[val] = dct.get(val, 0) + 1
 
         tot = 0
-        for line in lines:
-            k = line[].split(maxsplit=1)[0]
+        for ref line in lines:
+            k = line.split(maxsplit=1)[0]
             try:
                 tot += Int(k) * dct.get(k, 0)
             except:

@@ -115,7 +115,8 @@ struct Solution(TensorSolution):
         """Each field could have 4 positions *  4 directions * 3 steps.
 
         It means == 48.
-        Final count will be 48 * 141 * 141 = 954288"""
+        Final count will be 48 * 141 * 141 = 954288
+        """
         print(data)
 
         sp = data.shape()

@@ -55,25 +55,6 @@ struct Dir(EqualityComparable, Movable, Copyable):
     fn __ne__(self, other: Self) -> Bool:
         return not (self == other)
 
-    # fn __str__(self) -> String:
-    #     if self == Self.up:
-    #         return "up"
-    #     if self == Self.down:
-    #         return "down"
-    #     if self == Self.left:
-    #         return "left"
-    #     if self == Self.right:
-    #         return "right"
-    #     if self == Self.upleft:
-    #         return "upleft"
-    #     if self == Self.downleft:
-    #         return "downleft"
-    #     if self == Self.upright:
-    #         return "upright"
-    #     if self == Self.downright:
-    #         return "downright"
-    #     return "error"
-
 
 struct Solution(AdventSolution):
     alias T = Int32

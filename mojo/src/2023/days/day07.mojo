@@ -63,8 +63,8 @@ struct Hand[mode: HandMode](Comparable & Copyable & Movable):
             else:
                 chars["J"] = j_val
 
-        for k in chars.values():
-            self.level += k[] ** 3
+        for ref k in chars.values():
+            self.level += k**3
 
     fn __eq__(self, other: Self) -> Bool:
         return (self.value == other.value).reduce_and()
@@ -153,8 +153,8 @@ struct Solution(ListSolution):
     @staticmethod
     fn part_1(lines: List[String]) -> UInt32:
         cards = List[Self.Hand1](capacity=1000)
-        for line in lines:
-            cards.append(Self.Hand1(line[]))
+        for ref line in lines:
+            cards.append(Self.Hand1(line))
 
         total = 0
 
@@ -167,8 +167,8 @@ struct Solution(ListSolution):
     @staticmethod
     fn part_2(lines: List[String]) -> UInt32:
         cards = List[Self.Hand2](capacity=1000)
-        for line in lines:
-            cards.append(Self.Hand2(line[]))
+        for ref line in lines:
+            cards.append(Self.Hand2(line))
 
         total = 0
 

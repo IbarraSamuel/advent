@@ -26,9 +26,9 @@ fn ceil_2pow(v: Int) -> Int:
 
 @always_inline
 fn key_in_list(k: Int, lstp: List[IndexList[2]]) -> Optional[Int]:
-    for tp in lstp:
-        if tp[][0] == k:
-            return Optional(tp[][1])
+    for ref tp in lstp:
+        if tp[0] == k:
+            return Optional(tp[1])
 
     return None
 

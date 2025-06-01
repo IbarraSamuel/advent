@@ -13,24 +13,24 @@ struct Solution(ListSolution):
         var seeds_nums = atol_uint(seeds_list)
 
         var maps = List[MapRange]()
-        for line in lines[2:]:
-            if line[] == "":
+        for ref line in lines[2:]:
+            if line == "":
                 continue
 
             # These lines are not useful
-            if "map" in line[]:
+            if "map" in line:
                 map_numbers(maps, seeds_nums)
                 maps.clear()
                 continue
 
-            var map_range: MapRange = atol_uint(line[].split())
+            var map_range: MapRange = atol_uint(line.split())
             maps.append(map_range)
 
         map_numbers(maps, seeds_nums)
 
         var m: Int = Int.MAX
-        for n in seeds_nums:
-            m = min(m, n[])
+        for ref n in seeds_nums:
+            m = min(m, n)
 
         return m
 
@@ -43,24 +43,24 @@ struct Solution(ListSolution):
         var seeds_nums = calc_num_ranges(atol_uint(seeds_list))
 
         var maps = List[MapRange]()
-        for line in lines[2:]:
-            if line[] == "":
+        for ref line in lines[2:]:
+            if line == "":
                 continue
 
             # These lines are not useful
-            if "map" in line[]:
+            if "map" in line:
                 seeds_nums = map_ranges(maps, seeds_nums)
                 maps.clear()
                 continue
 
-            var map_range: MapRange = atol_uint(line[].split())
+            var map_range: MapRange = atol_uint(line.split())
             maps.append(map_range)
 
         seeds_nums = map_ranges(maps, seeds_nums)
 
         var m: Int = Int.MAX
-        for n in seeds_nums:
-            m = min(m, n[].start)
+        for ref n in seeds_nums:
+            m = min(m, n.start)
 
         return m
 
@@ -107,9 +107,9 @@ fn map_number(range: MapRange, n: Int) -> Tuple[Int, Bool]:
 
 
 fn map_numbers(ranges: List[MapRange], mut numbers: List[Int]):
-    for i in range(len(numbers)):
-        for map in ranges:
-            numbers[i], mapped = map_number(map[], numbers[i])
+    for num in numbers:
+        for ref map in ranges:
+            num, mapped = map_number(map, num)
 
             if mapped:
                 break
@@ -173,8 +173,8 @@ fn map_ranges(
     while len(numbers) > 0:
         var num = numbers.pop(0)
 
-        for map in ranges:
-            new_numbers, mask = calc_ranges(map[], num)
+        for ref map in ranges:
+            new_numbers, mask = calc_ranges(map, num)
 
             if len(mask) == 3:  # 3 Produced
                 num = new_numbers[0]

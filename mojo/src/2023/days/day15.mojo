@@ -10,7 +10,7 @@ alias COMMA = ord(",")
 fn hash(v: Span[Byte]) -> Int:
     acc = 0
     for i in v:
-        acc = ((acc + Int(i[])) * 17) % 256
+        acc = ((acc + Int(i)) * 17) % 256
     return acc
 
 
@@ -28,21 +28,21 @@ fn add_elems(
     h = hash(chr.as_bytes())
     try:
         n = Int(elem[idx + 1 :]) if is_add else -1
-        for it in elems.items():
-            if it[].key == h:
-                for idx in range(len(it[].value)):
-                    if it[].value[idx][0] == chr:
+        for ref it in elems.items():
+            if it.key == h:
+                for idx in range(len(it.value)):
+                    if it.value[idx][0] == chr:
                         if not is_add:
-                            if len(it[].value) == 1:
+                            if len(it.value) == 1:
                                 _ = elems.pop(h)
                                 return
-                            _ = it[].value.pop(idx)
+                            _ = it.value.pop(idx)
                             return
-                        it[].value[idx][1] = n
+                        it.value[idx][1] = n
                         return
                 if not is_add:
                     return
-                it[].value.append((chr, n))
+                it.value.append((chr, n))
                 return
         if not is_add:
             return
@@ -61,12 +61,12 @@ struct Solution(ListSolution):
     fn part_1(data: List[String]) -> Scalar[Self.dtype]:
         t = 0
         acc = 0
-        for v in data[0].as_bytes():
-            if v[] == COMMA:
+        for ref v in data[0].as_bytes():
+            if v == COMMA:
                 t += Int(acc)
                 acc = 0
                 continue
-            acc = ((acc + Int(v[])) * 17) % 256
+            acc = ((acc + Int(v)) * 17) % 256
         return t + acc
 
     @staticmethod
@@ -82,9 +82,9 @@ struct Solution(ListSolution):
         add_elems(elems, d, l, len(d))
 
         tot = 0
-        for it in elems.items():
+        for ref it in elems.items():
             tt = 0
-            for i in range(len(it[].value)):
-                tt += (i + 1) * it[].value[i][1]
-            tot += (it[].key + 1) * tt
+            for i in range(len(it.value)):
+                tt += (i + 1) * it.value[i][1]
+            tot += (it.key + 1) * tt
         return tot

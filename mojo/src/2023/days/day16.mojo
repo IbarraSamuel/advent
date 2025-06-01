@@ -1,6 +1,5 @@
 from advent_utils import TensorSolution, FileTensor
 from utils import IndexList, Index
-from tensor import TensorShape
 from collections import Dict
 from collections.set import Set
 from algorithm import parallelize
