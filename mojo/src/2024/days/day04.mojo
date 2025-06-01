@@ -86,6 +86,15 @@ struct Solution(AdventSolution):
                 print("[START] an x in pos (", x, ",", y, ")")
                 # We will start always from the top left corner in a clockwise manner.
                 last = x + 1
+                print(
+                    "We will go from (",
+                    max(0, x - 1),
+                    max(0, y - 1),
+                    ") to (",
+                    min(xmax - 1, x + 1),
+                    min(ymax - 1, y + 1),
+                    ") inclusive",
+                )
 
                 for xi in range(max(0, x - 1), min(xmax - 1, x + 1) + 1):
                     for yi in range(max(0, y - 1), min(ymax - 1, y + 1) + 1):
@@ -118,46 +127,46 @@ struct Solution(AdventSolution):
                             dy,
                             ")",
                         )
-                        xi, yi = xi + dx, yi + dy
+                        xii, yii = xi + dx, yi + dy
                         if (
-                            0 > xi
-                            or xi >= xmax
-                            or 0 > yi
-                            or yi >= ymax
-                            or ls[yi][xi] != "A"
+                            0 > xii
+                            or xii >= xmax
+                            or 0 > yii
+                            or yii >= ymax
+                            or ls[yii][xii] != "A"
                         ):
                             print(
                                 "[--][--] (",
-                                xi,
+                                xii,
                                 ",",
-                                yi,
+                                yii,
                                 ") no a found. end --",
                             )
                             continue
 
-                        print("[--][--]an a in pos (", xi, ",", yi, ")")
-                        xi, yi = xi + dx, yi + dy
+                        print("[--][--]an a in pos (", xii, ",", yii, ")")
+                        xii, yii = xii + dx, yii + dy
                         if (
-                            0 > xi
-                            or xi >= xmax
-                            or 0 > yi
-                            or yi >= ymax
-                            or ls[yi][xi] != "S"
+                            0 > xii
+                            or xii >= xmax
+                            or 0 > yii
+                            or yii >= ymax
+                            or ls[yii][xii] != "S"
                         ):
                             print(
                                 "[--][--][--] (",
-                                xi,
+                                xii,
                                 ",",
-                                yi,
+                                yii,
                                 ") no s found. end --",
                             )
                             continue
 
                         print(
                             "[--][--][--]an s in pos (",
-                            xi,
+                            xii,
                             ",",
-                            yi,
+                            yii,
                             ")",
                             " ->> +1!!",
                         )
