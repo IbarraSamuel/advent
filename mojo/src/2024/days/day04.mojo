@@ -98,13 +98,7 @@ struct Solution(AdventSolution):
 
                 for xi in range(max(0, x - 1), min(xmax - 1, x + 1) + 1):
                     for yi in range(max(0, y - 1), min(ymax - 1, y + 1) + 1):
-                        if (
-                            0 > xi
-                            or xi >= xmax
-                            or 0 > yi
-                            or yi >= ymax
-                            or ls[yi][xi] != "M"
-                        ):
+                        if ls[yi][xi] != "M":
                             print(
                                 "[--] (",
                                 xi,
