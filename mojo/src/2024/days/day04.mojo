@@ -80,47 +80,16 @@ struct Solution(AdventSolution):
             while True:
                 x = ls[y].find("X", last)
                 if x == -1:
-                    print(x, "--level x finished")
                     break
 
-                print("[START] an x in pos (", x, ",", y, ")")
-                # We will start always from the top left corner in a clockwise manner.
                 last = x + 1
-                print(
-                    "We will go from (",
-                    max(0, x - 1),
-                    max(0, y - 1),
-                    ") to (",
-                    min(xmax - 1, x + 1),
-                    min(ymax - 1, y + 1),
-                    ") inclusive",
-                )
 
                 for xi in range(max(0, x - 1), min(xmax - 1, x + 1) + 1):
                     for yi in range(max(0, y - 1), min(ymax - 1, y + 1) + 1):
                         if ls[yi][xi] != "M":
-                            print(
-                                "[--] (",
-                                xi,
-                                ",",
-                                yi,
-                                ") no m found. end --",
-                            )
                             continue
                         dir = Dir((x, y), (xi, yi))
                         dx, dy = dir.delta()
-                        print(
-                            "[--]an m in pos (",
-                            xi,
-                            ",",
-                            yi,
-                            ")",
-                            " and delta: (",
-                            dx,
-                            ",",
-                            dy,
-                            ")",
-                        )
                         xii, yii = xi + dx, yi + dy
                         if (
                             0 > xii
@@ -129,16 +98,8 @@ struct Solution(AdventSolution):
                             or yii >= ymax
                             or ls[yii][xii] != "A"
                         ):
-                            print(
-                                "[--][--] (",
-                                xii,
-                                ",",
-                                yii,
-                                ") no a found. end --",
-                            )
                             continue
 
-                        print("[--][--]an a in pos (", xii, ",", yii, ")")
                         xii, yii = xii + dx, yii + dy
                         if (
                             0 > xii
@@ -147,39 +108,9 @@ struct Solution(AdventSolution):
                             or yii >= ymax
                             or ls[yii][xii] != "S"
                         ):
-                            print(
-                                "[--][--][--] (",
-                                xii,
-                                ",",
-                                yii,
-                                ") no s found. end --",
-                            )
                             continue
 
-                        print(
-                            "[--][--][--]an s in pos (",
-                            xii,
-                            ",",
-                            yii,
-                            ")",
-                            " ->> +1!!",
-                        )
                         tot += 1
-            print(
-                y,
-                (
-                    ">>>>>>>>>>>><<<<<>>>>><<<>>> row y -> No more results for"
-                    " it -- "
-                ),
-                "current count:",
-                tot,
-                "\n",
-            )
-
-            # var res = [Dir(y) for y in ry for x in rx]
-
-            # var positions = [(x, y) for x in rx for y in ry]
-
         return tot
 
     @staticmethod
@@ -190,8 +121,32 @@ struct Solution(AdventSolution):
         from advent_utils import test
         import days
 
-        test[days.day04.Solution, file="tests/2024/day032.txt", part=2, expected=0]()
+        test[days.day04.Solution, file="tests/2024/day032.txt", part=2, expected=9]()
         ```
         """
         tot = 0
+        ls = data.splitlines()
+        xmax, ymax = len(ls[0]), len(ls)
+
+        for y in range(1, ymax - 1):
+            last = 1
+            while True:
+                x = ls.unsafe_get(y).find("A", last)
+                if x == -1 or x == xmax - 1:
+                    break
+                last = x + 1
+
+                if (
+                    ls[y - 1][x - 1] == "M"
+                    and ls[y + 1][x + 1] == "S"
+                    or ls[y - 1][x - 1] == "S"
+                    and ls[y + 1][x + 1] == "M"
+                ) and (
+                    ls[y + 1][x - 1] == "M"
+                    and ls[y - 1][x + 1] == "S"
+                    or ls[y + 1][x - 1] == "S"
+                    and ls[y - 1][x + 1] == "M"
+                ):
+                    tot += 1
+
         return tot

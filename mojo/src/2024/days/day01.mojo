@@ -72,9 +72,11 @@ struct Solution(AdventSolution):
         ```
         """
         lines = data.splitlines()
-        var vals = [line.split(maxsplit=1)[1] for ref line in lines]
+        vals: List[StringSlice[o]] = [
+            line.split(maxsplit=1)[1] for ref line in lines
+        ]
 
-        var dct = Dict[StringSlice[o], Int]()
+        dct = Dict[StringSlice[o], Int]()
         for ref val in vals:
             dct[val] = dct.get(val, 0) + 1
 

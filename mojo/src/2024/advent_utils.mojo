@@ -38,7 +38,7 @@ trait AdventSolution:
 
 
 fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
-    var filepath = _dir_of_current_file() / "../../.." / input_path
+    filepath = _dir_of_current_file() / "../../.." / input_path
     alias sols = VariadicList(solutions)
     alias n_sols = len(sols)
 
@@ -75,7 +75,7 @@ fn test[
     file: StringLiteral,
     expected: IntLiteral,
 ]() raises:
-    var filepath = _dir_of_current_file() / "../../.." / file
+    filepath = _dir_of_current_file() / "../../.." / file
     data = filepath.read_text().as_string_slice()
 
     @parameter
