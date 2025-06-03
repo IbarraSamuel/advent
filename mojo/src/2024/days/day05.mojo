@@ -12,7 +12,7 @@ struct Solution(AdventSolution):
         from advent_utils import test
         from days.day01 import Solution
 
-        test[Solution, file="tests/2024/dayXX.txt", part=1, expected=0]()
+        test[Solution, file="tests/2024/day05.txt", part=1, expected=143]()
         ```
         """
         tot = 0
@@ -26,7 +26,7 @@ struct Solution(AdventSolution):
         from advent_utils import test
         from days.day01 import Solution
 
-        test[Solution, file="tests/2024/dayXX.txt", part=2, expected=0]()
+        test[Solution, file="tests/2024/day05.txt", part=2, expected=0]()
         ```
         """
         tot = 0

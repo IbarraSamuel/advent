@@ -124,6 +124,7 @@ struct Solution(AdventSolution):
         test[days.day04.Solution, file="tests/2024/day032.txt", part=2, expected=9]()
         ```
         """
+        # TODO: Use the string directly, and don't splitlines to have performant code.
         tot = 0
         ls = data.splitlines()
         xmax, ymax = len(ls[0]), len(ls)
