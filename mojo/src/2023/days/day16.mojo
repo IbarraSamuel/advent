@@ -1,4 +1,4 @@
-from advent_utils import TensorSolution, FileTensor
+from advent_utils import ListSolution
 from utils import IndexList, Index
 from collections import Dict
 from collections.set import Set
@@ -126,7 +126,7 @@ struct Cache(KeyElement):
 fn calc_new_pos(
     dir: Dir,
     pos: IndexList[2],
-    map: FileTensor,
+    map: List[String],
     sp: (Int, Int),
     mut readed: Set[Int],
     mut cache: Set[Cache],
@@ -134,40 +134,40 @@ fn calc_new_pos(
 ) -> (IndexList[2], Int):
     dt = delta(dir)
     npos = pos
-    while map[npos] == DOT or npos == pos:
+    while map[npos[1]][npos[0]] == "." or npos == pos:
         npos = npos + dt
         k = Cache(npos, dir)
-        if oob(npos, sp) or map[npos] == LN or k in cache:
+        if oob(npos, sp) or map[npos[1]][npos[0]] == "\n" or k in cache:
             npos = npos - dt
             break
-        readed.add(map._compute_linear_offset(npos))
+        readed.add(npos[1] * sp[0] + npos[0])
         cache.add(k)
     mv = pos - npos
     return npos, abs(mv[0]) + abs(mv[1])
 
 
 fn calc_energized(
-    map: FileTensor, sp: (Int, Int), owned pos: IndexList[2], owned dir: Dir
+    map: List[String], sp: (Int, Int), owned pos: IndexList[2], owned dir: Dir
 ) -> Int:
-    readed = Set[Int](map._compute_linear_offset(pos))
+    readed = Set[Int](pos[1] * sp[0] + pos[0])
     cache = Set[Cache](Cache(pos, dir))
 
-    if Int(map[pos]) not in MIRRORS:
+    if ord(map[pos[1]][pos[0]]) not in MIRRORS:
         pos, _ = calc_new_pos(dir, pos, map, sp, readed, cache)
 
     queue = List[(Dir, IndexList[2])]((dir, pos))
 
     while queue:
         dir, pos = queue.pop()
-        d1, d2 = reflect(opposite(dir), map[pos])
+        d1, d2 = reflect(opposite(dir), ord(map[pos[1]][pos[0]]))
         if d1:
             npos, _ = calc_new_pos(d1, pos, map, sp, readed, cache)
-            if npos != pos and Int(map[npos]) in MIRRORS:
+            if npos != pos and ord(map[npos[1]][npos[0]]) in MIRRORS:
                 queue.append((d1, npos))
 
         if d2:
             npos2, _ = calc_new_pos(d2, pos, map, sp, readed, cache)
-            if npos2 != pos and Int(map[npos2]) in MIRRORS:
+            if npos2 != pos and ord(map[npos2[1]][npos2[0]]) in MIRRORS:
                 queue.append((d2, npos2))
 
     # @parameter
@@ -186,15 +186,15 @@ fn calc_energized(
     return len(readed)
 
 
-struct Solution(TensorSolution):
+struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod
-    fn part_1(owned map: FileTensor) raises -> Scalar[Self.dtype]:
+    fn part_1(map: List[String]) -> Scalar[Self.dtype]:
         # 46 .. 7199
         pos = Index(0, 0)
         dir = RIGHT
-        sp = map.shape()
+        sp = len(map[0]), len(map)
 
         return calc_energized(
             map,
@@ -204,9 +204,9 @@ struct Solution(TensorSolution):
         )
 
     @staticmethod
-    fn part_2(owned map: FileTensor) raises -> Scalar[Self.dtype]:
+    fn part_2(map: List[String]) -> Scalar[Self.dtype]:
         # 51 .. 7438
-        sp = map.shape()
+        sp = len(map[0]), len(map)
         ym, xm = sp[0], sp[1] - 1
         indexes = List[(IndexList[2], Dir)](capacity=(ym + xm) * 2)
 
