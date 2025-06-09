@@ -90,7 +90,7 @@ struct Solution(ListSolution):
 
             return winner_amnt
 
-        for ref line in input:
+        for line in input:
             var amnt = calc_line(line)
             var times = amount.pop(0) if len(amount) > 0 else 1
             total += times

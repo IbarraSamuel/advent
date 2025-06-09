@@ -11,11 +11,7 @@ fn create_game(card: String) -> Game:
     var r = 0
     var g = 0
     var b = 0
-    var cards: List[String]
-    try:
-        cards = card.split(", ")
-    except:
-        return (0, 0, 0)
+    cards = card.split(", ")
 
     @parameter
     for i in range(3):
@@ -65,13 +61,9 @@ struct Solution(ListSolution):
 
         @parameter
         fn calc_line[v: Int](idx: Int) capturing:
-            var cards: List[String]
-            try:
-                cards = input[idx][input[idx].find(": ") + 2 :].split("; ")
-            except:
-                return
+            cards = input[idx][input[idx].find(": ") + 2 :].split("; ")
 
-            for ref card in cards:
+            for card in cards:
                 var gm = create_game(card)
                 if not less_than_max(gm):
                     return
@@ -89,13 +81,9 @@ struct Solution(ListSolution):
         fn set_result[v: Int](idx: Int):
             var max_card = 0, 0, 0
             var first_space = input[idx].find(": ") + 2
-            var cards: List[String]
-            try:
-                cards = input[idx][first_space:].split("; ")
-            except:
-                return
+            cards = input[idx][first_space:].split("; ")
 
-            for ref card in cards:
+            for card in cards:
                 var gm = create_game(card)
                 max_card = calc_max(max_card, gm)
 

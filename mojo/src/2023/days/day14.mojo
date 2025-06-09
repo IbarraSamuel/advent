@@ -119,7 +119,7 @@ struct Solution(ListSolution):
             idx += 1
 
         valid_idx = (Int(1e9) - iteration - 1) % cycles + (iteration - cycles)
-        for ref it in mazes.items():
+        for it in mazes.items():
             if it.value == valid_idx:
                 maze = it.key
                 break

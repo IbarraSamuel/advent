@@ -42,7 +42,7 @@ struct Solution(AdventSolution):
             end = Int(spaces[line_idx + 1])
             line = data[init : end - 1]
             v1, v2 = 0, 0
-            for ref chr in line.as_bytes():
+            for chr in line.as_bytes():
                 if v2 == 0 and chr == spaceord:
                     continue
                 if chr == spaceord:
@@ -77,11 +77,11 @@ struct Solution(AdventSolution):
         ]
 
         dct = Dict[StringSlice[o], Int]()
-        for ref val in vals:
+        for val in vals:
             dct[val] = dct.get(val, 0) + 1
 
         tot = 0
-        for ref line in lines:
+        for line in lines:
             k = line.split(maxsplit=1)[0]
             try:
                 tot += Int(k) * dct.get(k, 0)

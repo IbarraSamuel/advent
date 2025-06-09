@@ -13,7 +13,7 @@ struct Solution(ListSolution):
         var seeds_nums = atol_uint(seeds_list)
 
         var maps = List[MapRange]()
-        for ref line in lines[2:]:
+        for line in lines[2:]:
             if line == "":
                 continue
 
@@ -29,7 +29,7 @@ struct Solution(ListSolution):
         map_numbers(maps, seeds_nums)
 
         var m: Int = Int.MAX
-        for ref n in seeds_nums:
+        for n in seeds_nums:
             m = min(m, n)
 
         return m
@@ -43,7 +43,7 @@ struct Solution(ListSolution):
         var seeds_nums = calc_num_ranges(atol_uint(seeds_list))
 
         var maps = List[MapRange]()
-        for ref line in lines[2:]:
+        for line in lines[2:]:
             if line == "":
                 continue
 
@@ -59,7 +59,7 @@ struct Solution(ListSolution):
         seeds_nums = map_ranges(maps, seeds_nums)
 
         var m: Int = Int.MAX
-        for ref n in seeds_nums:
+        for n in seeds_nums:
             m = min(m, n.start)
 
         return m
@@ -107,8 +107,8 @@ fn map_number(range: MapRange, n: Int) -> Tuple[Int, Bool]:
 
 
 fn map_numbers(ranges: List[MapRange], mut numbers: List[Int]):
-    for num in numbers:
-        for ref map in ranges:
+    for ref num in numbers:
+        for map in ranges:
             num, mapped = map_number(map, num)
 
             if mapped:
@@ -173,7 +173,7 @@ fn map_ranges(
     while len(numbers) > 0:
         var num = numbers.pop(0)
 
-        for ref map in ranges:
+        for map in ranges:
             new_numbers, mask = calc_ranges(map, num)
 
             if len(mask) == 3:  # 3 Produced

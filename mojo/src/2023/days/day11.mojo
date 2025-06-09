@@ -49,10 +49,10 @@ struct Solution(ListSolution):
                 y_space = 0
                 xmin, xmax = min(a[0], b[0]), max(a[0], b[0])
                 ymin, ymax = min(a[1], b[1]), max(a[1], b[1])
-                for ref x in empty_l:
+                for x in empty_l:
                     x_space += 1 if xmin <= x <= xmax else 0
 
-                for ref y in empty_c:
+                for y in empty_c:
                     y_space += 1 if ymin <= y <= ymax else 0
 
                 total += xmax - xmin + ymax - ymin + x_space + y_space
@@ -95,10 +95,10 @@ struct Solution(ListSolution):
                 y_space = 0
                 xmin, xmax = min(a[0], b[0]), max(a[0], b[0])
                 ymin, ymax = min(a[1], b[1]), max(a[1], b[1])
-                for ref x in empty_l:
+                for x in empty_l:
                     x_space += 999999 if xmin <= x <= xmax else 0
 
-                for ref y in empty_c:
+                for y in empty_c:
                     y_space += 999999 if ymin <= y <= ymax else 0
 
                 total += xmax - xmin + ymax - ymin + x_space + y_space

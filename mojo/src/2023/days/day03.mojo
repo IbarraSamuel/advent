@@ -118,7 +118,7 @@ struct Solution(ListSolution):
 
         var total = 0
         var results = Set[Point]()
-        for ref point in points:
+        for point in points:
             check_window(point, input, results, total)
 
         return total
@@ -142,7 +142,7 @@ struct Solution(ListSolution):
 
         var total = 0
         var results = Set[Point]()
-        for ref point in points:
+        for point in points:
             check_window[2](point, input, results, total)
 
         return total

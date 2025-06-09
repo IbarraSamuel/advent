@@ -12,49 +12,6 @@ fn read_input_lines[path: StaticString]() raises -> List[String]:
         return f.read().splitlines()
 
 
-fn filter[
-    elem: CollectionElement, //,
-    *filters: fn (elem) -> Bool,
-    negate: Bool = False,
-](owned list: List[elem]) -> List[elem]:
-    alias fltrs = VariadicList(filters)
-    i = len(list) - 1
-    while i >= 0:
-        to_delete = False
-
-        @parameter
-        for f in range(len(fltrs)):
-            to_delete = fltrs[f](list[i]) ^ negate
-
-        if to_delete:
-            _ = list.pop(i)
-
-        i -= 1
-    return list
-
-
-fn map[
-    elem: CollectionElement,
-    out: CollectionElement, //,
-    mapper: fn (elem) -> out,
-](list: List[elem]) -> List[out]:
-    final = List[out](capacity=len(list))
-    for ref value in list:
-        final.append(mapper(value))
-    return final
-
-
-fn map[
-    elem: CollectionElement,
-    out: CollectionElement, //,
-    mapper: fn (elem) raises -> out,
-](list: List[elem]) raises -> List[out]:
-    final = List[out](capacity=len(list))
-    for ref value in list:
-        final.append(mapper(value))
-    return final
-
-
 trait ListSolution:
     alias dtype: DType
 

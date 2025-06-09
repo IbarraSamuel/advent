@@ -61,7 +61,7 @@ struct Solution(ListSolution):
     fn part_1(data: List[String]) -> Scalar[Self.dtype]:
         t = 0
         acc = 0
-        for ref v in data[0].as_bytes():
+        for v in data[0].as_bytes():
             if v == COMMA:
                 t += Int(acc)
                 acc = 0
@@ -82,7 +82,7 @@ struct Solution(ListSolution):
         add_elems(elems, d, l, len(d))
 
         tot = 0
-        for ref it in elems.items():
+        for it in elems.items():
             tt = 0
             for i in range(len(it.value)):
                 tt += (i + 1) * it.value[i][1]

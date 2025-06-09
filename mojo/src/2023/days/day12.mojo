@@ -72,7 +72,7 @@ struct Solution(ListSolution):
             nums = List[Int]()
             try:
                 splitted_nums = nums_chr.split(",")
-                for ref num in splitted_nums:
+                for num in splitted_nums:
                     nums.append(Int(num))
             except:
                 os.abort("This should never happen")
@@ -94,7 +94,7 @@ struct Solution(ListSolution):
             nums = List[Int]()
             try:
                 splitted_nums = nums_chr.split(",")
-                for ref num in splitted_nums:
+                for num in splitted_nums:
                     nums.append(Int(num))
             except:
                 os.abort("This should never happen")
