@@ -84,7 +84,10 @@ fn line_value(line: String) -> Int:
     var last_v = 0
     var last_idx: Int = -1
 
-    for ref k, v in MapList:
+    @parameter
+    for i in range(len(MapList)):
+        alias k = MapList[i][0]
+        alias v = MapList[i][1]
         var mn = line.find(k)
         var mx = line.rfind(k)
 
