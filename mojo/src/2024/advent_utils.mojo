@@ -1,28 +1,82 @@
 from pathlib import Path
 from time import perf_counter_ns
+from benchmark import run as run_bench
 from pathlib import _dir_of_current_file
 from testing import assert_equal
 
 
 @register_passable("trivial")
-struct Part(EqualityComparable):
-    alias one: Part = 1
-    alias two: Part = 2
-    alias bad: Part = -1
-    var v: Int
+struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
+    var v: IntLiteral[value]
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self, v: IntLiteral):
-        self.v = v if v == 1 or v == 2 else -1
+    fn __init__(out self: Part[v.value], v: __type_of(1)):
+        self.v = v
+
+    @implicit
+    @always_inline("builtin")
+    fn __init__(out self: Part[v.value], v: __type_of(2)):
+        self.v = v
 
     @always_inline("builtin")
     fn __eq__(self, other: Self) -> Bool:
+        return True
+
+    @always_inline("builtin")
+    fn __eq__(self, other: Part) -> Bool:
         return self.v == other.v
 
     @always_inline("builtin")
     fn __ne__(self, other: Self) -> Bool:
-        return not (self == other)
+        return False
+
+    @always_inline("builtin")
+    fn __ne__(self, other: Part) -> Bool:
+        return self.v != other.v
+
+
+@register_passable("trivial")
+struct TimeUnit[value: __mlir_type.`!kgen.string`](EqualityComparable):
+    # alias ms: TimeUnit["us".value] = "us"
+    # alias ns: TimeUnit["ns".value] = "ns"
+    # alias s: TimeUnit["s".value] = "s"
+    var v: StringLiteral[value]
+
+    @implicit
+    @always_inline("builtin")
+    fn __init__(out self: TimeUnit[v.value], v: __type_of("ms")):
+        self.v = v
+
+    @implicit
+    @always_inline("builtin")
+    fn __init__(out self: TimeUnit[v.value], v: __type_of("ns")):
+        self.v = v
+
+    @implicit
+    @always_inline("builtin")
+    fn __init__(out self: TimeUnit[v.value], v: __type_of("s")):
+        self.v = v
+
+    @always_inline("builtin")
+    fn __eq__(self, other: Self) -> Bool:
+        return True
+
+    @always_inline(
+        "nodebug"
+    )  # TODO: use @builtin when StringLiteral is @builtin comparable
+    fn __eq__(self, other: TimeUnit) -> Bool:
+        return self.v == other.v
+
+    @always_inline("builtin")
+    fn __ne__(self, other: Self) -> Bool:
+        return False
+
+    @always_inline(
+        "nodebug"
+    )  # TODO: use @builtin when StringLiteral is @builtin comparable
+    fn __ne__(self, other: TimeUnit) -> Bool:
+        return self.v == other.v
 
 
 trait AdventSolution:
@@ -50,23 +104,49 @@ fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
         file = filepath / String("day", day, ".txt")
         data = file.read_text().as_string_slice()
 
-        init = perf_counter_ns()
         var p1: Sol.T = Sol.part_1(data)
-        end = perf_counter_ns()
-        b1 = end - init
-
-        init = perf_counter_ns()
         var p2: Sol.T = Sol.part_2(data)
-        end = perf_counter_ns()
-        b2 = end - init
-
-        # Saving results
-        b1m = (b1 // 100) / 10
-        b2m = (b2 // 100) / 10
 
         print("Day", day, "=>")
-        print("\tPart 1:", Int(p1), "in", b1m, "us.")
-        print("\tPart 2:", Int(p2), "in", b2m, "us.\n")
+        print("\tPart 1:", Int(p1))
+        print("\tPart 2:", Int(p2), end="\n\n")
+
+
+fn bench[
+    iters: Int,
+    time_unit: TimeUnit,
+    input_path: StringLiteral,
+    *solutions: AdventSolution,
+]() raises:
+    filepath = _dir_of_current_file() / "../../.." / input_path
+    alias sols = VariadicList(solutions)
+    alias n_sols = len(sols)
+
+    alias tu = TimeUnit("ms")
+    alias res = tu == "ms"
+
+    @parameter
+    for i in range(n_sols):
+        alias Sol = solutions[i]
+
+        day = String("0" if i < 9 else "", i + 1)
+        file = filepath / String("day", day, ".txt")
+        data = file.read_text().as_string_slice()
+
+        @parameter
+        fn part_1():
+            _ = Sol.part_1(data)
+
+        @parameter
+        fn part_2():
+            _ = Sol.part_2(data)
+
+        print(">>> Day", day, "<<<")
+        print("Part 1:")
+        run_bench[part_1](max_iters=iters).print(time_unit.v)
+        print("Part 2:")
+        run_bench[part_2](max_iters=iters).print(time_unit.v)
+        print()
 
 
 fn test[
@@ -79,9 +159,9 @@ fn test[
     data = filepath.read_text().as_string_slice()
 
     @parameter
-    if part == Part.one:
+    if part == 1:
         res = S.part_1(data)
-    elif part == Part.two:
+    elif part == 2:
         res = S.part_2(data)
     else:
         raise Error("Part argument is incorrectly set.")

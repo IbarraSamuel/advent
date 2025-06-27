@@ -15,41 +15,55 @@ struct Solution(AdventSolution):
         test[Solution, file="tests/2024/day01.txt", part=1, expected=11]()
         ```
         """
-        alias ordoff = ord("0")
-        alias spaceord = ord(" ")
-        pos = 0
-        lines_size = 1
+        alias ordoff: Int = ord("0")
+        alias spaceord: Int = ord(" ")
 
-        spaces = SIMD[DType.uint32, 1024]()
+        # pos = 0
+        # lines_size = 1
 
-        while True:
-            pos = data.find("\n", pos)
-            if pos == -1:
-                break
+        # spaces = List[Int](capacity=1024)
+        ref lines = data.splitlines()
+        lines_size = len(lines)
 
-            spaces[lines_size] = pos + 1
-            pos += 1
-            lines_size += 1
+        # while True:
+        #     pos = data.find("\n", pos)
+        #     if pos == -1:
+        #         break
 
-        if not data.endswith("\n"):
-            spaces[lines_size] = data.byte_length()
+        #     spaces[lines_size] = pos + 1
+        #     spaces.append(0)
+        #     pos += 1
+        #     lines_size += 1
+
+        # if not data.endswith("\n"):
+        #     spaces[lines_size] = data.byte_length()
 
         l1 = List[Int](capacity=lines_size)
         l2 = List[Int](capacity=lines_size)
 
-        for line_idx in range(lines_size - 1):
-            init = Int(spaces[line_idx])
-            end = Int(spaces[line_idx + 1])
-            line = data[init : end - 1]
+        # for line_idx in range(lines_size - 1):
+        #     init = Int(spaces[line_idx])
+        #     end = Int(spaces[line_idx + 1])
+        #     line = data[init : end - 1]
+        for ref line in lines:
             v1, v2 = 0, 0
-            for chr in line.as_bytes():
-                if v2 == 0 and chr == spaceord:
-                    continue
-                if chr == spaceord:
-                    v1, v2 = v2, 0
-                    continue
+            no1 = line.find(" ")
+            no2 = line.rfind(" ") + 1
+            try:
+                v1, v2 = Int(line[:no1]), Int(line[no2:])
+            except:
+                pass
+            # for chr in line:
+            #     spc = chr.find(" ")
+            #     if chr != spaceord:
+            #         v1 += v1 * 10 + (Int(chr) - ordoff)
+            #     if v2 == 0 and chr == spaceord:
+            #         continue
+            #     if chr == spaceord:
+            #         v1, v2 = v2, 0
+            #         continue
 
-                v2 += v2 * 10 + (Int(chr) - ordoff)
+            #     v2 += v2 * 10 + (Int(chr) - ordoff)
             l1.append(v1)
             l2.append(v2)
 

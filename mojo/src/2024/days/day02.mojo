@@ -6,11 +6,11 @@ from math import log2
 from advent_utils import AdventSolution
 
 
-fn to_int(v: StringSlice) -> Int:
-    try:
-        return Int(v)
-    except:
-        return 0
+# fn to_int(v: StringSlice) -> Int:
+#     try:
+#         return Int(v)
+#     except:
+#         return 0
 
 
 fn calc_simd(
@@ -45,17 +45,16 @@ struct Solution(AdventSolution):
         lines = data.splitlines()
         results = SIMD[DType.int32, 1024](0)
 
-        @parameter
-        fn calc_line(idx: Int):
-            nums = lines[idx].split()
+        for idx in range(len(lines)):
+            ref nums = lines.unsafe_get(idx).split()
             f = SIMD[DType.int8, 8](0)
-            for i in range(len(nums)):
-                f[i] = to_int(nums[i])
-
+            try:
+                for i in range(len(nums)):
+                    f[i] = Int(nums[i])
+            except:
+                pass
             pos, neg = calc_simd(f)
             results[idx] = Int(all(pos) or all(neg))
-
-        parallelize[calc_line](len(lines))
 
         return results.reduce_add()
 
@@ -73,18 +72,18 @@ struct Solution(AdventSolution):
         lines = data.splitlines()
         results = SIMD[DType.int32, 1024](0)
 
-        @parameter
-        fn calc_line(idx: Int):
-            # for idx in range(len(lines)):
-            nums = lines[idx].split()
+        for idx in range(len(lines)):
+            ref nums = lines.unsafe_get(idx).split()
             f = SIMD[DType.int8, 8](0)
-            for i in range(len(nums)):
-                f[i] = to_int(nums[i])
-
+            try:
+                for i in range(len(nums)):
+                    f[i] = Int(nums[i])
+            except:
+                pass
             pos, neg = calc_simd(f)
             if all(pos) or all(neg):
                 results[idx] = 1
-                return
+                continue
 
             s_pos = Int(log2(Float64(prev_power_of_two(pack_bits(~pos)))))
             s_neg = Int(log2(Float64(prev_power_of_two(pack_bits(~neg)))))
@@ -102,11 +101,11 @@ struct Solution(AdventSolution):
             p, n = calc_simd(fpos)
             if all(p) or all(n):
                 results[idx] = 1
-                return
+                continue
             p, n = calc_simd(fpos2)
             if all(p) or all(n):
                 results[idx] = 1
-                return
+                continue
 
             # Calc for negative
             fneg_msk = SIMD[DType.bool, f.size](False)
@@ -119,11 +118,10 @@ struct Solution(AdventSolution):
             p, n = calc_simd(fneg)
             if all(p) or all(n):
                 results[idx] = 1
-                return
+                continue
             p, n = calc_simd(fneg2)
             if all(p) or all(n):
                 results[idx] = 1
-                return
+                continue
 
-        parallelize[calc_line](len(lines))
         return results.reduce_add()

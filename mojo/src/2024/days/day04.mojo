@@ -2,7 +2,7 @@ from advent_utils import AdventSolution
 
 
 @fieldwise_init
-struct Dir(EqualityComparable, Movable, Copyable):
+struct Dir(Copyable, EqualityComparable, Movable):
     alias error = Dir(0)
     alias up = Dir(1)
     alias down = Dir(2)
@@ -130,6 +130,9 @@ struct Solution(AdventSolution):
         xmax, ymax = len(ls[0]), len(ls)
 
         for y in range(1, ymax - 1):
+            ref pr = ls.unsafe_get(y - 1)
+            ref ne = ls.unsafe_get(y + 1)
+
             last = 1
             while True:
                 x = ls.unsafe_get(y).find("A", last)
@@ -138,15 +141,15 @@ struct Solution(AdventSolution):
                 last = x + 1
 
                 if (
-                    ls[y - 1][x - 1] == "M"
-                    and ls[y + 1][x + 1] == "S"
-                    or ls[y - 1][x - 1] == "S"
-                    and ls[y + 1][x + 1] == "M"
+                    pr[x - 1] == "M"
+                    and ne[x + 1] == "S"
+                    or pr[x - 1] == "S"
+                    and ne[x + 1] == "M"
                 ) and (
-                    ls[y + 1][x - 1] == "M"
-                    and ls[y - 1][x + 1] == "S"
-                    or ls[y + 1][x - 1] == "S"
-                    and ls[y - 1][x + 1] == "M"
+                    ne[x - 1] == "M"
+                    and pr[x + 1] == "S"
+                    or ne[x - 1] == "S"
+                    and pr[x + 1] == "M"
                 ):
                     tot += 1
 
