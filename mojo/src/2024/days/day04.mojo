@@ -1,60 +1,9 @@
 from advent_utils import AdventSolution
 
 
-@fieldwise_init
-struct Dir(Copyable, EqualityComparable, Movable):
-    alias error = Dir(0)
-    alias up = Dir(1)
-    alias down = Dir(2)
-    alias left = Dir(3)
-    alias right = Dir(4)
-    alias upleft = Dir(5)
-    alias downleft = Dir(6)
-    alias upright = Dir(7)
-    alias downright = Dir(8)
-    var v: Int
-
-    fn __init__(pos: (Int, Int), rel_pos: (Int, Int)) -> Self:
-        xi, yi = rel_pos
-        x, y = pos
-        if xi - x == -1 and yi - y == -1:
-            return Self.upleft
-        elif xi - x == 0 and yi - y == -1:
-            return Self.up
-        elif xi - x == 1 and yi - y == -1:
-            return Self.upright
-        elif xi - x == 1 and yi - y == 0:
-            return Self.right
-        elif xi - x == 1 and yi - y == 1:
-            return Self.downright
-        elif xi - x == 0 and yi - y == 1:
-            return Self.down
-        elif xi - x == -1 and yi - y == 1:
-            return Self.downleft
-        elif xi - x == -1 and yi - y == 0:
-            return Self.left
-        else:
-            return Self.error
-
-    fn delta(self) -> (Int, Int):
-        yi = (
-            -1 if self
-            in [Self.upleft, Self.upright, Self.up] else 1 if self
-            in [Self.down, Self.downleft, Self.downright] else 0
-        )
-        xi = (
-            1 if self
-            in [Self.upright, Self.right, Self.downright] else -1 if self
-            in [Self.upleft, Self.left, Self.downleft] else 0
-        )
-        return (xi, yi)
-
-    fn __eq__(self, other: Self) -> Bool:
-        return self.v == other.v
-
-    fn __ne__(self, other: Self) -> Bool:
-        return not (self == other)
-
+alias `M` = ord('M')
+alias `A` = ord('A')
+alias `S` = ord('S')
 
 struct Solution(AdventSolution):
     alias T = Int32
@@ -72,46 +21,64 @@ struct Solution(AdventSolution):
         ```
         """
         tot = 0
-        ls = data.splitlines()
-        xmax, ymax = len(ls[0]), len(ls)
+        bytes = data.as_bytes()
+        xmax = data.find('\n')
+        ymax = len(bytes) // (xmax + 1)
 
-        for y in range(ymax):
-            last = 0
-            while True:
-                x = ls[y].find("X", last)
-                if x == -1:
-                    break
+        @parameter
+        @always_inline
+        fn idx(x: Int, y: Int) -> Int:
+            return x + y * (xmax + 1)
+        
+        last = 0
+        while True:
+            lnr = data.find("X", start=last)
+            if lnr == -1:
+                break
 
-                last = x + 1
+            last = lnr + 1
+            x, y = lnr % (xmax + 1), lnr // (xmax + 1)
 
-                for xi in range(max(0, x - 1), min(xmax - 1, x + 1) + 1):
-                    for yi in range(max(0, y - 1), min(ymax - 1, y + 1) + 1):
-                        if ls[yi][xi] != "M":
-                            continue
-                        dir = Dir((x, y), (xi, yi))
-                        dx, dy = dir.delta()
-                        xii, yii = xi + dx, yi + dy
-                        if (
-                            0 > xii
-                            or xii >= xmax
-                            or 0 > yii
-                            or yii >= ymax
-                            or ls[yii][xii] != "A"
-                        ):
-                            continue
+            tot += Int(x < xmax - 3
+                and bytes[idx(x + 1, y)] == `M`
+                and bytes[idx(x + 2, y)] == `A`
+                and bytes[idx(x + 3, y)] == `S`)
+                + (x > 2
+                    and bytes[idx(x - 1, y)] == `M`
+                    and bytes[idx(x - 2, y)] == `A`
+                    and bytes[idx(x - 3, y)] == `S`)
+                + (x < xmax - 3
+                    and y < ymax - 3
+                    and bytes[idx(x + 1, y + 1)] == `M`
+                    and bytes[idx(x + 2, y + 2)] == `A`
+                    and bytes[idx(x + 3, y + 3)] == `S`)
+                + (x > 2
+                    and y > 2
+                    and bytes[idx(x - 1, y - 1)] == `M`
+                    and bytes[idx(x - 2, y - 2)] == `A`
+                    and bytes[idx(x - 3, y - 3)] == `S`)
+                + (x < xmax - 3
+                    and y > 2
+                    and bytes[idx(x + 1, y - 1)] == `M`
+                    and bytes[idx(x + 2, y - 2)] == `A`
+                    and bytes[idx(x + 3, y - 3)] == `S`)
+                + (x > 2
+                    and y < ymax - 3
+                    and bytes[idx(x - 1, y + 1)] == `M`
+                    and bytes[idx(x - 2, y + 2)] == `A`
+                    and bytes[idx(x - 3, y + 3)] == `S`)
+                + (y < ymax - 3
+                    and bytes[idx(x, y + 1)] == `M`
+                    and bytes[idx(x, y + 2)] == `A`
+                    and bytes[idx(x, y + 3)] == `S`)
+                + (y > 2
+                    and bytes[idx(x, y - 1)] == `M`
+                    and bytes[idx(x, y - 2)] == `A`
+                    and bytes[idx(x, y - 3)] == `S`)
 
-                        xii, yii = xii + dx, yii + dy
-                        if (
-                            0 > xii
-                            or xii >= xmax
-                            or 0 > yii
-                            or yii >= ymax
-                            or ls[yii][xii] != "S"
-                        ):
-                            continue
 
-                        tot += 1
-        return tot
+        return tot            
+
 
     @staticmethod
     fn part_2[o: ImmutableOrigin](data: StringSlice[o]) -> Self.T:
@@ -126,31 +93,33 @@ struct Solution(AdventSolution):
         """
         # TODO: Use the string directly, and don't splitlines to have performant code.
         tot = 0
-        ls = data.splitlines()
-        xmax, ymax = len(ls[0]), len(ls)
+        xmax = data.find("\n")
+        bts = data.as_bytes()
+        ymax = len(data) // (xmax + 1)
 
-        for y in range(1, ymax - 1):
-            ref pr = ls.unsafe_get(y - 1)
-            ref ne = ls.unsafe_get(y + 1)
+        @always_inline
+        @parameter
+        fn idx(x: Int, y: Int) -> Int:
+            return x + y * (xmax + 1)
 
-            last = 1
-            while True:
-                x = ls.unsafe_get(y).find("A", last)
-                if x == -1 or x == xmax - 1:
-                    break
-                last = x + 1
+        last = xmax + 3
+        while True:
+            lnr = data.find("A", last)
+            if lnr == -1 or lnr // (xmax + 1) == ymax - 1:
+                break
+            last = lnr + 1
 
-                if (
-                    pr[x - 1] == "M"
-                    and ne[x + 1] == "S"
-                    or pr[x - 1] == "S"
-                    and ne[x + 1] == "M"
-                ) and (
-                    ne[x - 1] == "M"
-                    and pr[x + 1] == "S"
-                    or ne[x - 1] == "S"
-                    and pr[x + 1] == "M"
-                ):
-                    tot += 1
+            x, y = lnr % (xmax + 1), lnr // (xmax + 1)
+            tot += Int(x > 0 and x < xmax - 1 and (
+                bts[idx(x - 1, y - 1)] == `M`
+                and bts[idx(x + 1, y + 1)] == `S`
+                or bts[idx(x - 1, y - 1)] == `S`
+                and bts[idx(x + 1, y + 1)] == `M`
+            ) and (
+                bts[idx(x - 1, y + 1)] == `M`
+                and bts[idx(x + 1, y - 1)] == `S`
+                or bts[idx(x - 1, y + 1)] == `S`
+                and bts[idx(x + 1, y - 1)] == `M`
+            ))
 
         return tot

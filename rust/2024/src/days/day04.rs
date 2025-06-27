@@ -1,32 +1,5 @@
 use crate::advent_utils::Solution as AdventSolution;
 
-// #[derive(PartialEq)]
-// enum Dir {
-//     Up,
-//     Down,
-//     Left,
-//     Right,
-//     UpLeft,
-//     UpRight,
-//     DownLeft,
-//     DownRight,
-// }
-
-// impl Dir {
-//     fn delta(&self) -> (i8, i8) {
-//         let yi = match self {
-//             Dir::Up | Dir::UpLeft | Dir::UpRight => -1,
-//             Dir::Down | Dir::DownLeft | Dir::DownRight => 1,
-//             _ => 0,
-//         };
-//         let xi = match self {
-//             Dir::Left | Dir::UpLeft | Dir::DownLeft => -1,
-//             Dir::Right | Dir::UpRight | Dir::DownRight => 1,
-//             _ => 0,
-//         };
-//         (xi, yi)
-//     }
-// }
 pub struct Solution;
 
 impl AdventSolution for Solution {
@@ -43,7 +16,6 @@ impl AdventSolution for Solution {
         let bytes = data.as_bytes();
         let xmax = data.find("\n").expect("no lines found?");
         let ymax = data.len() / (xmax + 1);
-        println!("xmax is {xmax} and ymax is {ymax}");
 
         let idx = |x, y| x + y * (xmax + 1);
 
