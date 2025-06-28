@@ -6,13 +6,6 @@ from math import log2
 from advent_utils import AdventSolution
 
 
-# fn to_int(v: StringSlice) -> Int:
-#     try:
-#         return Int(v)
-#     except:
-#         return 0
-
-
 fn calc_simd(
     f: SIMD[DType.int8, 8]
 ) -> (SIMD[DType.bool, 8], SIMD[DType.bool, 8]):
