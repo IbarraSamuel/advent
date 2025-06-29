@@ -9,7 +9,7 @@ struct Solution(AdventSolution):
     alias T = Int32
 
     @staticmethod
-    fn part_1[o: ImmutableOrigin](data: StringSlice[o]) -> Self.T:
+    fn part_1(data: StringSlice) -> Self.T:
         """Part 1 solution.
 
         ```mojo
@@ -81,7 +81,7 @@ struct Solution(AdventSolution):
 
 
     @staticmethod
-    fn part_2[o: ImmutableOrigin](data: StringSlice[o]) -> Self.T:
+    fn part_2(data: StringSlice) -> Self.T:
         """Part 2 solution.
 
         ```mojo
@@ -91,7 +91,6 @@ struct Solution(AdventSolution):
         test[days.day04.Solution, file="tests/2024/day032.txt", part=2, expected=9]()
         ```
         """
-        # TODO: Use the string directly, and don't splitlines to have performant code.
         tot = 0
         xmax = data.find("\n")
         bts = data.as_bytes()

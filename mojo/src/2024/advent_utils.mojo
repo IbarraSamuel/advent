@@ -7,6 +7,8 @@ from testing import assert_equal
 
 @register_passable("trivial")
 struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
+    alias one = Part(1)
+    alias two = Part(2)
     var v: IntLiteral[value]
 
     @implicit
@@ -38,9 +40,9 @@ struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
 
 @register_passable("trivial")
 struct TimeUnit[value: __mlir_type.`!kgen.string`](EqualityComparable):
-    # alias ms: TimeUnit["us".value] = "us"
-    # alias ns: TimeUnit["ns".value] = "ns"
-    # alias s: TimeUnit["s".value] = "s"
+    alias ms = TimeUnit("ms")
+    alias ns = TimeUnit("ns")
+    alias s = TimeUnit("s")
     var v: StringLiteral[value]
 
     @implicit
@@ -83,11 +85,11 @@ trait AdventSolution:
     alias T: Intable
 
     @staticmethod
-    fn part_1[o: ImmutableOrigin](data: StringSlice[o]) -> T:
+    fn part_1(data: StringSlice) -> T:
         ...
 
     @staticmethod
-    fn part_2[o: ImmutableOrigin](data: StringSlice[o]) -> T:
+    fn part_2(data: StringSlice) -> T:
         ...
 
 
