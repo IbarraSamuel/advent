@@ -1,16 +1,18 @@
 from algorithm.functional import vectorize
 from collections import Set
 from utils import IndexList
+from hashlib.hasher import Hasher
 from advent_utils import ListSolution
 
 
-@value
+@fieldwise_init
 struct Point(KeyElement):
     var x: Int
     var y: Int
 
-    fn __hash__(self) -> UInt:
-        return self.x * 1000000 + self.y
+    fn __hash__[H: Hasher](self, mut hasher: H):
+        hasher.update(self.x)
+        hasher.update(self.y)
 
     fn __eq__(self, other: Self) -> Bool:
         return self.x == other.x and self.y == other.y

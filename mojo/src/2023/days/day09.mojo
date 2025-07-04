@@ -8,7 +8,7 @@ alias Size = 32
 alias Line = SIMD[DType.int64, Size]
 
 
-fn calc_prev_and_next(owned value: Line, last: Int) -> (Int64, Int64):
+fn calc_prev_and_next(var value: Line, last: Int) -> (Int64, Int64):
     idx, frst, lst = 0, Int64(0), Int64(0)
     while not (value == 0).reduce_and():
         frst = value[0] - frst

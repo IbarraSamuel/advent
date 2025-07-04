@@ -1,5 +1,7 @@
 from advent_utils import ListSolution
 from utils import IndexList, Index
+from hashlib.hasher import Hasher
+from sys import sizeof
 from collections import Dict
 from collections.set import Set
 from algorithm import parallelize
@@ -118,9 +120,10 @@ struct Cache(KeyElement):
     fn __ne__(self, other: Self) -> Bool:
         return not self == other
 
-    fn __hash__(self) -> UInt:
-        v = self.dir.value * 1000000 + self.idx[0] * 1000 + self.idx[1]
-        return Int(v)
+    fn __hash__[H: Hasher](self, mut hasher: H):
+        # TODO: Check if this is ok!
+        hasher.update(self.idx)
+        hasher.update(self.dir)
 
 
 fn calc_new_pos(
@@ -147,7 +150,7 @@ fn calc_new_pos(
 
 
 fn calc_energized(
-    map: List[String], sp: (Int, Int), owned pos: IndexList[2], owned dir: Dir
+    map: List[String], sp: (Int, Int), var pos: IndexList[2], var dir: Dir
 ) -> Int:
     readed = Set[Int](pos[1] * sp[0] + pos[0])
     cache = Set[Cache](Cache(pos, dir))

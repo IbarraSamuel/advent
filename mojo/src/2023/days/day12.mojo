@@ -3,14 +3,16 @@ from algorithm import parallelize
 from collections import Dict
 import os
 
+from hashlib.hasher import Hasher
 
-@value
+
+@fieldwise_init
 struct CacheKey(KeyElement):
     var cfg: String
     var nums: List[Int]
 
-    fn __hash__(self) -> UInt:
-        return self.cfg.__hash__()
+    fn __hash__[H: Hasher](self, mut hasher: H):
+        hasher.update(self.cfg)
 
     fn __eq__(self, other: Self) -> Bool:
         return self.cfg == other.cfg and self.nums == other.nums

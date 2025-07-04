@@ -68,8 +68,7 @@ struct Solution(ListSolution):
 alias MapRangeTp = Tuple[Int, Int, Int]
 
 
-@value
-struct MapRange:
+struct MapRange(Copyable, Movable):
     var src_start: Int
     var dest_start: Int
     var length: Int
@@ -78,16 +77,15 @@ struct MapRange:
         self.dest_start, self.src_start, self.length = range
 
     @implicit
-    fn __init__(out self, owned range: List[Int]):
+    fn __init__(out self, var range: List[Int]):
         self.dest_start, self.src_start, self.length = (
             range[0],
             range[1],
             range[2],
         )
 
-
-@value
-struct NumRange:
+@fieldwise_init
+struct NumRange(Copyable, Movable):
     var start: Int
     var end: Int
 
@@ -157,7 +155,7 @@ fn calc_ranges(
 
 
 fn map_ranges(
-    ranges: List[MapRange], owned numbers: List[NumRange]
+    ranges: List[MapRange], var numbers: List[NumRange]
 ) -> List[NumRange]:
     """We should produce a new list of ranges out of the ranges we receive.
     For each range, first we will produce a new set of ranges.
@@ -210,7 +208,7 @@ fn atol_uint(c: String) -> Int:
         return 0
 
 
-fn atol_uint(owned l: List[String]) -> List[Int]:
+fn atol_uint(var l: List[String]) -> List[Int]:
     var uint_l = List[Int](capacity=len(l))
     for i in range(len(l)):
         uint_l.append(atol_uint(l[i]))
