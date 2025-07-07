@@ -24,6 +24,6 @@ fn test_day04() raises:
     test[days.day04.Solution, 2, "tests/2024/day04.txt", expected=9]()
 
 
-# fn test_day05() raises:
-#     test[days.day05.Solution, 1, "tests/2024/day05.txt", expected=143]()
-#     test[days.day05.Solution, 2, "tests/2024/day05.txt", expected=0]()
+fn test_day05() raises:
+    test[days.day05.Solution, 1, "tests/2024/day05.txt", expected=143]()
+    test[days.day05.Solution, 2, "tests/2024/day05.txt", expected=0]()

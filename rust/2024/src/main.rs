@@ -7,5 +7,6 @@ fn main() {
         .add::<days::day02::Solution>()
         .add::<days::day03::Solution>()
         .add::<days::day04::Solution>()
+        .add::<days::day05::Solution>()
         .compute()
 }
