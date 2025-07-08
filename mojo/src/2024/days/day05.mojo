@@ -22,7 +22,6 @@ struct Solution(AdventSolution):
         rest = data[order_split + 2 :]
 
         for line in rest.splitlines():
-            print("checking line:", line)
             var readed_idx = 3
             while True:
                 if line[readed_idx - 1] == "\n":
@@ -34,7 +33,6 @@ struct Solution(AdventSolution):
                         - 11 * zord
                         + bts[1].cast[DType.int32]()
                     )
-                    print("line finalized. Adding value:", tot)
                     break
 
                 val = line[readed_idx : readed_idx + 2]
@@ -44,43 +42,20 @@ struct Solution(AdventSolution):
                 while ord_idx != -1:
                     requisite = order[ord_idx - 2 : ord_idx]
                     if line[:readed_idx].find(requisite) != -1:
-                        print("Prev requirement met:", requisite)
                         oidx = order.find(val + "|")
                         while oidx != -1:
                             req = order[oidx + 3 : oidx + 5]
                             if line[:readed_idx].find(req) != -1:
-                                print(
-                                    "Problem. the value",
-                                    val,
-                                    "should be before",
-                                    req,
-                                )
                                 break
                             oidx = order.find(val + "|", oidx + 1)
                         else:
-                            print(
-                                "the value",
-                                val,
-                                "is not before any other value",
-                            )
                             req_met = True
                             break
                     ord_idx = order.find("|" + val, ord_idx + 1)
 
                 if not req_met:
-                    print("No instruction for this value:", val)
                     break
 
-                print(
-                    "the value:",
-                    val,
-                    "with prev requirement:",
-                    order[ord_idx - 2 : ord_idx],
-                    "has condition met?:",
-                    req_met,
-                    "now using as init:",
-                    readed_idx + 3,
-                )
                 readed_idx += 3
 
         return tot
