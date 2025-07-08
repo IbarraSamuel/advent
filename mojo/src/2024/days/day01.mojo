@@ -6,7 +6,7 @@ struct Solution(AdventSolution):
     alias T = Int32
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Self.T:
+    fn part_1(data: StringSlice[mut=False]) -> Self.T:
         """Part 1 test.
 
         ```mojo
@@ -42,7 +42,7 @@ struct Solution(AdventSolution):
         return t
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Self.T:
+    fn part_2(data: StringSlice[mut=False]) -> Self.T:
         """Part 2 test.
 
         ```mojo

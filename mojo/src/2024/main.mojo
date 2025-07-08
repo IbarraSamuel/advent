@@ -13,6 +13,7 @@ fn main() raises:
         days.day02.Solution,
         days.day03.Solution,
         days.day04.Solution,
+        days.day05.Solution,
     ]()
 
     do_bench = False
@@ -30,4 +31,5 @@ fn main() raises:
             days.day02.Solution,
             days.day03.Solution,
             days.day04.Solution,
+            days.day05.Solution,
         ]()
