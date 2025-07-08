@@ -38,28 +38,25 @@ struct Solution(AdventSolution):
 
                 val = line[readed_idx:new_idx]
                 var ord_idx = order.find("|" + val)
-                if ord_idx == -1:
-                    print("No order for the value:", val)
-                    readed_idx = new_idx + 1
-                    continue
+                var req_met = False
 
-                while True:
-                    if line.find(order[ord_idx - 2 : ord_idx]) != -1:
-                        ord_idx = order.find("|" + val, ord_idx + 1)
-                        if ord_idx == -1:
-                            break
-                        continue
-                    if ord_idx == -1:
+                while ord_idx != -1 and not req_met:
+                    requisite = order[ord_idx - 2 : ord_idx]
+                    if line[:readed_idx].find(requisite) != -1:
+                        req_met = True
                         break
-                else:
-                    print(
-                        "for val:",
-                        val,
-                        "the value needed before is not before. pref:",
-                        order[ord_idx - 2 : ord_idx],
-                        "is not in",
-                        line,
-                    )
+                    ord_idx = order.find("|" + val, ord_idx + 1)
+                    # if line.find(order[ord_idx - 2 : ord_idx]) != -1:
+                    #     ord_idx = order.find("|" + val, ord_idx + 1)
+                    #     if ord_idx == -1:
+                    #         break
+                    #     continue
+                    # if ord_idx == -1:
+                    #     break
+                # else:
+                #     break
+
+                if not req_met:
                     break
 
                 print(val, order[ord_idx - 2 : ord_idx])
