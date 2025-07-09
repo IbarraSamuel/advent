@@ -1,4 +1,5 @@
 from advent_utils import AdventSolution
+from algorithm import parallelize
 
 
 struct Solution(AdventSolution):
@@ -16,7 +17,7 @@ struct Solution(AdventSolution):
         ```
         """
         alias zord = ord("0")
-        tot = Int32(0)
+        tot = SIMD[DType.int32, 1024](0)
         order_split = data.find("\n\n")
         rest = data[order_split + 2 :]
         order = data[0:order_split]
@@ -31,8 +32,6 @@ struct Solution(AdventSolution):
 
         prev_idx = 0
 
-        # 1. try with all
-        # 2. try with lazy cache
         while True:
             var lnr = order.find("\n", prev_idx)
             if lnr == -1:
@@ -45,16 +44,19 @@ struct Solution(AdventSolution):
                 order[prev_idx:mid]
             )
             prev_idx = lnr + 1
-        # NEW END 1
 
-        for line in rest.splitlines():
+        lines = rest.splitlines()
+
+        @parameter
+        fn calc(idx: Int):
+            line = lines[idx]
             var readed_idx = 3
             while True:
                 if line[readed_idx - 1] == "\n":
                     # We finalize the line
                     nbr = line[len(line) // 2 - 1 : len(line) // 2 + 1]
                     bts = nbr.as_bytes()
-                    tot += (
+                    tot[idx] = (
                         10 * bts[0].cast[DType.int32]()
                         - 11 * zord
                         + bts[1].cast[DType.int32]()
@@ -90,29 +92,8 @@ struct Solution(AdventSolution):
 
                 readed_idx += 3
 
-                # var ord_idx = order.find("|" + val)
-                # var req_met = False
-
-                # while ord_idx != -1:
-                #     requisite = order[ord_idx - 2 : ord_idx]
-                #     if prev_values.find(requisite) != -1:
-                #         oidx = order.find(val + "|")
-                #         while oidx != -1:
-                #             req = order[oidx + 3 : oidx + 5]
-                #             if prev_values.find(req) != -1:
-                #                 break
-                #             oidx = order.find(val + "|", oidx + 1)
-                #         else:
-                #             req_met = True
-                #             break
-                #     ord_idx = order.find("|" + val, ord_idx + 1)
-
-                # if not req_met:
-                #     break
-
-                # readed_idx += 3
-
-        return tot
+        parallelize[calc](len(lines))
+        return tot.reduce_add()
 
     @staticmethod
     fn part_2(data: StringSlice[mut=False]) -> Self.T:
