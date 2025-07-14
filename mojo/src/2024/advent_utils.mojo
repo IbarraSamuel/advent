@@ -9,17 +9,16 @@ from testing import assert_equal
 struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
     alias one = Part(1)
     alias two = Part(2)
-    var v: IntLiteral[value]
 
     @implicit
     @always_inline("builtin")
     fn __init__(out self: Part[v.value], v: __type_of(1)):
-        self.v = v
+        pass
 
     @implicit
     @always_inline("builtin")
     fn __init__(out self: Part[v.value], v: __type_of(2)):
-        self.v = v
+        pass
 
     @always_inline("builtin")
     fn __eq__(self, other: Self) -> Bool:
@@ -27,7 +26,7 @@ struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
 
     @always_inline("builtin")
     fn __eq__(self, other: Part) -> Bool:
-        return self.v == other.v
+        return IntLiteral[self.value]() == IntLiteral[other.value]()
 
     @always_inline("builtin")
     fn __ne__(self, other: Self) -> Bool:
@@ -35,7 +34,7 @@ struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
 
     @always_inline("builtin")
     fn __ne__(self, other: Part) -> Bool:
-        return self.v != other.v
+        return IntLiteral[self.value]() != IntLiteral[other.value]()
 
 
 @register_passable("trivial")
@@ -43,22 +42,23 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`](EqualityComparable):
     alias ms = TimeUnit("ms")
     alias ns = TimeUnit("ns")
     alias s = TimeUnit("s")
-    var v: StringLiteral[value]
+
+    alias unit = StringLiteral[value]()
 
     @implicit
     @always_inline("builtin")
     fn __init__(out self: TimeUnit[v.value], v: __type_of("ms")):
-        self.v = v
+        pass
 
     @implicit
     @always_inline("builtin")
     fn __init__(out self: TimeUnit[v.value], v: __type_of("ns")):
-        self.v = v
+        pass
 
     @implicit
     @always_inline("builtin")
     fn __init__(out self: TimeUnit[v.value], v: __type_of("s")):
-        self.v = v
+        pass
 
     @always_inline("builtin")
     fn __eq__(self, other: Self) -> Bool:
@@ -68,7 +68,7 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`](EqualityComparable):
         "nodebug"
     )  # TODO: use @builtin when StringLiteral is @builtin comparable
     fn __eq__(self, other: TimeUnit) -> Bool:
-        return self.v == other.v
+        return StringLiteral[self.value]() == StringLiteral[other.value]()
 
     @always_inline("builtin")
     fn __ne__(self, other: Self) -> Bool:
@@ -78,7 +78,7 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`](EqualityComparable):
         "nodebug"
     )  # TODO: use @builtin when StringLiteral is @builtin comparable
     fn __ne__(self, other: TimeUnit) -> Bool:
-        return self.v == other.v
+        return StringLiteral[self.value]() == StringLiteral[other.value]()
 
 
 trait AdventSolution:
@@ -145,9 +145,9 @@ fn bench[
 
         print(">>> Day", day, "<<<")
         print("Part 1:")
-        run_bench[part_1](max_iters=iters).print(time_unit.v)
+        run_bench[part_1](max_iters=iters).print(time_unit.unit)
         print("Part 2:")
-        run_bench[part_2](max_iters=iters).print(time_unit.v)
+        run_bench[part_2](max_iters=iters).print(time_unit.unit)
         print()
 
 
