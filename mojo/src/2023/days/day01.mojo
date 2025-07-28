@@ -53,7 +53,7 @@ struct Solution(ListSolution):
 
 
 @always_inline("nodebug")
-fn to_int(v: String, mut o: Int):
+fn to_int(v: StringSlice, mut o: Int):
     try:
         o = Int(v)
     except:

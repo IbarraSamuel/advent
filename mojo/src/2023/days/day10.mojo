@@ -41,7 +41,7 @@ alias PIPE_TO_MOV = List(
 )
 
 
-fn get_pipe_and_mov(char: String) -> (StaticString, Movement):
+fn get_pipe_and_mov(char: StringSlice) -> (StaticString, Movement):
     @parameter
     for idx in range(len(PIPE_TO_MOV)):
         alias pp = PIPE_TO_MOV[idx]

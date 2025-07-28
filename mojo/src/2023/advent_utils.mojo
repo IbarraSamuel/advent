@@ -8,7 +8,7 @@ alias CollectionElement = Copyable & Movable
 
 fn read_input_lines[path: StaticString]() raises -> List[String]:
     p = _dir_of_current_file().joinpath("../../../" + path)
-    with open(p, "rt") as f:
+    with open(p, "r") as f:
         return f.read().splitlines()
 
 
@@ -59,11 +59,11 @@ fn test_solution[
     test_1: (StaticString, Int),
     test_2: (StaticString, Int),
 ]() raises:
-    alias path_1 = test_1[0]
-    alias expected_result_1 = test_1[1]
+    alias path_1: StaticString = test_1[0]
+    alias expected_result_1: Int = test_1[1]
 
-    alias path_2 = test_2[0]
-    alias expected_result_2 = test_2[1]
+    alias path_2: StaticString = test_2[0]
+    alias expected_result_2: Int = test_2[1]
 
     result_1 = S.part_1(read_input_lines[path_1]())
     assert_equal(result_1, expected_result_1)
@@ -77,9 +77,9 @@ fn test_solution[S: ListSolution, *tests: (StaticString, (Int, Int))]() raises:
 
     @parameter
     for i in range(len(test_list)):
-        alias path = test_list[i][0][0]
-        alias expected_result_1 = test_list[i][0][1][0]
-        alias expected_result_2 = test_list[i][0][1][1]
+        alias path: StaticString = test_list[i][0][0]
+        alias expected_result_1: Int = test_list[i][0][1][0]
+        alias expected_result_2: Int = test_list[i][0][1][1]
 
         input = read_input_lines[path=path]()
 

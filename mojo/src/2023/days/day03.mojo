@@ -22,15 +22,15 @@ struct Point(KeyElement):
 
 
 fn parse_number[dir: Int](s: String, pos: Int) -> Tuple[String, Int]:
-    var current = s[pos]
+    var current = String(s[pos])
     var left: String = ""
     var lpos: Int = pos
     var right: String = ""
 
-    if pos > 0 and s[pos - 1].isdigit() and dir <= 0:
+    if pos > 0 and String(s[pos - 1]).isdigit() and dir <= 0:
         left, lpos = parse_number[-1](s, pos - 1)
 
-    if pos < len(s) - 1 and s[pos + 1].isdigit() and dir >= 0:
+    if pos < len(s) - 1 and String(s[pos + 1]).isdigit() and dir >= 0:
         right, _ = parse_number[+1](s, pos + 1)
     current = left + current + right
     return current, lpos
@@ -51,7 +51,7 @@ fn check_window(
 
     for y in range(min_y, max_y + 1):
         for x in range(min_x, max_x + 1):
-            if input[y][x].isdigit():
+            if String(input[y][x]).isdigit():
                 to_parse, first_x = parse_number[0](input[y], x)
                 var current_point = Point(first_x, y)
                 if current_point not in results:
@@ -77,7 +77,7 @@ fn check_window[
 
     for y in range(min_y, max_y + 1):
         for x in range(min_x, max_x + 1):
-            if input[y][x].isdigit():
+            if String(input[y][x]).isdigit():
                 to_parse, first_x = parse_number[0](input[y], x)
                 var current_point = Point(first_x, y)
                 if current_point not in results:
@@ -111,7 +111,10 @@ struct Solution(ListSolution):
         fn check_line[v: Int](y: Int):
             @parameter
             fn check_position[v: Int](x: Int):
-                if input[y][x] != "." and not input[y][x].isdigit():
+                if (
+                    input[y][x] != StaticString(".")
+                    and not String(input[y][x]).isdigit()
+                ):
                     points.append(Point(x, y))
 
             vectorize[check_position, 1](x_len)

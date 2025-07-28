@@ -25,7 +25,7 @@ struct Hand[mode: HandMode](Comparable & Copyable & Movable):
     var level: UInt8
     var bid: UInt32
 
-    fn __init__(out self, s: String):
+    fn __init__(out self, s: StringSlice):
         space_pos = s.find(" ")
         self.bid = parse_int(s[space_pos + 1 :])
         self.value = Self.type()
@@ -38,7 +38,7 @@ struct Hand[mode: HandMode](Comparable & Copyable & Movable):
         self._calc_level(s)
 
     @always_inline("nodebug")
-    fn _calc_level(mut self, s: String):
+    fn _calc_level(mut self, s: StringSlice):
         chars = Dict[String, Int](power_of_two_initial_capacity=Self.type.size)
 
         @parameter
@@ -136,7 +136,7 @@ struct Card[mode: HandMode]:
             self.value = parse_int(v)
 
 
-fn parse_int(string: String) -> Int:
+fn parse_int(string: StringSlice) -> Int:
     try:
         return Int(string)
     except:
