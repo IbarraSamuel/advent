@@ -122,5 +122,5 @@ fn test_day16() raises:
 fn test_day17() raises:
     test_solution[
         days.day17.Solution,
-        (StaticString("tests/2023/day17.txt"), (102, -1)),
+        (StaticString("tests/2023/day17.txt"), (102, 123)),
     ]()
