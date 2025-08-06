@@ -128,16 +128,29 @@ struct Solution(AdventSolution):
             if lnr == -1:
                 break
             var mid = order.find("|", prev_idx)
+            # All next values for a given key
             next_dct.setdefault(order[prev_idx:mid], []).append(
                 order[mid + 1 : lnr]
             )
+            # All prev values for a given key
             prev_dct.setdefault(order[mid + 1 : lnr], []).append(
                 order[prev_idx:mid]
             )
             prev_idx = lnr + 1
 
+        # Each line can be calculated independently
         for line in rest.splitlines():
+            # Get each number for the line.
             line_values = line.split(",")
+
+            # Here, for each number, we need to find the requisites
+            # It means, which numbers should be before and after the given number.
+            # Then, make a list with each idx for each dependency.
+            # At the end, compare the indexes to the current number idx.
+            # If There is a place where we can make the number valid for all values
+            # found, then, make it valid. If not, then move the numbers to make it valid.
+            # Start again with the first number, so we are sure that all numbers are valid.
+
             bad = False
             for i in range(len(line_values)):
                 ref v = line_values.unsafe_get(i)
