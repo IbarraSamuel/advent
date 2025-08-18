@@ -7,7 +7,7 @@ alias max_game: Game = (12, 13, 14)
 
 
 @always_inline
-fn create_game(card: String) -> Game:
+fn create_game(card: StringSlice) -> Game:
     var r = 0
     var g = 0
     var b = 0

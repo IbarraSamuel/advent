@@ -67,7 +67,7 @@ struct Hand[mode: HandMode](Comparable & Copyable & Movable):
             self.level += k**3
 
     fn __eq__(self, other: Self) -> Bool:
-        return (self.value == other.value).reduce_and()
+        return self.value == other.value
 
     fn __ne__(self, other: Self) -> Bool:
         return not self == other
