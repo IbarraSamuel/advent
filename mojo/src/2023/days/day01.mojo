@@ -2,26 +2,46 @@ from advent_utils import SIMDResult, ListSolution
 from collections import Dict, Optional
 from algorithm.functional import parallelize
 
-alias MapList = [
-    (StaticString("one"), 1),
-    (StaticString("two"), 2),
-    (StaticString("three"), 3),
-    (StaticString("four"), 4),
-    (StaticString("five"), 5),
-    (StaticString("six"), 6),
-    (StaticString("seven"), 7),
-    (StaticString("eight"), 8),
-    (StaticString("nine"), 9),
-    (StaticString("1"), 1),
-    (StaticString("2"), 2),
-    (StaticString("3"), 3),
-    (StaticString("4"), 4),
-    (StaticString("5"), 5),
-    (StaticString("6"), 6),
-    (StaticString("7"), 7),
-    (StaticString("8"), 8),
-    (StaticString("9"), 9),
-]
+alias MapList = {
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+}
+
+# alias NUM_MAP: List[(StaticString, Int)] = [
+#     (StaticString("two"), 2),
+#     (StaticString("three"), 3),
+#     (StaticString("four"), 4),
+#     (StaticString("five"), 5),
+#     (StaticString("six"), 6),
+#     (StaticString("seven"), 7),
+#     (StaticString("eight"), 8),
+#     (StaticString("nine"), 9),
+#     (StaticString("1"), 1),
+#     (StaticString("2"), 2),
+#     (StaticString("3"), 3),
+#     (StaticString("4"), 4),
+#     (StaticString("5"), 5),
+#     (StaticString("6"), 6),
+#     (StaticString("7"), 7),
+#     (StaticString("8"), 8),
+#     (StaticString("9"), 9),
+# ]
 
 
 struct Solution(ListSolution):
@@ -84,17 +104,20 @@ fn line_value(line: String) -> Int:
     var last_v = 0
     var last_idx: Int = -1
 
-    @parameter
-    for i in range(len(MapList)):
-        alias k = MapList[i][0]
-        alias v = MapList[i][1]
-        var mn = line.find(k)
-        var mx = line.rfind(k)
+    # @parameter
+    # for i in range(len(MapList)):
+    for kv in MapList.items():
+        var key = kv.key
+        var value = kv.value
+        # alias k = MapList[i][0]
+        # alias v = MapList[i][1]
+        var mn = line.find(key)
+        var mx = line.rfind(key)
 
         if first_idx == -1 or mn != -1 and mn < first_idx:
-            first_v, first_idx = v, mn
+            first_v, first_idx = value, mn
 
         if last_idx == -1 or mx != -1 and mx > last_idx:
-            last_v, last_idx = v, mx
+            last_v, last_idx = value, mx
 
     return first_v * 10 + last_v

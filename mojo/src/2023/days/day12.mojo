@@ -7,7 +7,7 @@ from hashlib.hasher import Hasher
 
 
 @fieldwise_init
-struct CacheKey(KeyElement):
+struct CacheKey(KeyElement, Movable):
     var cfg: String
     var nums: List[Int]
 
@@ -28,15 +28,20 @@ struct CacheKey(KeyElement):
         except:
             return "repre raises"
 
+    fn copy(self) -> Self:
+        return CacheKey(self.cfg, self.nums)
 
-fn count(cfg: String, nums: List[Int], mut cache: Dict[CacheKey, Int]) -> Int:
+
+fn count(
+    cfg: StringSlice, nums: List[Int], mut cache: Dict[CacheKey, Int]
+) -> Int:
     if (not cfg and not nums) or (not nums and "#" not in cfg):
         return 1
 
     if (not cfg and nums) or (not nums and "#" in cfg):
         return 0
 
-    k = CacheKey(cfg, nums)
+    k = CacheKey(String(cfg), nums)
     vl = cache.get(k)
     if vl:
         return vl.value()
@@ -53,7 +58,7 @@ fn count(cfg: String, nums: List[Int], mut cache: Dict[CacheKey, Int]) -> Int:
     ):
         result += count(cfg[nums[0] + 1 :], nums[1:], cache)
 
-    cache[k] = result
+    cache[k^] = result
     return result
 
 
@@ -92,7 +97,7 @@ struct Solution(ListSolution):
         @parameter
         fn calc_line(idx: Int):
             splitted = lines[idx].split()
-            cfg, nums_chr = splitted[0], splitted[1]
+            cfg, nums_chr = String(splitted[0]), splitted[1]
             nums = List[Int]()
             try:
                 splitted_nums = nums_chr.split(",")

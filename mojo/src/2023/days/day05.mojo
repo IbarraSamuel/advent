@@ -84,6 +84,7 @@ struct MapRange(Copyable, Movable):
             range[2],
         )
 
+
 @fieldwise_init
 struct NumRange(Copyable, Movable):
     var start: Int
@@ -200,7 +201,7 @@ fn map_ranges(
     return used_ranges
 
 
-fn atol_uint(c: String) -> Int:
+fn atol_uint(c: StringSlice) -> Int:
     try:
         return atol(c)
     except:
@@ -208,7 +209,7 @@ fn atol_uint(c: String) -> Int:
         return 0
 
 
-fn atol_uint(var l: List[String]) -> List[Int]:
+fn atol_uint[o: Origin](var l: List[StringSlice[o]]) -> List[Int]:
     var uint_l = List[Int](capacity=len(l))
     for i in range(len(l)):
         uint_l.append(atol_uint(l[i]))

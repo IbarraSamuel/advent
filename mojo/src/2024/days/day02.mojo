@@ -12,10 +12,10 @@ fn calc_simd(
     """This could be improved to precisely show the place where the problem is.
     """
     l = f.shift_left[1]()
-    zero_msk = l == 0
+    zero_msk = l.eq(0)
     diff = l - f
-    is_positive_in_bounds = zero_msk | ~((diff < 1) | (diff > 3))
-    is_negative_in_bounds = zero_msk | ~((diff > -1) | (diff < -3))
+    is_positive_in_bounds = zero_msk | ~((diff.lt(1)) | (diff.gt(3)))
+    is_negative_in_bounds = zero_msk | ~((diff.gt(-1)) | (diff.lt(-3)))
     return is_positive_in_bounds, is_negative_in_bounds
 
 

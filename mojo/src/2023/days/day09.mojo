@@ -1,6 +1,5 @@
 from algorithm import parallelize
 import os
-from builtin.file import FileHandle
 from collections import Optional
 from advent_utils import ListSolution
 
@@ -10,7 +9,7 @@ alias Line = SIMD[DType.int64, Size]
 
 fn calc_prev_and_next(var value: Line, last: Int) -> (Int64, Int64):
     idx, frst, lst = 0, Int64(0), Int64(0)
-    while not (value == 0).reduce_and():
+    while not (value == 0):
         frst = value[0] - frst
         lst += value[last - 1 - idx]
         value = value.shift_left[1]() - value

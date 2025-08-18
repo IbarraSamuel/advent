@@ -6,7 +6,7 @@ from advent_utils import ListSolution
 
 
 @fieldwise_init
-struct Point(KeyElement):
+struct Point(ExplicitlyCopyable, KeyElement):
     var x: Int
     var y: Int
 
@@ -19,6 +19,9 @@ struct Point(KeyElement):
 
     fn __ne__(self, other: Self) -> Bool:
         return not (self == other)
+
+    fn copy(self) -> Self:
+        return Point(self.x, self.y)
 
 
 fn parse_number[dir: Int](s: String, pos: Int) -> Tuple[String, Int]:
