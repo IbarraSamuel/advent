@@ -1,5 +1,6 @@
 from advent_utils import AdventSolution
 from algorithm import parallelize
+from collections import Set
 
 
 struct Solution(AdventSolution):
@@ -107,89 +108,51 @@ struct Solution(AdventSolution):
         ```
         """
         tot = Int32(0)
+        split_idx = data.find("\n\n")
 
-        alias zord = ord("0")
-        order_split = data.find("\n\n")
-        rest = data[order_split + 2 :]
-        order = data[0:order_split]
+        rules = [(r[:2], r[3:]) for r in data[0:split_idx].splitlines()]
+        manuals = data[data.find("\n\n") + 2 :].splitlines()
 
-        # NEW
-        next_dct = Dict[
-            StringSlice[data.origin], List[StringSlice[data.origin]]
-        ]()
-        prev_dct = Dict[
-            StringSlice[data.origin], List[StringSlice[data.origin]]
-        ]()
+        for page in manuals:
+            var valid = True
+            for f, l in rules:
+                if f in page and l in page:
+                    if page.find(f) > page.find(l):
+                        valid = False
+                        break
+            if not valid:
+                var mut_page = String(page)
+                var mut_slice = mut_page.as_string_slice_mut()
+                order_manual[o = data.origin](mut_slice, rules)
+                try:
+                    middle = len(mut_slice) // 2
+                    tot += Int(mut_slice[middle - 1 : middle + 1])
+                except:
+                    pass
 
-        prev_idx = 0
-
-        while True:
-            var lnr = order.find("\n", prev_idx)
-            if lnr == -1:
-                break
-            var mid = order.find("|", prev_idx)
-            # All next values for a given key
-            next_dct.setdefault(order[prev_idx:mid], []).append(
-                order[mid + 1 : lnr]
-            )
-            # All prev values for a given key
-            prev_dct.setdefault(order[mid + 1 : lnr], []).append(
-                order[prev_idx:mid]
-            )
-            prev_idx = lnr + 1
-
-        # Each line can be calculated independently
-        for line in rest.splitlines():
-            # Get each number for the line.
-            line_values = line.split(",")
-
-            # Here, for each number, we need to find the requisites
-            # It means, which numbers should be before and after the given number.
-            # Then, make a list with each idx for each dependency.
-            # At the end, compare the indexes to the current number idx.
-            # If There is a place where we can make the number valid for all values
-            # found, then, make it valid. If not, then move the numbers to make it valid.
-            # Start again with the first number, so we are sure that all numbers are valid.
-
-            bad = False
-            for i in range(len(line_values)):
-                ref v = line_values.unsafe_get(i)
-
-                next_for_v = next_dct.get(v).or_else([])
-                # prev_for_v = prev_dct.get(v).or_else([])
-
-                prev_in_line = line_values[:i]
-                # one_prev_is_there = False
-                for pi in range(i):  # length of prev_in_line
-                    ref piv = prev_in_line.unsafe_get(pi)
-                    # if piv in prev_for_v:
-                    #     one_prev_is_there = True
-
-                    if piv in next_for_v:
-                        # It means we have to move v to be before pv
-                        bad = True
-                        move = line_values.pop(i)
-                        line_values.insert(pi, move)
-
-                # if not one_prev_is_there and len(prev_for_v) > 0:
-                #     idx = -1
-                #     for pp in prev_for_v:
-                #         try:
-                #             idx = line_values.index(pp)
-                #         except:
-                #             pass
-
-                #     if idx == -1:
-                #         os.abort("This is wrong!!!!!!!!!!!!!!!")
-
-                #     ....
-
-            if bad:
-                bts = line_values.unsafe_get(len(line_values) // 2).as_bytes()
-
-                tot += (
-                    10 * bts[0].cast[DType.int32]()
-                    - 11 * zord
-                    + bts[1].cast[DType.int32]()
-                )
         return tot
+
+
+fn order_manual[
+    mo: MutableOrigin, o: Origin
+](
+    mut page: StringSlice[mo],
+    rules: List[Tuple[StringSlice[o], StringSlice[o]]],
+):
+    for _ in range(page.count(",") + 1):
+        for first, last in rules:
+            if first in page and last in page:
+                fi, li = page.find(first), page.find(last)
+                try:
+                    if fi > li:
+                        page.as_bytes().swap_elements(fi, li)
+                        page.as_bytes().swap_elements(fi + 1, li + 1)
+                        # page[page.find(first) : page.find(first) + 2], page[
+                        #     page.find(last) : page.find(last) + 2
+                        # ] = (
+                        #     page[page.find(last) : page.find(last) + 2],
+                        #     page[page.find(first) : page.find(first) + 2],
+                        # )
+                except:
+                    pass
+    # return page
