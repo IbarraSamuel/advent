@@ -1,8 +1,8 @@
 from pathlib import Path
-from time import perf_counter_ns
 from benchmark import run as run_bench
 from pathlib import _dir_of_current_file
 from testing import assert_equal
+from builtin import variadic_size
 
 
 @register_passable("trivial")
@@ -95,8 +95,7 @@ trait AdventSolution:
 
 fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
     filepath = _dir_of_current_file() / "../../.." / input_path
-    alias sols = VariadicList(solutions)
-    alias n_sols = len(sols)
+    alias n_sols = variadic_size(solutions)
 
     @parameter
     for i in range(n_sols):
@@ -121,11 +120,7 @@ fn bench[
     *solutions: AdventSolution,
 ]() raises:
     filepath = _dir_of_current_file() / "../../.." / input_path
-    alias sols = VariadicList(solutions)
-    alias n_sols = len(sols)
-
-    alias tu = TimeUnit("ms")
-    alias res = tu == "ms"
+    alias n_sols = variadic_size(solutions)
 
     @parameter
     for i in range(n_sols):

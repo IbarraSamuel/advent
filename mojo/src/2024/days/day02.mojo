@@ -84,7 +84,7 @@ struct Solution(AdventSolution):
             # TODO: Make it nicer, now it's kind of good but brute forced on two options.
 
             # calc for positive
-            fpos_msk = SIMD[DType.bool, f.size](False)
+            fpos_msk = SIMD[DType.bool, f.size](fill=False)
             for i in range(s_pos, f.size):
                 fpos_msk[i] = True
 
@@ -101,7 +101,7 @@ struct Solution(AdventSolution):
                 continue
 
             # Calc for negative
-            fneg_msk = SIMD[DType.bool, f.size](False)
+            fneg_msk = SIMD[DType.bool, f.size](fill=False)
             for i in range(s_neg, f.size):
                 fneg_msk[i] = True
 
