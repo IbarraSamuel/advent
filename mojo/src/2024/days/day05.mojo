@@ -169,7 +169,7 @@ fn order_manual[
 ]:
     var done = False
     var idx = indexes.copy()
-    used_rules = List[(Int, Int)]()
+    var used_rules = List[(Int, Int)]()
     for first, last in rules:
         of = page.find(first)
         ol = page.find(last)
@@ -177,9 +177,6 @@ fn order_manual[
             used_rules.append((of, ol))
             fi = Int(idx.eq(of // 3).select(indexes, zeroidx).reduce_max())
             li = Int(idx.eq(ol // 3).select(indexes, zeroidx).reduce_max())
-            # fi = Int(log2(pack_bits(idx.eq(of // 3)).cast[DType.float32]()))
-            # li = Int(log2(pack_bits(idx.eq(ol // 3)).cast[DType.float32]()))
-
             if fi > li:
                 idx[fi], idx[li] = idx[li], idx[fi]
 
@@ -188,55 +185,8 @@ fn order_manual[
         for of, ol in used_rules:
             fi = Int(idx.eq(of // 3).select(indexes, zeroidx).reduce_max())
             li = Int(idx.eq(ol // 3).select(indexes, zeroidx).reduce_max())
-            # fi = Int(log2(pack_bits(idx.eq(of // 3)).cast[DType.float32]()))
-            # li = Int(log2(pack_bits(idx.eq(ol // 3)).cast[DType.float32]()))
             if fi > li:
                 done = False
                 idx[fi], idx[li] = idx[li], idx[fi]
 
     return idx
-
-
-# fn order_manual[
-#     o: Origin, //
-# ](
-#     mut page: List[StringSlice[o]],
-#     rules: List[Tuple[StringSlice[o], StringSlice[o]]],
-# ):
-#     var done = False
-#     used_rules = List[Tuple[StringSlice[o], StringSlice[o]]]()
-#     for f, l in rules:
-#         var fi = -1
-#         var li = -1
-#         for idx in range(len(page)):
-#             if page[idx] == f:
-#                 fi = idx
-#                 continue
-#             if page[idx] == l:
-#                 li = idx
-#                 continue
-#             if fi != -1 and li != -1:
-#                 break
-
-#         if fi > -1 and li > -1:
-#             used_rules.append((f, l))
-#             if fi > li:
-#                 page[fi], page[li] = page[li], page[fi]
-
-#     while not done:
-#         done = True
-#         for f, l in used_rules:
-#             var fi = -1
-#             var li = -1
-#             for idx in range(len(page)):
-#                 if page[idx] == f:
-#                     fi = idx
-#                     continue
-#                 if page[idx] == l:
-#                     li = idx
-#                     continue
-#                 if fi != -1 and li != -1:
-#                     break
-#             if fi > li:
-#                 done = False
-#                 page[fi], page[li] = page[li], page[fi]
