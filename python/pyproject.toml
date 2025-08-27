@@ -28,21 +28,21 @@ preview = true
 select = ["ALL"]
 preview = true
 ignore = [
-    "PD010", # Pandas Vet - False Positive with Polars.
-    "D203",  # One blank line before class docstring. Conflicts with D213.
-    "D212",  # No blank lines allowed before function docstring. Conflicts with D213.
-    "EXE",   # Executable python files lints. Don't work on Windows so we cannot use it.
-    "COM812",  # Conflicts with Formatter
+    "PD010",  # Pandas Vet - False Positive with Polars.
+    "D203",   # One blank line before class docstring. Conflicts with D213.
+    "D212",   # No blank lines allowed before function docstring. Conflicts with D213.
+    "EXE",    # Executable python files lints. Don't work on Windows so we cannot use it.
+    "COM812", # Conflicts with Formatter
     "ISC001", # Conflicts with Formatter
-    "S608", # SQL Injection Warning
     "CPY001",
 ]
+
+[tool.ty.environment]
+root = ["src/2023", "src/2024"]
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"
 testpaths = ["src/2024"]
 
 [dependency-groups]
-dev = [
-    "pytest>=8.3.4",
-]
+dev = ["pytest>=8.3.4", "ruff>=0.12.10", "ty>=0.0.1a19"]
