@@ -1,9 +1,7 @@
 """Day 12 results."""
 
 from collections.abc import Sequence
-from typing import override
 
-from advent_utils import AdventSolution
 
 
 def count(
@@ -47,10 +45,9 @@ def count(
     return result
 
 
-class Solution(AdventSolution):
+class Solution:
     """Solution for day 12."""
 
-    @override
     @staticmethod
     def part_1(lines: Sequence[str]) -> int:
         total = 0
@@ -60,7 +57,6 @@ class Solution(AdventSolution):
             total += count(cfg, nums, {})
         return total
 
-    @override
     @staticmethod
     def part_2(lines: Sequence[str]) -> int:
         total = 0
