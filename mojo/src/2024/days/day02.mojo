@@ -19,6 +19,46 @@ fn calc_simd(
     return is_positive_in_bounds, is_negative_in_bounds
 
 
+fn part_1(data: StringSlice[mut=False]) -> Self.T:
+    """Part 1 test.
+    --------------------------------------------------------------------------------
+    Benchmark Report (ms)
+    --------------------------------------------------------------------------------
+    Mean: 0.553725586
+    Total: 553.725586
+    Iters: 1000
+    Warmup Total: 0.645772
+    Fastest Mean: 0.553725586
+    Slowest Mean: 0.553725586
+
+    ```mojo
+    from advent_utils import test
+    from days.day02 import Solution
+
+    test[Solution, file="tests/2024/day02.txt", part=1, expected=2]()
+
+    ```"""
+    lines = data.splitlines()
+    results = SIMD[DType.int32, 1024](0)
+
+    for idx in range(len(lines)):
+        ref nums = lines.unsafe_get(idx).split()
+        f = SIMD[DType.int8, 8](0)
+        try:
+            for i in range(len(nums)):
+                f[i] = Int(nums[i])
+        except:
+            pass
+        pos, neg = calc_simd(f)
+        results[idx] = Int(all(pos) or all(neg))
+
+    return results.reduce_add()
+
+fn slice_to_num(slice: StringSlice[mut=False]) -> Int:
+    alias zeroord = ord("0")
+    var bts = slice.as_bytes()
+    return Int(bts[0]) * 10 + Int(bts[1]) - 11 * zeroord 
+
 struct Solution(AdventSolution):
     alias T = Int32
     alias IdxSIMD = SIMD[DType.int8, 8](0, 1, 2, 3, 4, 5, 6, 7)
@@ -35,6 +75,17 @@ struct Solution(AdventSolution):
         test[Solution, file="tests/2024/day02.txt", part=1, expected=2]()
 
         ```"""
+        result = 0
+        for line in data.splitlines():
+            ref nums = line.split()
+            ref sign = nums.unsafe_get(0)
+            for ni in range(len(nums) - 1): # go one in future
+                ref np = nums.unsafe_get(ni)
+                ref nn = nums.unsafe_get(ni + 1)
+                if np > nn
+                if slice_to_num(num)
+            # calc pos and add +1 if true and continue
+            # calc neg and add +1 if true
         lines = data.splitlines()
         results = SIMD[DType.int32, 1024](0)
 
