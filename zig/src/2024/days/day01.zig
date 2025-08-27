@@ -1,5 +1,6 @@
 const std = @import("std");
-pub const Solution = .{
+const SolBuilder = @import("../advent_utils.zig").Solution;
+pub const Solution: SolBuilder = .{
     .part1 = part1,
     .part2 = part2,
 };
@@ -8,10 +9,10 @@ fn part1(data: []u8) anyerror!i32 {
     var lines = std.mem.splitScalar(u8, data, '\n');
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const alloc = gpa.allocator();
-    var l1 = std.ArrayList(usize).init(alloc);
-    defer l1.deinit();
-    var l2 = std.ArrayList(usize).init(alloc);
-    defer l2.deinit();
+    var l1 = std.ArrayList(usize).empty;
+    defer l1.deinit(alloc);
+    var l2 = std.ArrayList(usize).empty;
+    defer l2.deinit(alloc);
 
     while (lines.next()) |line| {
         const sep = std.mem.indexOfScalar(u8, line, ' ') orelse continue;
@@ -22,8 +23,8 @@ fn part1(data: []u8) anyerror!i32 {
         const next = sep + idx;
         const f = try std.fmt.parseInt(usize, line[0..sep], 10);
         const l = try std.fmt.parseInt(usize, line[next..], 10);
-        try l1.append(f);
-        try l2.append(l);
+        try l1.append(alloc, f);
+        try l2.append(alloc, l);
     }
 
     std.mem.sort(usize, l1.items, {}, std.sort.asc(usize));
@@ -46,10 +47,10 @@ fn part2(data: []u8) anyerror!i32 {
     var lines = std.mem.splitScalar(u8, data, '\n');
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const alloc = gpa.allocator();
-    var l1 = std.ArrayList(usize).init(alloc);
-    defer l1.deinit();
-    var l2 = std.ArrayList(usize).init(alloc);
-    defer l2.deinit();
+    var l1 = std.ArrayList(usize).empty;
+    defer l1.deinit(alloc);
+    var l2 = std.ArrayList(usize).empty;
+    defer l2.deinit(alloc);
 
     while (lines.next()) |line| {
         const sep = std.mem.indexOfScalar(u8, line, ' ') orelse continue;
@@ -60,8 +61,8 @@ fn part2(data: []u8) anyerror!i32 {
         const next = sep + idx;
         const f = try std.fmt.parseInt(usize, line[0..sep], 10);
         const l = try std.fmt.parseInt(usize, line[next..], 10);
-        try l1.append(f);
-        try l2.append(l);
+        try l1.append(alloc, f);
+        try l2.append(alloc, l);
     }
 
     var tot: usize = 0;

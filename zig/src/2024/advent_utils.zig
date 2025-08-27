@@ -18,13 +18,15 @@ const Solver = struct {
     }
 
     pub fn run(solver: Solver) anyerror!void {
-        const writer = std.io.getStdOut().writer();
+        // const file = std.fs.File.stdout();
+        // const writer = std.io.Writer{.vtable = };
+        // const writer = std.io.getStdOut().writer();
         var gp_alloc = std.heap.GeneralPurposeAllocator(.{}){};
         const gpa = gp_alloc.allocator();
 
         for (0..25) |i| {
             if (solver.solutions[i] == null) {
-                continue;
+                break;
             }
             const sol = solver.solutions[i].?;
             var buf: [2]u8 = undefined;
@@ -37,11 +39,11 @@ const Solver = struct {
             }
             const path = try std.fmt.allocPrint(gpa, "{s}day{s}.txt", .{ solver.path, day });
             const data = try getInput(path);
-            try writer.print("Day {s} =>\n", .{day});
+            std.debug.print("Day {s} =>\n", .{day});
             const res1 = try sol.part1(data);
-            try writer.print("\tPart 1: {d}\n", .{res1});
+            std.debug.print("\tPart 1: {d}\n", .{res1});
             const res2 = try sol.part2(data);
-            try writer.print("\tPart 2: {d}\n\n", .{res2});
+            std.debug.print("\tPart 2: {d}\n\n", .{res2});
         }
     }
 };
