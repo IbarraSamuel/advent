@@ -19,8 +19,9 @@ fn calc_simd(
     return is_positive_in_bounds, is_negative_in_bounds
 
 
-fn part_1(data: StringSlice[mut=False]) -> Self.T:
+fn part_1(data: StringSlice[mut=False]) -> SIMD[DType.int32, 1024]:
     """Part 1 test.
+
     --------------------------------------------------------------------------------
     Benchmark Report (ms)
     --------------------------------------------------------------------------------
@@ -52,12 +53,16 @@ fn part_1(data: StringSlice[mut=False]) -> Self.T:
         pos, neg = calc_simd(f)
         results[idx] = Int(all(pos) or all(neg))
 
-    return results.reduce_add()
+    return results
+
 
 fn slice_to_num(slice: StringSlice[mut=False]) -> Int:
     alias zeroord = ord("0")
     var bts = slice.as_bytes()
-    return Int(bts[0]) * 10 + Int(bts[1]) - 11 * zeroord 
+    if len(bts) == 1:
+        return Int(bts[0] - zeroord)
+    return Int(bts[0]) * 10 + Int(bts[1]) - 11 * zeroord
+
 
 struct Solution(AdventSolution):
     alias T = Int32
@@ -75,32 +80,54 @@ struct Solution(AdventSolution):
         test[Solution, file="tests/2024/day02.txt", part=1, expected=2]()
 
         ```"""
+        var pr = part_1(data)
         result = 0
-        for line in data.splitlines():
+        ref lines = data.splitlines()
+        for lidx in range(len(lines)):
+            ref line = lines.unsafe_get(lidx)
             ref nums = line.split()
-            ref sign = nums.unsafe_get(0)
-            for ni in range(len(nums) - 1): # go one in future
-                ref np = nums.unsafe_get(ni)
-                ref nn = nums.unsafe_get(ni + 1)
-                if np > nn
-                if slice_to_num(num)
-            # calc pos and add +1 if true and continue
-            # calc neg and add +1 if true
-        lines = data.splitlines()
-        results = SIMD[DType.int32, 1024](0)
+            var n1 = slice_to_num(nums.unsafe_get(0))
+            var last = slice_to_num(nums.unsafe_get(1))
+            var sign = (last - n1) > 0
+            for ni in range(2, len(nums)):  # go one in future
+                var current = slice_to_num(nums.unsafe_get(ni))
+                var diff = current - last
+                if diff == 0 or diff < -3 or diff > 3 or (diff > 0) ^ sign:
+                    break
+                last = current
+            else:
+                if pr[lidx] != 1:
+                    print(
+                        "This one is failing:",
+                        line[lidx],
+                        "with last:",
+                        last,
+                        "and sign:",
+                        sign,
+                    )
+                result += 1
+        return result
+        # if np > nn
+        # if slice_to_num(num)
+        # calc pos and add +1 if true and continue
+        # calc neg and add +1 if true
+        # lines = data.splitlines()
+        # results = SIMD[DType.int32, 1024](0)
 
-        for idx in range(len(lines)):
-            ref nums = lines.unsafe_get(idx).split()
-            f = SIMD[DType.int8, 8](0)
-            try:
-                for i in range(len(nums)):
-                    f[i] = Int(nums[i])
-            except:
-                pass
-            pos, neg = calc_simd(f)
-            results[idx] = Int(all(pos) or all(neg))
+        # for idx in range(len(lines)):
+        #     ref nums = lines.unsafe_get(idx).split()
+        #     f = SIMD[DType.int8, 8](0)
+        #     try:
+        #         for i in range(len(nums)):
+        #             f[i] = Int(nums[i])
+        #     except:
+        #         pass
+        #     pos, neg = calc_simd(f)
+        #     results[idx] = Int(all(pos) or all(neg))
 
-        return results.reduce_add()
+        # return results.reduce_add()
+
+        # return result
 
     @staticmethod
     fn part_2(data: StringSlice[mut=False]) -> Self.T:
