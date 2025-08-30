@@ -85,11 +85,11 @@ trait AdventSolution:
     alias T: Intable
 
     @staticmethod
-    fn part_1(data: StringSlice[mut=False]) -> T:
+    fn part_1(data: StringSlice[mut=False]) -> Self.T:
         ...
 
     @staticmethod
-    fn part_2(data: StringSlice[mut=False]) -> T:
+    fn part_2(data: StringSlice[mut=False]) -> Self.T:
         ...
 
 

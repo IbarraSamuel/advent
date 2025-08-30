@@ -16,11 +16,11 @@ trait ListSolution:
     alias dtype: DType
 
     @staticmethod
-    fn part_1(lines: List[String]) -> Scalar[dtype]:
+    fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
         ...
 
     @staticmethod
-    fn part_2(lines: List[String]) -> Scalar[dtype]:
+    fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
         ...
 
 
