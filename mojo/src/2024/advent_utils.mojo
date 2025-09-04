@@ -28,14 +28,6 @@ struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
     fn __eq__(self, other: Part) -> Bool:
         return IntLiteral[self.value]() == IntLiteral[other.value]()
 
-    @always_inline("builtin")
-    fn __ne__(self, other: Self) -> Bool:
-        return False
-
-    @always_inline("builtin")
-    fn __ne__(self, other: Part) -> Bool:
-        return IntLiteral[self.value]() != IntLiteral[other.value]()
-
 
 @register_passable("trivial")
 struct TimeUnit[value: __mlir_type.`!kgen.string`](EqualityComparable):
@@ -68,16 +60,6 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`](EqualityComparable):
         "nodebug"
     )  # TODO: use @builtin when StringLiteral is @builtin comparable
     fn __eq__(self, other: TimeUnit) -> Bool:
-        return StringLiteral[self.value]() == StringLiteral[other.value]()
-
-    @always_inline("builtin")
-    fn __ne__(self, other: Self) -> Bool:
-        return False
-
-    @always_inline(
-        "nodebug"
-    )  # TODO: use @builtin when StringLiteral is @builtin comparable
-    fn __ne__(self, other: TimeUnit) -> Bool:
         return StringLiteral[self.value]() == StringLiteral[other.value]()
 
 
