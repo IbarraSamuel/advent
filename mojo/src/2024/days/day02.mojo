@@ -19,43 +19,6 @@ fn calc_simd(
     return is_positive_in_bounds, is_negative_in_bounds
 
 
-fn part_1(data: StringSlice[mut=False]) -> SIMD[DType.int32, 1024]:
-    """Part 1 test.
-
-    --------------------------------------------------------------------------------
-    Benchmark Report (ms)
-    --------------------------------------------------------------------------------
-    Mean: 0.553725586
-    Total: 553.725586
-    Iters: 1000
-    Warmup Total: 0.645772
-    Fastest Mean: 0.553725586
-    Slowest Mean: 0.553725586
-
-    ```mojo
-    from advent_utils import test
-    from days.day02 import Solution
-
-    test[Solution, file="tests/2024/day02.txt", part=1, expected=2]()
-
-    ```"""
-    lines = data.splitlines()
-    results = SIMD[DType.int32, 1024](0)
-
-    for idx in range(len(lines)):
-        ref nums = lines.unsafe_get(idx).split()
-        f = SIMD[DType.int8, 8](0)
-        try:
-            for i in range(len(nums)):
-                f[i] = Int(nums[i])
-        except:
-            pass
-        pos, neg = calc_simd(f)
-        results[idx] = Int(all(pos) or all(neg))
-
-    return results
-
-
 fn slice_to_num(slice: StringSlice[mut=False]) -> Int:
     alias zeroord = ord("0")
     var bts = slice.as_bytes()
@@ -80,7 +43,6 @@ struct Solution(AdventSolution):
         test[Solution, file="tests/2024/day02.txt", part=1, expected=2]()
 
         ```"""
-        var pr = part_1(data)
         result = 0
         ref lines = data.splitlines()
         for lidx in range(len(lines)):
@@ -89,45 +51,18 @@ struct Solution(AdventSolution):
             var n1 = slice_to_num(nums.unsafe_get(0))
             var last = slice_to_num(nums.unsafe_get(1))
             var sign = (last - n1) > 0
+            var diff = last - n1
+            if diff < -3 or diff > 3 or diff == 0:
+                continue
             for ni in range(2, len(nums)):  # go one in future
                 var current = slice_to_num(nums.unsafe_get(ni))
-                var diff = current - last
+                diff = current - last
                 if diff == 0 or diff < -3 or diff > 3 or (diff > 0) ^ sign:
                     break
                 last = current
             else:
-                if pr[lidx] != 1:
-                    print(
-                        "This one is failing:",
-                        line[lidx],
-                        "with last:",
-                        last,
-                        "and sign:",
-                        sign,
-                    )
                 result += 1
         return result
-        # if np > nn
-        # if slice_to_num(num)
-        # calc pos and add +1 if true and continue
-        # calc neg and add +1 if true
-        # lines = data.splitlines()
-        # results = SIMD[DType.int32, 1024](0)
-
-        # for idx in range(len(lines)):
-        #     ref nums = lines.unsafe_get(idx).split()
-        #     f = SIMD[DType.int8, 8](0)
-        #     try:
-        #         for i in range(len(nums)):
-        #             f[i] = Int(nums[i])
-        #     except:
-        #         pass
-        #     pos, neg = calc_simd(f)
-        #     results[idx] = Int(all(pos) or all(neg))
-
-        # return results.reduce_add()
-
-        # return result
 
     @staticmethod
     fn part_2(data: StringSlice[mut=False]) -> Self.T:
