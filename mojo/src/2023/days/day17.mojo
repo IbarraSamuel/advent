@@ -6,7 +6,7 @@ from time import sleep
 
 
 @register_passable("trivial")
-struct Dir(Writable):
+struct Dir:
     alias UP: Self = 1
     alias RIGHT: Self = 2
     alias DOWN: Self = 3
@@ -24,9 +24,6 @@ struct Dir(Writable):
     fn __eq__(self, other: Self) -> Bool:
         return self.v == other.v
 
-    fn __ne__(self, other: Self) -> Bool:
-        return not (self == other)
-
     fn delta(self, out tp: (Int, Int)):
         if self == Self.UP:
             tp = (0, -1)
@@ -36,14 +33,6 @@ struct Dir(Writable):
             tp = (-1, 0)
 
         tp = (1, 0)
-
-    fn write_to[W: Writer](self, mut writer: W):
-        return writer.write(
-            "UP" if self
-            == Self.UP else "DOWN" if self
-            == Self.DOWN else "LEFT" if self
-            == Self.LEFT else "RIGHT"
-        )
 
 
 alias DUP = Dir.UP.delta()

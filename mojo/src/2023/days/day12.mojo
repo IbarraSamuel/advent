@@ -17,16 +17,13 @@ struct CacheKey(KeyElement, Movable):
     fn __eq__(self, other: Self) -> Bool:
         return self.cfg == other.cfg and self.nums == other.nums
 
-    fn __ne__(self, other: Self) -> Bool:
-        return not self == other
-
-    fn __repr__(self) -> String:
-        try:
-            return StringSlice("(cfg: {}, nums: {})").format(
-                self.cfg, self.nums.__str__()
-            )
-        except:
-            return "repre raises"
+    # fn __repr__(self) -> String:
+    #     try:
+    #         return StringSlice("(cfg: {}, nums: {})").format(
+    #             self.cfg, self.nums.__str__()
+    #         )
+    #     except:
+    #         return "repre raises"
 
     fn copy(self) -> Self:
         return CacheKey(self.cfg, self.nums)

@@ -117,9 +117,6 @@ struct Cache(KeyElement):
     fn __eq__(self, other: Self) -> Bool:
         return self.idx == other.idx and self.dir == other.dir
 
-    fn __ne__(self, other: Self) -> Bool:
-        return not self == other
-
     fn __hash__[H: Hasher](self, mut hasher: H):
         # TODO: Check if this is ok!
         hasher.update(self.idx)

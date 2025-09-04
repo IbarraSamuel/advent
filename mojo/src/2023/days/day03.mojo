@@ -17,9 +17,6 @@ struct Point(ExplicitlyCopyable, KeyElement):
     fn __eq__(self, other: Self) -> Bool:
         return self.x == other.x and self.y == other.y
 
-    fn __ne__(self, other: Self) -> Bool:
-        return not (self == other)
-
     fn copy(self) -> Self:
         return Point(self.x, self.y)
 

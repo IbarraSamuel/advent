@@ -69,9 +69,6 @@ struct Hand[mode: HandMode](Comparable & Copyable & Movable):
     fn __eq__(self, other: Self) -> Bool:
         return self.value == other.value
 
-    fn __ne__(self, other: Self) -> Bool:
-        return not self == other
-
     fn __gt__(self, other: Self) -> Bool:
         if self.level > other.level:
             return True
