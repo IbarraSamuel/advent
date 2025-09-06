@@ -48,7 +48,7 @@ struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         var total = SIMDResult(0)
 
         @parameter
@@ -61,7 +61,7 @@ struct Solution(ListSolution):
         return total.reduce_add()
 
     @staticmethod
-    fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         var total = SIMDResult(0)
 
         @parameter
@@ -98,7 +98,7 @@ fn first_numeric(line: String) -> (Int, Int):
     return fval, lval
 
 
-fn line_value(line: String) -> Int:
+fn line_value(line: StringSlice) -> Int:
     var first_v = 0
     var first_idx: Int = -1
     var last_v = 0

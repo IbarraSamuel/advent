@@ -59,6 +59,7 @@ fn tilt[times: Int = 1](mut maze: String):
     x_max = maze.find("\n")
     y_max = len(maze) // (x_max + 1)
     lines = maze.splitlines()
+    newlines = List[String](capacity=len(lines))
 
     @parameter
     for _ in range(times):
@@ -85,7 +86,7 @@ fn tilt[times: Int = 1](mut maze: String):
                 "O" * count,
                 "\n",
             )
-            lines[x] = line^
+            newlines[x] = line^
 
         parallelize[calc_line](x_max)
         maze = StringSlice("").join(lines^)
@@ -95,14 +96,14 @@ struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod
-    fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
-        maze = StringSlice("\n").join(lines) + "\n"
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+        maze = "\n".join(lines) + "\n"
         tilt[1](maze)
         return calculate[RIGHT](maze)
 
     @staticmethod
-    fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
-        maze = StringSlice("\n").join(lines) + "\n"
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+        maze = "\n".join(lines) + "\n"
         mazes = Dict[String, Int](power_of_two_initial_capacity=256)
 
         idx = 0

@@ -6,7 +6,7 @@ struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(input: List[String]) -> UInt32:
+    fn part_1[o: Origin](input: List[StringSlice[o]]) -> UInt32:
         var total = 0
 
         @parameter
@@ -49,7 +49,7 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> UInt32:
+    fn part_2[o: Origin](input: List[StringSlice[o]]) -> UInt32:
         var total = 0
         var amount = List[Int]()
         for _ in range(len(input)):
