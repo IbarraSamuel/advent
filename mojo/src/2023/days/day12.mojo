@@ -65,7 +65,7 @@ struct Solution(ListSolution):
     alias dtype = DType.uint64
 
     @staticmethod
-    fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         total = SIMD[DType.uint32, 1024](0)
 
         @parameter
@@ -88,7 +88,7 @@ struct Solution(ListSolution):
         return total.reduce_add().cast[DType.uint64]()
 
     @staticmethod
-    fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         total = SIMD[DType.uint64, 1024](0)
 
         @parameter

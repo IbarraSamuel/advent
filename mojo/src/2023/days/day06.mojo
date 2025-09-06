@@ -10,7 +10,7 @@ fn quadratic_solution(a: Float64, b: Float64, c: Float64) -> (Float64, Float64):
 
 
 @always_inline
-fn races_winning(duration: Int, record: Int) -> UInt:
+fn races_winning(duration: Int, record: Int) -> Int:
     a, b, c = 1, -duration, record
     lower, upper = quadratic_solution(a, b, c)
     lower, upper = floor(lower + 1), ceil(upper - 1)
@@ -22,7 +22,7 @@ struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(input: List[String]) -> UInt32:
+    fn part_1[o: Origin](input: List[StringSlice[o]]) -> UInt32:
         total = 1
         for r_idx in range(len(input[0].split()) - 1):
             duration = input[0].split()[r_idx + 1]
@@ -37,7 +37,7 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> UInt32:
+    fn part_2[o: Origin](input: List[StringSlice[o]]) -> UInt32:
         duration = StaticString("").join(input[0].split()[1:])
         record = StaticString("").join(input[1].split()[1:])
         try:

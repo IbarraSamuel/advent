@@ -14,7 +14,7 @@ struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(lines: List[String]) -> UInt32:
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
         nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=len(lines))
         empty_c = List[Int](capacity=lines[0].byte_length())
@@ -60,7 +60,7 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2(lines: List[String]) -> UInt32:
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
         nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=len(lines))
         empty_c = List[Int](capacity=lines[0].byte_length())

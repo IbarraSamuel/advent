@@ -5,7 +5,7 @@ struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(lines: List[String]) -> UInt32:
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
         var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
@@ -24,7 +24,7 @@ struct Solution(ListSolution):
                 continue
 
             var map_range: MapRange = atol_uint(line.split())
-            maps.append(map_range)
+            maps.append(map_range^)
 
         map_numbers(maps, seeds_nums)
 
@@ -35,7 +35,7 @@ struct Solution(ListSolution):
         return m
 
     @staticmethod
-    fn part_2(lines: List[String]) -> UInt32:
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
         var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
@@ -54,7 +54,7 @@ struct Solution(ListSolution):
                 continue
 
             var map_range: MapRange = atol_uint(line.split())
-            maps.append(map_range)
+            maps.append(map_range^)
 
         seeds_nums = map_ranges(maps, seeds_nums)
 
@@ -115,7 +115,7 @@ fn map_numbers(ranges: List[MapRange], mut numbers: List[Int]):
 
 
 fn calc_ranges(
-    map: MapRange, num: NumRange
+    map: MapRange, var num: NumRange
 ) -> Tuple[List[NumRange], List[Bool]]:
     """Returns the list of new ranges, and a mask to tell if those were mapped or not.
     """
@@ -126,7 +126,7 @@ fn calc_ranges(
 
     if y < a or b < x:
         # No overlaps. Just give back what you have.
-        return List(num), List(False)
+        return List(num^), List(False)
 
     var delta = map.dest_start - map.src_start
 
@@ -167,17 +167,19 @@ fn map_ranges(
     return the final list once you iterate trough all the ranges provided.
 
     """
-    var used_ranges = List[NumRange]()
+    var used_ranges = List[Pointer[NumRange, ImmutableAnyOrigin]]()
 
     while len(numbers) > 0:
         var num = numbers.pop(0)
 
         for map in ranges:
-            new_numbers, mask = calc_ranges(map, num)
+            new_numbers, mask = calc_ranges(map, num^)
 
             if len(mask) == 3:  # 3 Produced
-                num = new_numbers[0]
-                used_ranges.append(new_numbers[1])
+                ref num = new_numbers[0]
+                used_ranges.append(
+                    Pointer[origin=ImmutableAnyOrigin](to=new_numbers[1])
+                )
                 numbers.insert(0, new_numbers[2])
                 continue
             # This one is not going to help if we append it again.

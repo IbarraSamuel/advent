@@ -7,7 +7,7 @@ from advent_utils import ListSolution
 
 alias LEFT = "L"
 alias RIGHT = "R"
-alias Indexer = Dict[String, Int]
+alias Indexer[o: Origin] = Dict[StringSlice[o], Int]
 
 alias default_lpv = List[IndexList[2]]()
 
@@ -37,10 +37,16 @@ struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(lines: List[String]) -> UInt32:
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
         data_len = len(lines) - 2
-        dct = Indexer(power_of_two_initial_capacity=ceil_2pow(data_len))
-        key = String("AAA")
+        dct = Indexer[o](power_of_two_initial_capacity=ceil_2pow(data_len))
+        var key: StringSlice[o]
+        for l in lines:
+            if l.startswith("AAA"):
+                key = l[0:3]
+                break
+        else:
+            key = StringSlice[o]()
         iterations = 0
 
         for idx in range(2, len(lines)):
@@ -61,10 +67,10 @@ struct Solution(ListSolution):
         return iterations
 
     @staticmethod
-    fn part_2(lines: List[String]) -> UInt32:
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
         data_len = len(lines)
         iter_len = lines[0].byte_length()
-        dct = Indexer(power_of_two_initial_capacity=ceil_2pow(data_len - 2))
+        dct = Indexer[o](power_of_two_initial_capacity=ceil_2pow(data_len - 2))
         init_nodes = List[Int](capacity=8)
 
         for idx in range(2, len(lines)):
@@ -79,7 +85,9 @@ struct Solution(ListSolution):
             pos = lines[init_nodes[idx]][:3]
             done = False
             loop_no = 0
-            readed = Dict[String, Int](power_of_two_initial_capacity=128)
+            readed = Dict[StringSlice[o], Int](
+                power_of_two_initial_capacity=128
+            )
             while not done:
                 for i in range(iter_len):
                     if pos in readed:

@@ -148,7 +148,7 @@ struct Solution(ListSolution):
     alias Hand2 = Hand[HandMode.Second]
 
     @staticmethod
-    fn part_1(lines: List[String]) -> UInt32:
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
         cards = List[Self.Hand1](capacity=1000)
         for line in lines:
             cards.append(Self.Hand1(line))
@@ -162,7 +162,7 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2(lines: List[String]) -> UInt32:
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
         cards = List[Self.Hand2](capacity=1000)
         for line in lines:
             cards.append(Self.Hand2(line))

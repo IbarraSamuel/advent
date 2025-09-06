@@ -62,7 +62,9 @@ fn next_position(
     return curr_pos + next
 
 
-fn find_connected_pipe(pos: Position, map: List[String]) -> Position:
+fn find_connected_pipe[
+    o: Origin
+](pos: Position, map: List[StringSlice[o]]) -> Position:
     xr, yr = map[0].byte_length(), len(map)
     xi, yi = pos[0], pos[1]
     xmin, xmax = max(0, xi - 1), min(xr - 1, xi + 1)
@@ -84,7 +86,7 @@ struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod
-    fn part_1(lines: List[String]) -> Int32:
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Int32:
         prev = EMPTY_POS
         for y in range(len(lines)):
             for x in range(lines[0].byte_length()):
@@ -108,7 +110,7 @@ struct Solution(ListSolution):
         return total // 2
 
     @staticmethod
-    fn part_2(lines: List[String]) -> Int32:
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Int32:
         p1 = EMPTY_POS
 
         for y in range(len(lines)):

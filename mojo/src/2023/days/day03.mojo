@@ -6,11 +6,11 @@ from advent_utils import ListSolution
 
 
 @fieldwise_init
-struct Point(ExplicitlyCopyable, KeyElement):
+struct Point(Copyable, KeyElement):
     var x: Int
     var y: Int
 
-    fn __hash__[H: Hasher](self, mut hasher: H):
+    fn __hash__(self, mut hasher: Some[Hasher]):
         hasher.update(self.x)
         hasher.update(self.y)
 
@@ -21,24 +21,26 @@ struct Point(ExplicitlyCopyable, KeyElement):
         return Point(self.x, self.y)
 
 
-fn parse_number[dir: Int](s: String, pos: Int) -> Tuple[String, Int]:
-    var current = String(s[pos])
+fn parse_number[dir: Int](s: StringSlice, pos: Int) -> Tuple[String, Int]:
+    var current = s[pos]
     var left: String = ""
     var lpos: Int = pos
     var right: String = ""
 
-    if pos > 0 and String(s[pos - 1]).isdigit() and dir <= 0:
+    if pos > 0 and s[pos - 1].isdigit() and dir <= 0:
         left, lpos = parse_number[-1](s, pos - 1)
 
-    if pos < len(s) - 1 and String(s[pos + 1]).isdigit() and dir >= 0:
+    if pos < len(s) - 1 and s[pos + 1].isdigit() and dir >= 0:
         right, _ = parse_number[+1](s, pos + 1)
     current = left + current + right
     return current, lpos
 
 
-fn check_window(
+fn check_window[
+    origin: Origin
+](
     point: Point,
-    input: List[String],
+    input: List[StringSlice[origin]],
     mut results: Set[Point],
     mut total: Int,
 ):
@@ -63,8 +65,13 @@ fn check_window(
 
 
 fn check_window[
-    number_limit: Int
-](point: Point, input: List[String], mut results: Set[Point], mut total: Int):
+    origin: Origin, //, number_limit: Int
+](
+    point: Point,
+    input: List[StringSlice[origin]],
+    mut results: Set[Point],
+    mut total: Int,
+):
     var min_x = max(point.x - 1, 0)
     var max_x = min(point.x + 1, len(input[0]) - 1)
     var min_y = max(point.y - 1, 0)
@@ -102,7 +109,7 @@ struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(input: List[String]) -> UInt32:
+    fn part_1[o: Origin](input: List[StringSlice[o]]) -> UInt32:
         var points = List[Point]()
         var x_len = len(input[0])
         var y_len = len(input)
@@ -129,7 +136,7 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> UInt32:
+    fn part_2[o: Origin](input: List[StringSlice[o]]) -> UInt32:
         var points = List[Point]()
         var x_len = len(input[0])
         var y_len = len(input)

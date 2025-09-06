@@ -4,6 +4,17 @@ from algorithm import parallelize
 from advent_utils import ListSolution
 
 
+fn is_mirror[o: Origin](values: List[StringSlice[o]]) -> OptionalReg[Int]:
+    for i in range(1, len(values)):
+        mn = min(i, len(values) - i)
+        f = values[i - mn : i]
+        l = values[i : i + mn]
+        l.reverse()
+        if f == l:
+            return i
+    return None
+
+
 fn is_mirror(values: List[String]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         mn = min(i, len(values) - i)
@@ -11,6 +22,23 @@ fn is_mirror(values: List[String]) -> OptionalReg[Int]:
         l = values[i : i + mn]
         l.reverse()
         if f == l:
+            return i
+    return None
+
+
+fn almost_a_mirror[o: Origin](values: List[StringSlice[o]]) -> OptionalReg[Int]:
+    for i in range(1, len(values)):
+        mn = min(i, len(values) - i)
+        p1 = values[i - mn : i]
+        p2 = values[i : i + mn]
+        p2.reverse()
+        dif = 0
+        for i in range(mn):
+            if p1[i] != p2[i]:
+                for j in range(len(p1[i])):
+                    if p1[i][j] != p2[i][j]:
+                        dif += 1
+        if dif == 1:
             return i
     return None
 
@@ -36,7 +64,7 @@ struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod
-    fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         total = SIMD[Self.dtype, 128]()
         # total = Scalar[Self.dtype]()
         spaces = List[Int](-1)
@@ -70,7 +98,7 @@ struct Solution(ListSolution):
         return total.reduce_add()
 
     @staticmethod
-    fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         total = SIMD[Self.dtype, 128]()
         # total = Scalar[Self.dtype]()
         spaces = List[Int](-1)

@@ -22,7 +22,7 @@ fn calc_prev_and_next(var value: Line, last: Int) -> (Int64, Int64):
     return frst, lst
 
 
-fn create_line(v: String) -> (Line, Int):
+fn create_line(v: StringSlice) -> (Line, Int):
     values = v.split()
     line = Line(0)
 
@@ -44,7 +44,7 @@ struct Solution(ListSolution):
     alias dtype = DType.int64
 
     @staticmethod
-    fn part_1(lines: List[String]) -> Scalar[Self.dtype]:
+    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         tot = SIMD[DType.int64, 256](0)
 
         @parameter
@@ -57,7 +57,7 @@ struct Solution(ListSolution):
         return tot.reduce_add()
 
     @staticmethod
-    fn part_2(lines: List[String]) -> Scalar[Self.dtype]:
+    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         tot = SIMD[DType.int64, 256](0)
 
         @parameter
