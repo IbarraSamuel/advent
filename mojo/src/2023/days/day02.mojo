@@ -56,7 +56,7 @@ struct Solution(ListSolution):
     alias dtype = DType.uint32
 
     @staticmethod
-    fn part_1(input: List[String]) -> Scalar[Self.dtype]:
+    fn part_1[o: Origin](input: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         var total = UInt32(0)
 
         @parameter
@@ -74,7 +74,7 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2(input: List[String]) -> Scalar[Self.dtype]:
+    fn part_2[o: Origin](input: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         var simd = SIMD[DType.uint32, 128]()
 
         @parameter
