@@ -86,7 +86,8 @@ struct MapRange(Copyable, Movable):
 
 
 @fieldwise_init
-struct NumRange(Copyable, Movable):
+@register_passable("trivial")
+struct NumRange:
     var start: Int
     var end: Int
 
@@ -126,7 +127,7 @@ fn calc_ranges(
 
     if y < a or b < x:
         # No overlaps. Just give back what you have.
-        return List(num^), List(False)
+        return List(num), List(False)
 
     var delta = map.dest_start - map.src_start
 
@@ -167,19 +168,17 @@ fn map_ranges(
     return the final list once you iterate trough all the ranges provided.
 
     """
-    var used_ranges = List[Pointer[NumRange, ImmutableAnyOrigin]]()
+    var used_ranges = List[NumRange]()
 
     while len(numbers) > 0:
         var num = numbers.pop(0)
 
         for map in ranges:
-            new_numbers, mask = calc_ranges(map, num^)
+            new_numbers, mask = calc_ranges(map, num)
 
             if len(mask) == 3:  # 3 Produced
-                ref num = new_numbers[0]
-                used_ranges.append(
-                    Pointer[origin=ImmutableAnyOrigin](to=new_numbers[1])
-                )
+                num = new_numbers[0]
+                used_ranges.append(new_numbers[1])
                 numbers.insert(0, new_numbers[2])
                 continue
             # This one is not going to help if we append it again.

@@ -55,7 +55,7 @@ struct Solution(ListSolution):
         for _ in range(len(input)):
             amount.append(1)
 
-        fn calc_line(read line: String) -> Int:
+        fn calc_line(line: StringSlice) -> Int:
             var winners = List[String]()
             var inp = line.find(": ") + 2
             var pipe = line.find("|")

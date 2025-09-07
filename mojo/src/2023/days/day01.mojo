@@ -80,7 +80,7 @@ fn to_int(v: StringSlice, mut o: Int):
         pass
 
 
-fn first_numeric(line: String) -> (Int, Int):
+fn first_numeric(line: StringSlice) -> (Int, Int):
     pos, end = 0, len(line) - 1
     fval, lval = 0, 0
 

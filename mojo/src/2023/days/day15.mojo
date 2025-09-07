@@ -14,9 +14,11 @@ fn hash(v: Span[Byte]) -> Int:
     return acc
 
 
-fn add_elems(
-    mut elems: Dict[Int, List[(String, Int)]],
-    data: String,
+fn add_elems[
+    o: Origin
+](
+    mut elems: Dict[Int, List[(StringSlice[o], Int)]],
+    data: StringSlice[o],
     mut init: Int,
     end: Int,
 ):
@@ -46,7 +48,7 @@ fn add_elems(
                 return
         if not is_add:
             return
-        l = List[(String, Int)](capacity=10)
+        l = List[(StringSlice[o], Int)](capacity=10)
         l.append((chr, n))
         elems[h] = l
 
@@ -58,7 +60,7 @@ struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod
-    fn part_1(data: List[String]) -> Scalar[Self.dtype]:
+    fn part_1[o: Origin](data: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         t = 0
         acc = 0
         for v in data[0].as_bytes():
@@ -70,9 +72,9 @@ struct Solution(ListSolution):
         return t + acc
 
     @staticmethod
-    fn part_2(data: List[String]) -> Scalar[Self.dtype]:
+    fn part_2[o: Origin](data: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         d = data[0]
-        elems = Dict[Int, List[(String, Int)]](
+        elems = Dict[Int, List[(StringSlice[o], Int)]](
             power_of_two_initial_capacity=256
         )
 

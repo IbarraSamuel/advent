@@ -1,8 +1,6 @@
 from advent_utils import ListSolution
 from utils import IndexList, Index
 from hashlib.hasher import Hasher
-from sys import sizeof
-from collections import Dict
 from collections.set import Set
 from algorithm import parallelize
 import os
@@ -123,10 +121,12 @@ struct Cache(KeyElement):
         hasher.update(self.dir)
 
 
-fn calc_new_pos(
+fn calc_new_pos[
+    o: Origin
+](
     dir: Dir,
     pos: IndexList[2],
-    map: List[String],
+    map: List[StringSlice[o]],
     sp: (Int, Int),
     mut readed: Set[Int],
     mut cache: Set[Cache],
@@ -146,8 +146,13 @@ fn calc_new_pos(
     return npos, abs(mv[0]) + abs(mv[1])
 
 
-fn calc_energized(
-    map: List[String], sp: (Int, Int), var pos: IndexList[2], var dir: Dir
+fn calc_energized[
+    o: Origin
+](
+    map: List[StringSlice[o]],
+    sp: (Int, Int),
+    var pos: IndexList[2],
+    var dir: Dir,
 ) -> Int:
     readed = Set[Int](pos[1] * sp[0] + pos[0])
     cache = Set[Cache](Cache(pos, dir))
@@ -190,21 +195,16 @@ struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod
-    fn part_1(map: List[String]) -> Scalar[Self.dtype]:
+    fn part_1[o: Origin](map: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         # 46 .. 7199
         pos = Index(0, 0)
         dir = RIGHT
         sp = len(map[0]), len(map)
 
-        return calc_energized(
-            map,
-            (sp[0], sp[1]),
-            pos,
-            dir,
-        )
+        return calc_energized(map, sp, pos, dir)
 
     @staticmethod
-    fn part_2(map: List[String]) -> Scalar[Self.dtype]:
+    fn part_2[o: Origin](map: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         # 51 .. 7438
         sp = len(map[0]), len(map)
         ym, xm = sp[0], sp[1] - 1
