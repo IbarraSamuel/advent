@@ -53,9 +53,9 @@ struct Solution(ListSolution):
     alias dtype = DType.int32
 
     @staticmethod
-    fn part_1(data: List[String]) -> Scalar[Self.dtype]:
+    fn part_1[o: Origin](data: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         return 0
 
     @staticmethod
-    fn part_2(data: List[String]) -> Scalar[Self.dtype]:
+    fn part_2[o: Origin](data: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         return 0
