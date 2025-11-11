@@ -3,6 +3,7 @@ from benchmark import run as run_bench
 from pathlib import _dir_of_current_file
 from testing import assert_equal
 from builtin import variadic_size
+from sys.intrinsics import _type_is_eq_parse_time
 
 
 @register_passable("trivial")
@@ -10,14 +11,16 @@ struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
     alias one = Part(1)
     alias two = Part(2)
 
+    alias number = IntLiteral[value]()
+
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: Part[v.value], v: __type_of(1)):
+    fn __init__(out self: Part[v.value], v: type_of(1)):
         pass
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: Part[v.value], v: __type_of(2)):
+    fn __init__(out self: Part[v.value], v: type_of(2)):
         pass
 
     @always_inline("builtin")
@@ -26,11 +29,11 @@ struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
 
     @always_inline("builtin")
     fn __eq__(self, other: Part) -> Bool:
-        return IntLiteral[self.value]() == IntLiteral[other.value]()
+        return self.number == other.number
 
 
 @register_passable("trivial")
-struct TimeUnit[value: __mlir_type.`!kgen.string`](EqualityComparable):
+struct TimeUnit[value: __mlir_type.`!kgen.string`]:
     alias ms = TimeUnit("ms")
     alias ns = TimeUnit("ns")
     alias s = TimeUnit("s")
@@ -39,32 +42,42 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`](EqualityComparable):
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: TimeUnit[v.value], v: __type_of("ms")):
+    fn __init__(out self: TimeUnit[v.value], v: type_of("ms")):
         pass
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: TimeUnit[v.value], v: __type_of("ns")):
+    fn __init__(out self: TimeUnit[v.value], v: type_of("ns")):
         pass
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: TimeUnit[v.value], v: __type_of("s")):
+    fn __init__(out self: TimeUnit[v.value], v: type_of("s")):
         pass
 
-    @always_inline("builtin")
-    fn __eq__(self, other: Self) -> Bool:
-        return True
+    # @always_inline("builtin")
+    # fn __eq__(self, other: Self) -> Bool:
+    #     return True
 
-    @always_inline(
-        "nodebug"
-    )  # TODO: use @builtin when StringLiteral is @builtin comparable
-    fn __eq__(self, other: TimeUnit) -> Bool:
-        return StringLiteral[self.value]() == StringLiteral[other.value]()
+    # @always_inline("builtin")
+    # fn __eq__[
+    #     v2: __mlir_type.`!kgen.string` where _type_is_eq_parse_time[
+    #         StringLiteral[value], StringLiteral[v2]
+    #     ]()
+    # ](self, other: TimeUnit[v2]) -> Bool:
+    #     return True
+
+    # @always_inline("builtin")
+    # fn __eq__[
+    #     v2: __mlir_type.`!kgen.string`
+    # ](self, other: TimeUnit[v2]) -> Bool where not _type_is_eq_parse_time[
+    #     StringLiteral[value], StringLiteral[v2]
+    # ]():
+    #     return False
 
 
 trait AdventSolution:
-    alias T: Intable
+    alias T: Intable = Int
 
     @staticmethod
     fn part_1(data: StringSlice[mut=False]) -> Self.T:
@@ -76,16 +89,16 @@ trait AdventSolution:
 
 
 fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
-    filepath = _dir_of_current_file() / "../../.." / input_path
+    var filepath = _dir_of_current_file() / "../../.." / input_path
     alias n_sols = variadic_size(solutions)
 
     @parameter
     for i in range(n_sols):
         alias Sol = solutions[i]
 
-        day = String("0" if i < 9 else "", i + 1)
-        file = filepath / String("day", day, ".txt")
-        data = file.read_text().as_string_slice()
+        var day = String("0" if i < 9 else "", i + 1)
+        var file = filepath / String("day", day, ".txt")
+        var data = file.read_text().as_string_slice()
 
         var p1: Sol.T = Sol.part_1(data)
         var p2: Sol.T = Sol.part_2(data)
@@ -101,16 +114,16 @@ fn bench[
     input_path: StringLiteral,
     *solutions: AdventSolution,
 ]() raises:
-    filepath = _dir_of_current_file() / "../../.." / input_path
+    var filepath = _dir_of_current_file() / "../../.." / input_path
     alias n_sols = variadic_size(solutions)
 
     @parameter
     for i in range(n_sols):
         alias Sol = solutions[i]
 
-        day = String("0" if i < 9 else "", i + 1)
-        file = filepath / String("day", day, ".txt")
-        data = file.read_text().as_string_slice()
+        var day = String("0" if i < 9 else "", i + 1)
+        var file = filepath / String("day", day, ".txt")
+        var data = file.read_text().as_string_slice()
 
         @parameter
         fn part_1():
@@ -134,15 +147,13 @@ fn test[
     file: StringLiteral,
     expected: IntLiteral,
 ]() raises:
-    filepath = _dir_of_current_file() / "../../.." / file
-    data = filepath.read_text().as_string_slice()
+    var filepath = _dir_of_current_file() / "../../.." / file
+    var data = filepath.read_text().as_string_slice()
 
     @parameter
     if part == 1:
-        res = S.part_1(data)
+        var res = S.part_1(data)
+        assert_equal(Int(res), expected)
     elif part == 2:
-        res = S.part_2(data)
-    else:
-        raise Error("Part argument is incorrectly set.")
-
-    assert_equal(Int(res), expected)
+        var res = S.part_2(data)
+        assert_equal(Int(res), expected)

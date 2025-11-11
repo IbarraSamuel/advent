@@ -1,4 +1,5 @@
 from advent_utils import test
+from testing import TestSuite
 import days
 
 
@@ -27,3 +28,7 @@ fn test_day04() raises:
 fn test_day05() raises:
     test[days.day05.Solution, 1, "tests/2024/day05.txt", expected=143]()
     test[days.day05.Solution, 2, "tests/2024/day05.txt", expected=123]()
+
+
+fn main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()
