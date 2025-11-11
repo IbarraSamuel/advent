@@ -8,7 +8,7 @@ from advent_utils import AdventSolution
 
 fn calc_simd(
     f: SIMD[DType.int8, 8]
-) -> (SIMD[DType.bool, 8], SIMD[DType.bool, 8]):
+) -> Tuple[SIMD[DType.bool, 8], SIMD[DType.bool, 8]]:
     """This could be improved to precisely show the place where the problem is.
     """
     l = f.shift_left[1]()

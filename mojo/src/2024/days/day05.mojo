@@ -163,13 +163,11 @@ fn order_manual[
     zeroidx: SIMD[DType.uint8, 32] = SIMD[DType.uint8, 32](0),
 ](
     page: StringSlice[o],
-    rules: List[(StringSlice[o], StringSlice[o])],
-) -> SIMD[
-    DType.uint8, 32
-]:
+    rules: List[Tuple[StringSlice[o], StringSlice[o]]],
+) -> SIMD[DType.uint8, 32]:
     var done = False
     var idx = indexes.copy()
-    var used_rules = List[(Int, Int)]()
+    var used_rules = List[Tuple[Int, Int]]()
     for first, last in rules:
         of = page.find(first)
         ol = page.find(last)

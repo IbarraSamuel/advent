@@ -43,35 +43,35 @@ struct Solution(AdventSolution):
                 and bytes[idx(x + 1, y)] == `M`
                 and bytes[idx(x + 2, y)] == `A`
                 and bytes[idx(x + 3, y)] == `S`)
-                + (x > 2
+                + Int(x > 2
                     and bytes[idx(x - 1, y)] == `M`
                     and bytes[idx(x - 2, y)] == `A`
                     and bytes[idx(x - 3, y)] == `S`)
-                + (x < xmax - 3
+                + Int(x < xmax - 3
                     and y < ymax - 3
                     and bytes[idx(x + 1, y + 1)] == `M`
                     and bytes[idx(x + 2, y + 2)] == `A`
                     and bytes[idx(x + 3, y + 3)] == `S`)
-                + (x > 2
+                + Int(x > 2
                     and y > 2
                     and bytes[idx(x - 1, y - 1)] == `M`
                     and bytes[idx(x - 2, y - 2)] == `A`
                     and bytes[idx(x - 3, y - 3)] == `S`)
-                + (x < xmax - 3
+                + Int(x < xmax - 3
                     and y > 2
                     and bytes[idx(x + 1, y - 1)] == `M`
                     and bytes[idx(x + 2, y - 2)] == `A`
                     and bytes[idx(x + 3, y - 3)] == `S`)
-                + (x > 2
+                + Int(x > 2
                     and y < ymax - 3
                     and bytes[idx(x - 1, y + 1)] == `M`
                     and bytes[idx(x - 2, y + 2)] == `A`
                     and bytes[idx(x - 3, y + 3)] == `S`)
-                + (y < ymax - 3
+                + Int(y < ymax - 3
                     and bytes[idx(x, y + 1)] == `M`
                     and bytes[idx(x, y + 2)] == `A`
                     and bytes[idx(x, y + 3)] == `S`)
-                + (y > 2
+                + Int(y > 2
                     and bytes[idx(x, y - 1)] == `M`
                     and bytes[idx(x, y - 2)] == `A`
                     and bytes[idx(x, y - 3)] == `S`)
