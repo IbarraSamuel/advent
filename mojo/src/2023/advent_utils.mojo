@@ -24,7 +24,7 @@ trait ListSolution:
         ...
 
 
-fn get_solutions[S: ListSolution, I: StringLiteral]() raises -> (Int, Int):
+fn get_solutions[S: ListSolution, I: StringLiteral]() raises -> Tuple[Int, Int]:
     input = read_input_lines[I]().splitlines()
     p1 = S.part_1(input)
     p2 = S.part_2(input)
@@ -56,8 +56,8 @@ fn run[S: ListSolution, path: StringLiteral]() raises:
 
 fn test_solution[
     S: ListSolution,
-    test_1: (StaticString, Int),
-    test_2: (StaticString, Int),
+    test_1: Tuple[StaticString, Int],
+    test_2: Tuple[StaticString, Int],
 ]() raises:
     alias path_1: StaticString = test_1[0]
     alias expected_result_1: Int = test_1[1]
@@ -72,7 +72,9 @@ fn test_solution[
     assert_equal(result_2, expected_result_2)
 
 
-fn test_solution[S: ListSolution, *tests: (StaticString, (Int, Int))]() raises:
+fn test_solution[
+    S: ListSolution, *tests: Tuple[StaticString, Tuple[Int, Int]]
+]() raises:
     alias test_list = VariadicList(tests)
 
     @parameter

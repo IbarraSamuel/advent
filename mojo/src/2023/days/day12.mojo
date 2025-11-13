@@ -25,8 +25,8 @@ struct CacheKey(KeyElement, Movable):
     #     except:
     #         return "repre raises"
 
-    fn copy(self) -> Self:
-        return CacheKey(self.cfg, self.nums)
+    # fn copy(self) -> Self:
+    #     return CacheKey(self.cfg, self.nums.copy())
 
 
 fn count(
@@ -38,7 +38,7 @@ fn count(
     if (not cfg and nums) or (not nums and "#" in cfg):
         return 0
 
-    k = CacheKey(String(cfg), nums)
+    k = CacheKey(String(cfg), nums.copy())
     vl = cache.get(k)
     if vl:
         return vl.value()
@@ -81,7 +81,7 @@ struct Solution(ListSolution):
             except:
                 os.abort("This should never happen")
             cache = Dict[CacheKey, Int]()
-            total[idx] = count(cfg, nums, cache)
+            total[idx] = count(cfg, nums^, cache)
             # total[idx] = count(cfg, nums)
 
         parallelize[calc_line](len(lines))
@@ -105,7 +105,7 @@ struct Solution(ListSolution):
             cfg = (("?" + cfg) * 5)[1:]
             nums *= 5
             cache = Dict[CacheKey, Int]()
-            total[idx] = count(cfg, nums, cache)
+            total[idx] = count(cfg, nums^, cache)
             # total[idx] = count(cfg, nums)
 
         parallelize[calc_line](len(lines))

@@ -2,7 +2,7 @@ from algorithm.functional import vectorize
 from algorithm.reduction import sum, _simd_sum
 from advent_utils import ListSolution
 
-alias Game = (Int, Int, Int)
+alias Game = Tuple[Int, Int, Int]
 alias max_game: Game = (12, 13, 14)
 
 

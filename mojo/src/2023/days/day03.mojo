@@ -78,7 +78,7 @@ fn check_window[
     var max_y = min(point.y + 1, len(input) - 1)
     var first_x: Int
     var to_parse: String
-    var old_results = results
+    var old_results = results.copy()
     var local_result: IndexList[2] = (0, 0)
     var local_count = 0
 
@@ -90,7 +90,7 @@ fn check_window[
                 if current_point not in results:
                     local_count += 1
                     if local_count > number_limit:
-                        results = old_results
+                        results = old_results^
                         return
                     results.add(current_point)
                     try:
@@ -99,7 +99,7 @@ fn check_window[
                         pass
 
     if local_count < number_limit:
-        results = old_results
+        results = old_results^
         return
 
     total += local_result[0] * local_result[1]
