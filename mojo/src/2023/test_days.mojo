@@ -1,4 +1,5 @@
 from advent_utils import test_solution
+from testing import TestSuite
 import days
 
 
@@ -124,3 +125,7 @@ fn test_day17() raises:
         days.day17.Solution,
         (StaticString("tests/2023/day17.txt"), (102, 123)),
     ]()
+
+
+fn main() raises:
+    TestSuite.discover_tests[__functions_in_module()]().run()

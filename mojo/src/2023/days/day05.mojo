@@ -10,7 +10,7 @@ struct Solution(ListSolution):
         var seeds_str = lines[0]
         var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
 
-        var seeds_nums = atol_uint(seeds_list)
+        var seeds_nums = atol_uint(seeds_list^)
 
         var maps = List[MapRange]()
         for line in lines[2:]:
@@ -40,7 +40,7 @@ struct Solution(ListSolution):
         var seeds_str = lines[0]
         var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
 
-        var seeds_nums = calc_num_ranges(atol_uint(seeds_list))
+        var seeds_nums = calc_num_ranges(atol_uint(seeds_list^))
 
         var maps = List[MapRange]()
         for line in lines[2:]:
@@ -49,14 +49,14 @@ struct Solution(ListSolution):
 
             # These lines are not useful
             if "map" in line:
-                seeds_nums = map_ranges(maps, seeds_nums)
+                seeds_nums = map_ranges(maps, seeds_nums^)
                 maps.clear()
                 continue
 
             var map_range: MapRange = atol_uint(line.split())
             maps.append(map_range^)
 
-        seeds_nums = map_ranges(maps, seeds_nums)
+        seeds_nums = map_ranges(maps, seeds_nums^)
 
         var m: Int = Int.MAX
         for n in seeds_nums:
@@ -96,7 +96,7 @@ fn calc_num_ranges(ranges: List[Int]) -> List[NumRange]:
     var numranges = List[NumRange]()
     for i in range(0, len(ranges), 2):
         numranges.append(NumRange(ranges[i], ranges[i] + ranges[i + 1]))
-    return numranges
+    return numranges^
 
 
 fn map_number(range: MapRange, n: Int) -> Tuple[Int, Bool]:
@@ -174,7 +174,7 @@ fn map_ranges(
         var num = numbers.pop(0)
 
         for map in ranges:
-            new_numbers, mask = calc_ranges(map, num)
+            ref new_numbers, mask = calc_ranges(map, num)
 
             if len(mask) == 3:  # 3 Produced
                 num = new_numbers[0]
@@ -199,7 +199,7 @@ fn map_ranges(
         # we finalize mapping num and we are still here. Let's continue with other maps. This will not move
         else:
             used_ranges.append(num)
-    return used_ranges
+    return used_ranges^
 
 
 fn atol_uint(c: StringSlice) -> Int:
@@ -215,4 +215,4 @@ fn atol_uint[o: Origin](var l: List[StringSlice[o]]) -> List[Int]:
     for i in range(len(l)):
         uint_l.append(atol_uint(l[i]))
 
-    return uint_l
+    return uint_l^

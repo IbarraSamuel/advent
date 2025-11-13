@@ -17,7 +17,7 @@ fn hash(v: Span[Byte]) -> Int:
 fn add_elems[
     o: Origin
 ](
-    mut elems: Dict[Int, List[(StringSlice[o], Int)]],
+    mut elems: Dict[Int, List[Tuple[StringSlice[o], Int]]],
     data: StringSlice[o],
     mut init: Int,
     end: Int,
@@ -48,9 +48,9 @@ fn add_elems[
                 return
         if not is_add:
             return
-        l = List[(StringSlice[o], Int)](capacity=10)
+        l = List[Tuple[StringSlice[o], Int]](capacity=10)
         l.append((chr, n))
-        elems[h] = l
+        elems[h] = l^
 
     except:
         return
@@ -74,7 +74,7 @@ struct Solution(ListSolution):
     @staticmethod
     fn part_2[o: Origin](data: List[StringSlice[o]]) -> Scalar[Self.dtype]:
         d = data[0]
-        elems = Dict[Int, List[(StringSlice[o], Int)]](
+        elems = Dict[Int, List[Tuple[StringSlice[o], Int]]](
             power_of_two_initial_capacity=256
         )
 

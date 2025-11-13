@@ -45,7 +45,7 @@ fn opposite(v: Dir) -> Int:
         return RIGHT
 
 
-# @always_inline("nodebug")
+# # @always_inline("nodebug")
 fn delta(v: Int) -> IndexList[2]:
     if v == DOWN:
         return Index(1, 0)
@@ -57,8 +57,8 @@ fn delta(v: Int) -> IndexList[2]:
         return Index(0, -1)
 
 
-# @always_inline
-fn reflect(v: Dir, mirror: UInt8) -> (Dir, Dir):
+# # @always_inline
+fn reflect(v: Dir, mirror: UInt8) -> Tuple[Dir, Dir]:
     """Self is the position relative to the mirror.
 
     Returns
@@ -96,8 +96,8 @@ fn reflect(v: Dir, mirror: UInt8) -> (Dir, Dir):
     return NO_DIR, NO_DIR
 
 
-# @always_inline("nodebug")
-fn oob(pos: IndexList[2], shape: (Int, Int)) -> Bool:
+# # @always_inline("nodebug")
+fn oob(pos: IndexList[2], shape: Tuple[Int, Int]) -> Bool:
     return (
         pos[0] >= shape[0] or pos[0] < 0 or pos[1] >= shape[1] - 1 or pos[1] < 0
     )
@@ -127,11 +127,11 @@ fn calc_new_pos[
     dir: Dir,
     pos: IndexList[2],
     map: List[StringSlice[o]],
-    sp: (Int, Int),
+    sp: Tuple[Int, Int],
     mut readed: Set[Int],
     mut cache: Set[Cache],
     # mut s: String,
-) -> (IndexList[2], Int):
+) -> Tuple[IndexList[2], Int]:
     dt = delta(dir)
     npos = pos
     while map[npos[1]][npos[0]] == "." or npos == pos:
@@ -150,7 +150,7 @@ fn calc_energized[
     o: Origin
 ](
     map: List[StringSlice[o]],
-    sp: (Int, Int),
+    sp: Tuple[Int, Int],
     var pos: IndexList[2],
     var dir: Dir,
 ) -> Int:
@@ -160,7 +160,7 @@ fn calc_energized[
     if ord(map[pos[1]][pos[0]]) not in MIRRORS:
         pos, _ = calc_new_pos(dir, pos, map, sp, readed, cache)
 
-    queue = List[(Dir, IndexList[2])]((dir, pos))
+    queue = List[Tuple[Dir, IndexList[2]]]((dir, pos))
 
     while queue:
         dir, pos = queue.pop()
@@ -208,7 +208,7 @@ struct Solution(ListSolution):
         # 51 .. 7438
         sp = len(map[0]), len(map)
         ym, xm = sp[0], sp[1] - 1
-        indexes = List[(IndexList[2], Dir)](capacity=(ym + xm) * 2)
+        indexes = List[Tuple[IndexList[2], Dir]](capacity=(ym + xm) * 2)
 
         for y in range(ym):
             indexes.append((Index(y, 0), RIGHT))

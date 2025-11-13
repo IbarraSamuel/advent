@@ -58,8 +58,7 @@ fn calculate[direction: Direction](maze: String) -> Int:
 fn tilt[times: Int = 1](mut maze: String):
     x_max = maze.find("\n")
     y_max = len(maze) // (x_max + 1)
-    lines = maze.splitlines()
-    newlines = List[String](capacity=len(lines))
+    var newlines = List[String](length=y_max, fill=String())
 
     @parameter
     for _ in range(times):
@@ -89,7 +88,7 @@ fn tilt[times: Int = 1](mut maze: String):
             newlines[x] = line^
 
         parallelize[calc_line](x_max)
-        maze = StringSlice("").join(lines^)
+        maze = StringSlice("").join(newlines^)
 
 
 struct Solution(ListSolution):

@@ -4,6 +4,7 @@ import os
 from algorithm import parallelize
 from testing import assert_equal, assert_true, assert_false
 from advent_utils import ListSolution
+from builtin.globals import global_constant
 
 alias Position = IndexList[2]
 alias EMPTY_POS = Position()
@@ -41,7 +42,7 @@ alias PIPE_TO_MOV = List(
 )
 
 
-fn get_pipe_and_mov(char: StringSlice) -> (StaticString, Movement):
+fn get_pipe_and_mov(char: StringSlice) -> Tuple[StaticString, Movement]:
     @parameter
     for idx in range(len(PIPE_TO_MOV)):
         alias pp = PIPE_TO_MOV[idx]
@@ -65,6 +66,8 @@ fn next_position(
 fn find_connected_pipe[
     o: Origin
 ](pos: Position, map: List[StringSlice[o]]) -> Position:
+    # ref valid_pipes = global_constant[VALID_PIPES]()
+    ref valid_pipes = materialize[VALID_PIPES]()
     xr, yr = map[0].byte_length(), len(map)
     xi, yi = pos[0], pos[1]
     xmin, xmax = max(0, xi - 1), min(xr - 1, xi + 1)
@@ -73,7 +76,7 @@ fn find_connected_pipe[
     for x in range(xmin, xmax + 1):
         for y in range(ymin, ymax + 1):
             ch, mov = get_pipe_and_mov(map[y][x])
-            if ch in VALID_PIPES:
+            if ch in valid_pipes:
                 diff = pos - (x, y)
                 if diff == mov[0] or diff == mov[1]:
                     return (x, y)

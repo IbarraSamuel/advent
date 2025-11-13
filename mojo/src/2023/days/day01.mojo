@@ -1,6 +1,7 @@
 from advent_utils import SIMDResult, ListSolution
 from collections import Dict, Optional
 from algorithm.functional import parallelize
+from builtin.globals import global_constant
 
 alias MapList = {
     "one": 1,
@@ -80,7 +81,7 @@ fn to_int(v: StringSlice, mut o: Int):
         pass
 
 
-fn first_numeric(line: StringSlice) -> (Int, Int):
+fn first_numeric(line: StringSlice) -> Tuple[Int, Int]:
     pos, end = 0, len(line) - 1
     fval, lval = 0, 0
 
@@ -106,7 +107,9 @@ fn line_value(line: StringSlice) -> Int:
 
     # @parameter
     # for i in range(len(MapList)):
-    for kv in MapList.items():
+    # ref map_list = global_constant[MapList]()
+    ref map_list = materialize[MapList]()
+    for kv in map_list.items():
         var key = kv.key
         var value = kv.value
         # alias k = MapList[i][0]

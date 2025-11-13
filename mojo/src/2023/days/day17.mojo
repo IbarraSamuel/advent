@@ -24,7 +24,7 @@ struct Dir:
     fn __eq__(self, other: Self) -> Bool:
         return self.v == other.v
 
-    fn delta(self, out tp: (Int, Int)):
+    fn delta(self, out tp: Tuple[Int, Int]):
         if self == Self.UP:
             tp = (0, -1)
         elif self == Self.DOWN:

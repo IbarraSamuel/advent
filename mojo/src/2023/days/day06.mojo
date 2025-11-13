@@ -3,7 +3,9 @@ from advent_utils import ListSolution
 
 
 @always_inline
-fn quadratic_solution(a: Float64, b: Float64, c: Float64) -> (Float64, Float64):
+fn quadratic_solution(
+    a: Float64, b: Float64, c: Float64
+) -> Tuple[Float64, Float64]:
     cns = -b / (2 * a)
     v = sqrt(b**2 - 4.0 * a * c) / (2 * a)
     return cns - v, cns + v
