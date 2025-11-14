@@ -1,6 +1,12 @@
+use std::io::Write;
+
 use crate::advent_utils::Solution as AdventSolution;
 
 pub struct Solution;
+
+const M: u8 = b'M';
+const A: u8 = b'A';
+const S: u8 = b'S';
 
 impl AdventSolution for Solution {
     /// ```
@@ -19,52 +25,62 @@ impl AdventSolution for Solution {
 
         let idx = |x, y| x + y * (xmax + 1);
 
-        for (y, line) in data.lines().enumerate() {
-            let mut last = 0;
-            while let Some(x) = line[last..].find('X').map(|x| x + last) {
-                last = x + 1;
+        let mut last = 0;
+        use std::fs::File;
 
-                tot += (x < xmax - 3
-                    && bytes[idx(x + 1, y)] == b'M'
-                    && bytes[idx(x + 2, y)] == b'A'
-                    && bytes[idx(x + 3, y)] == b'S') as usize
-                    + (x > 2
-                        && bytes[idx(x - 1, y)] == b'M'
-                        && bytes[idx(x - 2, y)] == b'A'
-                        && bytes[idx(x - 3, y)] == b'S') as usize
-                    + (x < xmax - 3
-                        && y < ymax - 3
-                        && bytes[idx(x + 1, y + 1)] == b'M'
-                        && bytes[idx(x + 2, y + 2)] == b'A'
-                        && bytes[idx(x + 3, y + 3)] == b'S') as usize
-                    + (x > 2
-                        && y > 2
-                        && bytes[idx(x - 1, y - 1)] == b'M'
-                        && bytes[idx(x - 2, y - 2)] == b'A'
-                        && bytes[idx(x - 3, y - 3)] == b'S') as usize
-                    + (x < xmax - 3
-                        && y > 2
-                        && bytes[idx(x + 1, y - 1)] == b'M'
-                        && bytes[idx(x + 2, y - 2)] == b'A'
-                        && bytes[idx(x + 3, y - 3)] == b'S') as usize
-                    + (x > 2
-                        && y < ymax - 3
-                        && bytes[idx(x - 1, y + 1)] == b'M'
-                        && bytes[idx(x - 2, y + 2)] == b'A'
-                        && bytes[idx(x - 3, y + 3)] == b'S') as usize
-                    + (y < ymax - 3
-                        && bytes[idx(x, y + 1)] == b'M'
-                        && bytes[idx(x, y + 2)] == b'A'
-                        && bytes[idx(x, y + 3)] == b'S') as usize
-                    + (y > 2
-                        && bytes[idx(x, y - 1)] == b'M'
-                        && bytes[idx(x, y - 2)] == b'A'
-                        && bytes[idx(x, y - 3)] == b'S') as usize;
+        let mut f = File::create("rs.txt").unwrap();
+        loop {
+            _ = f.write_all(tot.to_string().as_bytes());
+            _ = f.write_all(b"\n");
+            let lnr = data[last..].find("X");
+            if lnr.is_none() {
+                break;
             }
+            let lnr = lnr.unwrap() + last;
+            last = lnr + 1;
+            let (x, y) = (lnr % (xmax + 1), lnr / (xmax + 1));
+
+            tot += (x < xmax - 3
+                && bytes[idx(x + 1, y)] == M
+                && bytes[idx(x + 2, y)] == A
+                && bytes[idx(x + 3, y)] == S) as usize
+                + (x > 2
+                    && bytes[idx(x - 1, y)] == M
+                    && bytes[idx(x - 2, y)] == A
+                    && bytes[idx(x - 3, y)] == S) as usize
+                + (x < xmax - 3
+                    && y < ymax - 3
+                    && bytes[idx(x + 1, y + 1)] == M
+                    && bytes[idx(x + 2, y + 2)] == A
+                    && bytes[idx(x + 3, y + 3)] == S) as usize
+                + (x > 2
+                    && y > 2
+                    && bytes[idx(x - 1, y - 1)] == M
+                    && bytes[idx(x - 2, y - 2)] == A
+                    && bytes[idx(x - 3, y - 3)] == S) as usize
+                + (x < xmax - 3
+                    && y > 2
+                    && bytes[idx(x + 1, y - 1)] == M
+                    && bytes[idx(x + 2, y - 2)] == A
+                    && bytes[idx(x + 3, y - 3)] == S) as usize
+                + (x > 2
+                    && y < ymax - 3
+                    && bytes[idx(x - 1, y + 1)] == M
+                    && bytes[idx(x - 2, y + 2)] == A
+                    && bytes[idx(x - 3, y + 3)] == S) as usize
+                + (y < ymax - 3
+                    && bytes[idx(x, y + 1)] == M
+                    && bytes[idx(x, y + 2)] == A
+                    && bytes[idx(x, y + 3)] == S) as usize
+                + (y > 2
+                    && bytes[idx(x, y - 1)] == M
+                    && bytes[idx(x, y - 2)] == A
+                    && bytes[idx(x, y - 3)] == S) as usize;
         }
 
         tot
     }
+
     /// ```
     /// # use aoc2024::days;
     /// # use aoc2024::Solution as _;
@@ -86,10 +102,8 @@ impl AdventSolution for Solution {
 
                 let pr = prev.as_bytes();
                 let ne = next.as_bytes();
-                if (pr[x - 1] == b'M' && ne[x + 1] == b'S'
-                    || pr[x - 1] == b'S' && ne[x + 1] == b'M')
-                    && (ne[x - 1] == b'M' && pr[x + 1] == b'S'
-                        || ne[x - 1] == b'S' && pr[x + 1] == b'M')
+                if (pr[x - 1] == M && ne[x + 1] == S || pr[x - 1] == S && ne[x + 1] == M)
+                    && (ne[x - 1] == M && pr[x + 1] == S || ne[x - 1] == S && pr[x + 1] == M)
                 {
                     tot += 1;
                 }
