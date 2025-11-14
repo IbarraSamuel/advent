@@ -4,7 +4,7 @@ channels = ["https://repo.prefix.dev/max-nightly", "https://repo.prefix.dev/cond
 description = "Advent of code problem solving."
 name = "mojo"
 platforms = ["linux-64", "osx-arm64"]
-version = "0.2.0"
+version = "0.3.0"
 
 [tasks]
 "2023_tests" = {cmd = "mojo run src/2023/test_days.mojo"}
