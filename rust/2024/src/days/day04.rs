@@ -1,5 +1,3 @@
-use std::io::Write;
-
 use crate::advent_utils::Solution as AdventSolution;
 
 pub struct Solution;
@@ -26,12 +24,8 @@ impl AdventSolution for Solution {
         let idx = |x, y| x + y * (xmax + 1);
 
         let mut last = 0;
-        use std::fs::File;
 
-        let mut f = File::create("rs.txt").unwrap();
         loop {
-            _ = f.write_all(tot.to_string().as_bytes());
-            _ = f.write_all(b"\n");
             let lnr = data[last..].find("X");
             if lnr.is_none() {
                 break;
