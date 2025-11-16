@@ -28,20 +28,20 @@ struct Solution(AdventSolution):
         ```
         """
         alias zord = ord("0")
-        tot = SIMD[DType.int32, 1024](0)
-        order_split = data.find("\n\n")
-        rest = data[order_split + 2 :]
-        order = data[0:order_split]
+        var tot = SIMD[DType.int32, 1024](0)
+        var order_split = data.find("\n\n")
+        var rest = data[order_split + 2 :]
+        var order = data[0:order_split]
 
         # NEW
-        next_dct = Dict[
+        var next_dct = Dict[
             StringSlice[data.origin], List[StringSlice[data.origin]]
         ]()
-        prev_dct = Dict[
+        var prev_dct = Dict[
             StringSlice[data.origin], List[StringSlice[data.origin]]
         ]()
 
-        prev_idx = 0
+        var prev_idx = 0
 
         while True:
             var lnr = order.find("\n", prev_idx)
@@ -60,7 +60,7 @@ struct Solution(AdventSolution):
 
         @parameter
         fn calc(idx: Int):
-            line = lines[idx]
+            var line = lines[idx]
             var readed_idx = 3
             while True:
                 if line[readed_idx - 1] == "\n":
