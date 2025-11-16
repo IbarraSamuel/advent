@@ -4,6 +4,16 @@ use crate::advent_utils::Solution as AdventSolution;
 
 pub struct Solution;
 
+const fn build_indexes<const SIZE: usize>() -> [usize; SIZE] {
+    let mut res = [0; SIZE];
+    let mut idx = 0;
+    while idx < SIZE {
+        res[idx] = idx;
+        idx += 1;
+    }
+    res
+}
+
 impl AdventSolution for Solution {
     /// ```
     /// # use aoc2024::days;
@@ -64,6 +74,8 @@ impl AdventSolution for Solution {
     /// assert_eq!(days::day05::Solution::part_2(&input), 0);
     /// ```
     fn part_2(_data: &str) -> usize {
+        const ZORD: u8 = b'0';
+        const INDEXES: [usize; 32] = build_indexes();
         let tot = 0;
         tot
     }
