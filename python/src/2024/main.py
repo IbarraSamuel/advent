@@ -1,7 +1,7 @@
 """Program entrypoint."""
 
-from .advent_utils import run
-from .days import day01, day02
+from .advent_utils import run  # ty: ignore[unresolved-import]
+from .days import day01, day02  # ty: ignore[unresolved-import]
 
 
 def main() -> None:

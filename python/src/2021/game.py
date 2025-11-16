@@ -1,4 +1,5 @@
 """Dummy app to spawn buttons."""
+
 import random
 import tkinter as tk
 
