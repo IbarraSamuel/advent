@@ -47,11 +47,10 @@ pub fn run(
     }
     println!("Day {day} =>");
     let data = std::fs::read_to_string(path).expect("Error while reading the file. Aborting.");
-    let data = data.trim();
 
-    let result_1 = part_1(data);
+    let result_1 = part_1(&data);
     println!("\tPart 1: {result_1}");
 
-    let result_2 = part_2(data);
+    let result_2 = part_2(&data);
     println!("\tPart 2: {result_2}\n");
 }

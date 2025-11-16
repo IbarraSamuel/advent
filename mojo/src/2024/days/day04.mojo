@@ -31,57 +31,51 @@ struct Solution(AdventSolution):
             return x + y * (xmax + 1)
         
         var last = 0
-        try:
-            var f = open("mojo.txt", "w")
-            print("file opened")
-            while True:
-                f.write(tot)
-                f.write("\n")
-                var lnr = data.find("X", start=last)
-                if lnr == -1:
-                    break
+        while True:
+            var lnr = data.find("X", start=last)
+            if lnr == -1:
+                break
 
-                last = lnr + 1
-                var x, y = lnr % (xmax + 1), lnr // (xmax + 1)
+            last = lnr + 1
+            var x, y = lnr % (xmax + 1), lnr // (xmax + 1)
 
-                tot += Int(x < xmax - 3
-                    and bytes[idx(x + 1, y)] == `M`
-                    and bytes[idx(x + 2, y)] == `A`
-                    and bytes[idx(x + 3, y)] == `S`)
-                    + Int(x > 2
-                        and bytes[idx(x - 1, y)] == `M`
-                        and bytes[idx(x - 2, y)] == `A`
-                        and bytes[idx(x - 3, y)] == `S`)
-                    + Int(x < xmax - 3
-                        and y < ymax - 3
-                        and bytes[idx(x + 1, y + 1)] == `M`
-                        and bytes[idx(x + 2, y + 2)] == `A`
-                        and bytes[idx(x + 3, y + 3)] == `S`)
-                    + Int(x > 2
-                        and y > 2
-                        and bytes[idx(x - 1, y - 1)] == `M`
-                        and bytes[idx(x - 2, y - 2)] == `A`
-                        and bytes[idx(x - 3, y - 3)] == `S`)
-                    + Int(x < xmax - 3
-                        and y > 2
-                        and bytes[idx(x + 1, y - 1)] == `M`
-                        and bytes[idx(x + 2, y - 2)] == `A`
-                        and bytes[idx(x + 3, y - 3)] == `S`)
-                    + Int(x > 2
-                        and y < ymax - 3
-                        and bytes[idx(x - 1, y + 1)] == `M`
-                        and bytes[idx(x - 2, y + 2)] == `A`
-                        and bytes[idx(x - 3, y + 3)] == `S`)
-                    + Int(y < ymax - 3
-                        and bytes[idx(x, y + 1)] == `M`
-                        and bytes[idx(x, y + 2)] == `A`
-                        and bytes[idx(x, y + 3)] == `S`)
-                    + Int(y > 2
-                        and bytes[idx(x, y - 1)] == `M`
-                        and bytes[idx(x, y - 2)] == `A`
-                        and bytes[idx(x, y - 3)] == `S`)
-        except:
-            pass
+            tot += Int(x < xmax - 3
+                and bytes[idx(x + 1, y)] == `M`
+                and bytes[idx(x + 2, y)] == `A`
+                and bytes[idx(x + 3, y)] == `S`)
+                + Int(x > 2
+                    and bytes[idx(x - 1, y)] == `M`
+                    and bytes[idx(x - 2, y)] == `A`
+                    and bytes[idx(x - 3, y)] == `S`)
+                + Int(x < xmax - 3
+                    and y < ymax - 3
+                    and bytes[idx(x + 1, y + 1)] == `M`
+                    and bytes[idx(x + 2, y + 2)] == `A`
+                    and bytes[idx(x + 3, y + 3)] == `S`)
+                + Int(x > 2
+                    and y > 2
+                    and bytes[idx(x - 1, y - 1)] == `M`
+                    and bytes[idx(x - 2, y - 2)] == `A`
+                    and bytes[idx(x - 3, y - 3)] == `S`)
+                + Int(x < xmax - 3
+                    and y > 2
+                    and bytes[idx(x + 1, y - 1)] == `M`
+                    and bytes[idx(x + 2, y - 2)] == `A`
+                    and bytes[idx(x + 3, y - 3)] == `S`)
+                + Int(x > 2
+                    and y < ymax - 3
+                    and bytes[idx(x - 1, y + 1)] == `M`
+                    and bytes[idx(x - 2, y + 2)] == `A`
+                    and bytes[idx(x - 3, y + 3)] == `S`)
+                + Int(y < ymax - 3
+                    and bytes[idx(x, y + 1)] == `M`
+                    and bytes[idx(x, y + 2)] == `A`
+                    and bytes[idx(x, y + 3)] == `S`)
+                + Int(y > 2
+                    and bytes[idx(x, y - 1)] == `M`
+                    and bytes[idx(x, y - 2)] == `A`
+                    and bytes[idx(x, y - 3)] == `S`)
+
         return tot            
 
 
