@@ -65,8 +65,9 @@ struct Solution(AdventSolution):
             while True:
                 if line[readed_idx - 1] == "\n":
                     # We finalize the line
-                    nbr = line[len(line) // 2 - 1 : len(line) // 2 + 1]
-                    bts = nbr.as_bytes()
+                    bts = line.as_bytes()[
+                        len(line) // 2 - 1 : len(line) // 2 + 1
+                    ]
                     tot[idx] = (
                         10 * bts[0].cast[DType.int32]()
                         - 11 * zord
