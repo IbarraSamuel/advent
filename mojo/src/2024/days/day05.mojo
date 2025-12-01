@@ -14,10 +14,8 @@ fn build_indexes[dtype: DType, size: Int]() -> SIMD[dtype, size]:
 
 
 struct Solution(AdventSolution):
-    alias T = Int32
-
     @staticmethod
-    fn part_1(data: StringSlice[mut=False]) -> Self.T:
+    fn part_1(data: StringSlice[mut=False]) -> Int32:
         """Part 1 solution.
 
         ```mojo
@@ -108,7 +106,7 @@ struct Solution(AdventSolution):
         return tot.reduce_add()
 
     @staticmethod
-    fn part_2(data: StringSlice[mut=False]) -> Self.T:
+    fn part_2(data: StringSlice) -> Int32:
         """Part 2 solution.
 
         ```mojo

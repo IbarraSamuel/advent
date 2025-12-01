@@ -7,11 +7,11 @@ from sys.intrinsics import _type_is_eq_parse_time
 
 
 @register_passable("trivial")
-struct Part[value: __mlir_type.`!pop.int_literal`](EqualityComparable):
+struct Part[value: __mlir_type.`!pop.int_literal`](Equatable):
     alias one = Part(1)
     alias two = Part(2)
 
-    alias number = IntLiteral[value]()
+    alias number = IntLiteral[Self.value]()
 
     @implicit
     @always_inline("builtin")
@@ -38,7 +38,7 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`]:
     alias ns = TimeUnit("ns")
     alias s = TimeUnit("s")
 
-    alias unit = StringLiteral[value]()
+    alias unit = StringLiteral[Self.value]()
 
     @implicit
     @always_inline("builtin")
@@ -55,36 +55,16 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`]:
     fn __init__(out self: TimeUnit[v.value], v: type_of("s")):
         pass
 
-    # @always_inline("builtin")
-    # fn __eq__(self, other: Self) -> Bool:
-    #     return True
-
-    # @always_inline("builtin")
-    # fn __eq__[
-    #     v2: __mlir_type.`!kgen.string` where _type_is_eq_parse_time[
-    #         StringLiteral[value], StringLiteral[v2]
-    #     ]()
-    # ](self, other: TimeUnit[v2]) -> Bool:
-    #     return True
-
-    # @always_inline("builtin")
-    # fn __eq__[
-    #     v2: __mlir_type.`!kgen.string`
-    # ](self, other: TimeUnit[v2]) -> Bool where not _type_is_eq_parse_time[
-    #     StringLiteral[value], StringLiteral[v2]
-    # ]():
-    #     return False
-
 
 trait AdventSolution:
-    alias T: Intable = Int
+    alias T: Intable = Int32
 
     @staticmethod
-    fn part_1(data: StringSlice[mut=False]) -> Self.T:
+    fn part_1(data: StringSlice) -> Self.T:
         ...
 
     @staticmethod
-    fn part_2(data: StringSlice[mut=False]) -> Self.T:
+    fn part_2(data: StringSlice) -> Self.T:
         ...
 
 
