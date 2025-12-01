@@ -19,7 +19,7 @@ fn calc_simd(
     return is_positive_in_bounds, is_negative_in_bounds
 
 
-fn slice_to_num(slice: StringSlice[mut=False]) -> Int:
+fn slice_to_num(slice: StringSlice) -> Int:
     alias zeroord = ord("0")
     var bts = slice.as_bytes()
     if len(bts) == 1:
@@ -33,7 +33,7 @@ struct Solution(AdventSolution):
     alias ZeroSIMD = SIMD[DType.int8, 8](0)
 
     @staticmethod
-    fn part_1(data: StringSlice[mut=False]) -> Self.T:
+    fn part_1(data: StringSlice) -> Self.T:
         """Part 1 test.
 
         ```mojo
@@ -65,7 +65,7 @@ struct Solution(AdventSolution):
         return result
 
     @staticmethod
-    fn part_2(data: StringSlice[mut=False]) -> Self.T:
+    fn part_2(data: StringSlice) -> Self.T:
         """Part 2 test.
 
         ```mojo
