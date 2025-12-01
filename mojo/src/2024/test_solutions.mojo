@@ -47,3 +47,20 @@ fn test_day05_part2() raises:
 
 fn main() raises:
     TestSuite.discover_tests[__functions_in_module()]().run()
+
+    # TestSuite.discover_tests[
+    #     (
+    #         test[days.day01.Solution, 1, "tests/2024/day01.txt", expected=11],
+    #         test[days.day01.Solution, 2, "tests/2024/day01.txt", expected=31],
+    #         test[days.day02.Solution, 1, "tests/2024/day02.txt", expected=2],
+    #         test[days.day02.Solution, 2, "tests/2024/day02.txt", expected=4],
+    #         test[days.day02.Solution, 2, "tests/2024/day022.txt", expected=28],
+    #         test[days.day03.Solution, 1, "tests/2024/day03.txt", expected=161],
+    #         test[days.day03.Solution, 2, "tests/2024/day032.txt", expected=48],
+    #         test[days.day04.Solution, 1, "tests/2024/day04.txt", expected=18],
+    #         test[days.day04.Solution, 1, "tests/2024/day044.txt", expected=4],
+    #         test[days.day04.Solution, 2, "tests/2024/day04.txt", expected=9],
+    #         test[days.day05.Solution, 1, "tests/2024/day05.txt", expected=143],
+    #         test[days.day05.Solution, 2, "tests/2024/day05.txt", expected=123],
+    #     ),
+    # ]().run()
