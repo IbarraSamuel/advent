@@ -15,7 +15,7 @@ fn build_indexes[dtype: DType, size: Int]() -> SIMD[dtype, size]:
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(data: StringSlice[mut=False]) -> Int32:
+    fn part_1(data: StringSlice) -> Int32:
         """Part 1 solution.
 
         ```mojo
@@ -31,12 +31,12 @@ struct Solution(AdventSolution):
         var rest = data[order_split + 2 :]
         var order = data[0:order_split]
 
-        # NEW
+        # # NEW
         var next_dct = Dict[
-            StringSlice[data.origin], List[StringSlice[data.origin]]
+            StringSlice[data.origin].Immutable, List[StringSlice[data.origin]]
         ]()
         var prev_dct = Dict[
-            StringSlice[data.origin], List[StringSlice[data.origin]]
+            StringSlice[data.origin].Immutable, List[StringSlice[data.origin]]
         ]()
 
         var prev_idx = 0
