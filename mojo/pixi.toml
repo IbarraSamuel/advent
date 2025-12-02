@@ -9,8 +9,10 @@ version = "0.3.0"
 [tasks]
 "2023_tests" = {cmd = "mojo run src/2023/test_days.mojo"}
 "2024_tests" = {cmd = "mojo run src/2024/test_solutions.mojo"}
+"2025_tests" = {cmd = "mojo run src/2025/test_solutions.mojo"}
 2023 = {cmd = "mojo run src/2023/main.mojo"}
 2024 = {cmd = "mojo run src/2024/main.mojo"}
+2025 = {cmd = "mojo run src/2025/main.mojo"}
 
 [dependencies]
 mojo = "*"
