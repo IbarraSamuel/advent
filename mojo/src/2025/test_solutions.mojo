@@ -1,50 +1,81 @@
-from advent_utils import test, YEAR
 from testing import TestSuite
+from advent_utils import AdventSolution
+from pathlib import _dir_of_current_file, Path
+from builtin import Variadic
 import days
+
+alias Years = Dict[Int, Days]
+alias Days = Dict[Int, Parts]
+alias Parts = Dict[Int, Files]
+alias Files = List[Path]
+
+
+fn _parse_to_config(data: StringSlice) -> Years:
+    var years: Years = {}
+    data.find("")
+
+
+fn test_from_config[
+    S: Variadic.TypesOfTrait[AdventSolution]
+](config_file: StringSlice) raises:
+    var pkg = _dir_of_current_file() / "../../.." / config_file
+    var data = pkg.read_text()
+    var parsed = _parse_to_config(data)
+    var filepath = _dir_of_current_file() / "../../.." / file
+    var data = filepath.read_text().as_string_slice()
+
+    @parameter
+    if part == 1:
+        var res = S.part_1(data)
+        assert_equal(Int(res), expected)
+    elif part == 2:
+        var res = S.part_2(data)
+        assert_equal(Int(res), expected)
+
 
 comptime FILES_LOCATION = "tests/" + YEAR
 
 
 fn test_day01_part1() raises:
-    test[days.day01.Solution, 1, FILES_LOCATION + "/day01.txt", expected=11]()
+    _test[days.day01.Solution, 1, FILES_LOCATION + "/day01.txt", expected=11]()
 
 
 fn test_day01_part2() raises:
-    test[days.day01.Solution, 2, FILES_LOCATION + "/day01.txt", expected=31]()
+    _test[days.day01.Solution, 2, FILES_LOCATION + "/day01.txt", expected=31]()
 
 
 fn test_day02_part1() raises:
-    test[days.day02.Solution, 1, FILES_LOCATION + "/day02.txt", expected=2]()
+    _test[days.day02.Solution, 1, FILES_LOCATION + "/day02.txt", expected=2]()
 
 
 fn test_day02_part2() raises:
-    test[days.day02.Solution, 2, FILES_LOCATION + "/day02.txt", expected=4]()
-    test[days.day02.Solution, 2, FILES_LOCATION + "/day022.txt", expected=28]()
+    _test[days.day02.Solution, 2, FILES_LOCATION + "/day02.txt", expected=4]()
+    _test[days.day02.Solution, 2, FILES_LOCATION + "/day022.txt", expected=28]()
 
 
 fn test_day03_part1() raises:
-    test[days.day03.Solution, 1, FILES_LOCATION + "/day03.txt", expected=161]()
+    _test[days.day03.Solution, 1, FILES_LOCATION + "/day03.txt", expected=161]()
 
 
 fn test_day03_part2() raises:
-    test[days.day03.Solution, 2, FILES_LOCATION + "/day032.txt", expected=48]()
+    _test[days.day03.Solution, 2, FILES_LOCATION + "/day032.txt", expected=48]()
 
 
 fn test_day04_part1() raises:
-    test[days.day04.Solution, 1, FILES_LOCATION + "/day04.txt", expected=18]()
-    test[days.day04.Solution, 1, FILES_LOCATION + "/day044.txt", expected=4]()
+    _test[days.day04.Solution, 1, FILES_LOCATION + "/day04.txt", expected=18]()
+    _test[days.day04.Solution, 1, FILES_LOCATION + "/day044.txt", expected=4]()
 
 
 fn test_day04_part2() raises:
-    test[days.day04.Solution, 2, FILES_LOCATION + "/day04.txt", expected=9]()
+    _test[days.day04.Solution, 2, FILES_LOCATION + "/day04.txt", expected=9]()
 
 
 fn test_day05_part1() raises:
-    test[days.day05.Solution, 1, FILES_LOCATION + "/day05.txt", expected=143]()
+    _test[days.day05.Solution, 1, FILES_LOCATION + "/day05.txt", expected=143]()
 
 
 fn test_day05_part2() raises:
-    test[days.day05.Solution, 2, FILES_LOCATION + "/day05.txt", expected=123]()
+    _test[days.day05.Solution, 2, FILES_LOCATION + "/day05.txt", expected=123]()
 
 
 fn main() raises:

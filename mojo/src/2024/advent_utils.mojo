@@ -68,12 +68,17 @@ trait AdventSolution:
         ...
 
 
-fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
+fn run[
+    input_path: StringLiteral, *solutions: AdventSolution
+](day: Optional[Int]) raises:
     var filepath = _dir_of_current_file() / "../../.." / input_path
     alias n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
+        if day and day[] != i + 1:
+            continue
+
         alias Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
@@ -93,12 +98,14 @@ fn bench[
     time_unit: TimeUnit,
     input_path: StringLiteral,
     *solutions: AdventSolution,
-]() raises:
+](day: Optional[Int]) raises:
     var filepath = _dir_of_current_file() / "../../.." / input_path
     alias n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
+        if day and day[] != i + 1:
+            continue
         alias Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
