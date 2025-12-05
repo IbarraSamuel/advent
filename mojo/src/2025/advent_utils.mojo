@@ -4,10 +4,6 @@ from pathlib import _dir_of_current_file
 from testing import assert_equal
 from builtin import Variadic
 
-# from sys.intrinsics import _type_is_eq_parse_time
-
-comptime YEAR = "2025"
-
 
 struct Solutions[*solutions: AdventSolution]:
     pass
@@ -75,37 +71,47 @@ trait AdventSolution:
         ...
 
 
-fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
+fn run[
+    *solutions: AdventSolution
+](input_path: StringSlice, day: Optional[Int], part: Optional[Int]) raises:
     var filepath = _dir_of_current_file() / "../../.." / input_path
     alias n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
+        if day and day[] != i + 1:
+            continue
+
         alias Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
         var file = filepath / String("day", day, ".txt")
         var data = file.read_text().as_string_slice()
 
-        var p1: Sol.T = Sol.part_1(data)
-        var p2: Sol.T = Sol.part_2(data)
-
         print("Day", day, "=>")
-        print("\tPart 1:", Int(p1))
-        print("\tPart 2:", Int(p2), end="\n\n")
+
+        if not part or part[] == 1:
+            var p1: Sol.T = Sol.part_1(data)
+            print("\tPart 1:", Int(p1))
+
+        if not part or part[] == 2:
+            var p2: Sol.T = Sol.part_2(data)
+            print("\tPart 2:", Int(p2), end="\n\n")
 
 
 fn bench[
     iters: Int,
     time_unit: TimeUnit,
-    input_path: StringLiteral,
     *solutions: AdventSolution,
-]() raises:
+](input_path: StringSlice, day: Optional[Int], part: Optional[Int]) raises:
     var filepath = _dir_of_current_file() / "../../.." / input_path
     alias n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
+        if day and day[] != i + 1:
+            continue
+
         alias Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
@@ -121,26 +127,11 @@ fn bench[
             _ = Sol.part_2(data)
 
         print(">>> Day", day, "<<<")
-        print("Part 1:")
-        benchmark.run[part_1](max_iters=iters).print(time_unit.unit)
-        print("Part 2:")
-        benchmark.run[part_2](max_iters=iters).print(time_unit.unit)
+        if not part or part[] == 1:
+            print("Part 1:")
+            benchmark.run[part_1](max_iters=iters).print(time_unit.unit)
+        if not part or part[] == 2:
+            print("Part 2:")
+            benchmark.run[part_2](max_iters=iters).print(time_unit.unit)
+
         print()
-
-
-fn test[
-    S: AdventSolution,
-    part: Part,
-    file: StringLiteral,
-    expected: IntLiteral,
-]() raises:
-    var filepath = _dir_of_current_file() / "../../.." / file
-    var data = filepath.read_text().as_string_slice()
-
-    @parameter
-    if part == 1:
-        var res = S.part_1(data)
-        assert_equal(Int(res), expected)
-    elif part == 2:
-        var res = S.part_2(data)
-        assert_equal(Int(res), expected)
