@@ -1,9 +1,10 @@
 from pathlib import Path
-from benchmark import run as run_bench
+import benchmark
 from pathlib import _dir_of_current_file
 from testing import assert_equal
-from builtin import variadic_size
-from sys.intrinsics import _type_is_eq_parse_time
+from builtin import Variadic
+
+# from sys.intrinsics import _type_is_eq_parse_time
 
 comptime YEAR = "2025"
 
@@ -76,7 +77,7 @@ trait AdventSolution:
 
 fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
     var filepath = _dir_of_current_file() / "../../.." / input_path
-    alias n_sols = variadic_size(solutions)
+    alias n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
@@ -101,7 +102,7 @@ fn bench[
     *solutions: AdventSolution,
 ]() raises:
     var filepath = _dir_of_current_file() / "../../.." / input_path
-    alias n_sols = variadic_size(solutions)
+    alias n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
@@ -121,9 +122,9 @@ fn bench[
 
         print(">>> Day", day, "<<<")
         print("Part 1:")
-        run_bench[part_1](max_iters=iters).print(time_unit.unit)
+        benchmark.run[part_1](max_iters=iters).print(time_unit.unit)
         print("Part 2:")
-        run_bench[part_2](max_iters=iters).print(time_unit.unit)
+        benchmark.run[part_2](max_iters=iters).print(time_unit.unit)
         print()
 
 

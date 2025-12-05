@@ -2,7 +2,7 @@ from pathlib import Path
 from benchmark import run as run_bench
 from pathlib import _dir_of_current_file
 from testing import assert_equal
-from builtin import variadic_size
+from builtin import Variadic
 from sys.intrinsics import _type_is_eq_parse_time
 
 
@@ -70,7 +70,7 @@ trait AdventSolution:
 
 fn run[input_path: StringLiteral, *solutions: AdventSolution]() raises:
     var filepath = _dir_of_current_file() / "../../.." / input_path
-    alias n_sols = variadic_size(solutions)
+    alias n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
@@ -95,7 +95,7 @@ fn bench[
     *solutions: AdventSolution,
 ]() raises:
     var filepath = _dir_of_current_file() / "../../.." / input_path
-    alias n_sols = variadic_size(solutions)
+    alias n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
