@@ -13,6 +13,7 @@ version = "0.3.0"
 2023 = {cmd = "mojo run src/2023/main.mojo"}
 2024 = {cmd = "mojo run src/2024/main.mojo"}
 2025 = {cmd = "mojo run src/2025/main.mojo"}
+advent = "mojo run src/2025/main.mojo"
 
 [dependencies]
 mojo = "*"

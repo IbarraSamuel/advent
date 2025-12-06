@@ -26,14 +26,15 @@ fn run_tests(
 ) raises:
     var _day = day.or_else(-1)
     var _part = part.or_else(-1)
-    var res = subprocess.run(
-        "mojo run src/{}/test_solutions.mojo -d {} -p {}".format(
-            year, _day, _part
-        )
-    )
+    var cmd = "mojo src/{}/test_solutions.mojo -y {}".format(year, year)
+    if day:
+        cmd.write(" -d {}".format(day[]))
+    if part:
+        cmd.write(" -p {}".format(part[]))
+    var res = subprocess.run(cmd)
     print(res)
     if "FAILED" in res:
-        raise Error("Test Failed.")
+        raise "Test Failed."
 
 
 @fieldwise_init
@@ -57,8 +58,7 @@ fn parse_args() raises -> Optional[Args]:
             print(HELP_STRING)
             return None
 
-        if len(args) > i + 1:
-            # No args could have a value attached so end this.
+        if len(args) <= i + 1:
             break
 
         if String(arg) in ("-m", "--mode"):
