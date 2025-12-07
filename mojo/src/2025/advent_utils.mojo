@@ -3,10 +3,7 @@ import benchmark
 from pathlib import _dir_of_current_file
 from testing import assert_equal
 from builtin import Variadic
-
-
-struct Solutions[*solutions: AdventSolution]:
-    pass
+import sys
 
 
 @register_passable("trivial")
@@ -135,3 +132,54 @@ fn bench[
             benchmark.run[part_2](max_iters=iters).print(time_unit.unit)
 
         print()
+
+
+@fieldwise_init
+struct Args:
+    var mode: String
+    var year: Optional[Int]
+    var day: Optional[Int]
+    var part: Optional[Int]
+
+
+comptime HELP_STRING = """
+Use `-m test` to run tests or `-m bench` to run benchmarks.
+Defaults to -m run to just run and give the results back.
+
+You can give an specific:
+* Year with: `-y {YYYY}`. eg: `-y 2025`.
+* Day with:  `-d {D|DD}`. eg: `-d 1` or `-d 25`.
+* Part with: `-p {P}`.    eg: `-p 1`.
+
+Any combination should work.
+"""
+
+
+fn parse_args() raises -> Args:
+    var args = sys.argv()
+
+    var mode: StaticString = "run"
+    var year: Optional[Int] = None
+    var day: Optional[Int] = None
+    var part: Optional[Int] = None
+
+    for i, arg in enumerate(args):
+        if String(arg) in ("-h", "--help"):
+            raise HELP_STRING
+
+        if len(args) <= i + 1:
+            break
+
+        if String(arg) in ("-m", "--mode"):
+            mode = args[i + 1]
+
+        if String(arg) in ("-y", "--year"):
+            year = Int(args[i + 1])
+
+        if String(arg) in ("-d", "--day"):
+            day = Int(args[i + 1])
+
+        if String(arg) in ("-p", "--part"):
+            part = Int(args[i + 1])
+
+    return Args(mode=mode, year=year, day=day, part=part)
