@@ -1,16 +1,15 @@
 from testing import TestSuite, assert_equal
-from advent_utils import AdventSolution
-import solutions
+from advent_utils import AdventSolution, Solutions
 from pathlib import _dir_of_current_file, Path
 from python import Python, PythonObject
 from builtin import Variadic
 from sys import argv
 import days
 
-alias Years = Dict[Int, Days]
-alias Days = Dict[Int, Parts]
-alias Parts = Dict[Int, TestCases]
-alias TestCases = List[Case]
+comptime Years = Dict[Int, Days]
+comptime Days = Dict[Int, Parts]
+comptime Parts = Dict[Int, TestCases]
+comptime TestCases = List[Case]
 
 
 @fieldwise_init
@@ -20,9 +19,10 @@ struct Case(ImplicitlyCopyable):
 
 
 fn parse_config() raises -> Years:
+    # TODO:NOT USE PYTHON HERE IF POSSIBLE.
     var toml = Python.import_module("tomllib")
 
-    var loc = _dir_of_current_file() / "../../.."
+    var loc = _dir_of_current_file() / "../.."
     var config_loc = loc / "advent_config.toml"
     var data = config_loc.read_text()
 
