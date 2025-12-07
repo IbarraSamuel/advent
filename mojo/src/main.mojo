@@ -1,18 +1,6 @@
-from advent_utils import run, bench, AdventSolution, parse_args, HELP_STRING
+from advent_utils import run, bench, Args, HELP_STRING
 from solutions import Solutions
-import days
-from builtin.variadics import Variadic
 import subprocess
-
-
-comptime SOLUTIONS = Variadic.types[
-    T=AdventSolution,
-    days.day01.Solution,
-    days.day02.Solution,
-    days.day03.Solution,
-    days.day04.Solution,
-    days.day05.Solution,
-]
 
 
 fn run_tests(
@@ -38,7 +26,7 @@ fn main() raises:
     """Use -m test to run tests or -m bench to run benchmarks."""
 
     try:
-        args = parse_args()
+        args = Args()
     except e:
         if String(e) == HELP_STRING:
             print(e)
@@ -47,6 +35,7 @@ fn main() raises:
 
     if args.mode == "test":
         run_tests(args.year, args.day, args.part)
+        return
 
     @parameter
     for Solution in Solutions:
@@ -56,5 +45,5 @@ fn main() raises:
             print("<==", Y, "==>")
             if args.mode == "run":
                 run[*S](input_path, args.day, args.part)
-            if args.mode == "bench":
+            elif args.mode == "bench":
                 bench[1000, "ms", *S](input_path, args.day, args.part)

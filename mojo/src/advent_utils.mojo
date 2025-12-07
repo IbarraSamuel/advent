@@ -135,14 +135,6 @@ fn bench[
         print()
 
 
-@fieldwise_init
-struct Args:
-    var mode: String
-    var year: Optional[Int]
-    var day: Optional[Int]
-    var part: Optional[Int]
-
-
 comptime HELP_STRING = """
 Use `-m test` to run tests or `-m bench` to run benchmarks.
 Defaults to -m run to just run and give the results back.
@@ -156,31 +148,44 @@ Any combination should work.
 """
 
 
-fn parse_args() raises -> Args:
-    var args = sys.argv()
+@fieldwise_init
+struct Args:
+    alias HELP = HELP_STRING
 
-    var mode: StaticString = "run"
-    var year: Optional[Int] = None
-    var day: Optional[Int] = None
-    var part: Optional[Int] = None
+    var mode: String
+    var year: Optional[Int]
+    var day: Optional[Int]
+    var part: Optional[Int]
 
-    for i, arg in enumerate(args):
-        if String(arg) in ("-h", "--help"):
-            raise HELP_STRING
+    fn __init__(out self) raises:
+        self = Self.parse_args()
 
-        if len(args) <= i + 1:
-            break
+    @staticmethod
+    fn parse_args() raises -> Args:
+        var args = sys.argv()
 
-        if String(arg) in ("-m", "--mode"):
-            mode = args[i + 1]
+        var mode: StaticString = "run"
+        var year: Optional[Int] = None
+        var day: Optional[Int] = None
+        var part: Optional[Int] = None
 
-        if String(arg) in ("-y", "--year"):
-            year = Int(args[i + 1])
+        for i, arg in enumerate(args):
+            if String(arg) in ("-h", "--help"):
+                raise Self.HELP
 
-        if String(arg) in ("-d", "--day"):
-            day = Int(args[i + 1])
+            if len(args) <= i + 1:
+                break
 
-        if String(arg) in ("-p", "--part"):
-            part = Int(args[i + 1])
+            if String(arg) in ("-m", "--mode"):
+                mode = args[i + 1]
 
-    return Args(mode=mode, year=year, day=day, part=part)
+            if String(arg) in ("-y", "--year"):
+                year = Int(args[i + 1])
+
+            if String(arg) in ("-d", "--day"):
+                day = Int(args[i + 1])
+
+            if String(arg) in ("-p", "--part"):
+                part = Int(args[i + 1])
+
+        return Args(mode=mode, year=year, day=day, part=part)

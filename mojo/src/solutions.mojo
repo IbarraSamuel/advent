@@ -1,22 +1,22 @@
-import days
+import aoc2024, aoc2025
 from advent_utils import AdventSolution
 from builtin import Variadic
 
 comptime Solutions2024 = Variadic.types[
     T=AdventSolution,
-    days.day01.Solution,
-    days.day02.Solution,
-    days.day03.Solution,
-    days.day04.Solution,
-    days.day05.Solution,
+    aoc2024.day01.Solution,
+    aoc2024.day02.Solution,
+    aoc2024.day03.Solution,
+    aoc2024.day04.Solution,
+    aoc2024.day05.Solution,
 ]
 comptime Solutions2025 = Variadic.types[
     T=AdventSolution,
-    days.day01.Solution,
-    days.day02.Solution,
-    days.day03.Solution,
-    days.day04.Solution,
-    days.day05.Solution,
+    aoc2025.day01.Solution,
+    aoc2025.day02.Solution,
+    aoc2025.day03.Solution,
+    aoc2025.day04.Solution,
+    aoc2025.day05.Solution,
 ]
 
 comptime Solutions = [(2024, Solutions2024), (2025, Solutions2025)]
