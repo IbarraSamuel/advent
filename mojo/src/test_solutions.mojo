@@ -1,10 +1,9 @@
 from testing import TestSuite, assert_equal
-from advent_utils import AdventSolution, Solutions
+from advent_utils import AdventSolution, Solutions, Args
 from pathlib import _dir_of_current_file, Path
 from python import Python, PythonObject
 from builtin import Variadic
 from sys import argv
-import days
 
 comptime Years = Dict[Int, Days]
 comptime Days = Dict[Int, Parts]
@@ -67,33 +66,8 @@ fn parse_config() raises -> Years:
     return years^
 
 
-@fieldwise_init
-struct Args:
-    var year: Optional[Int]
-    var day: Optional[Int]
-    var part: Optional[Int]
-
-
-fn parse_args() raises -> Args:
-    var args = argv()
-
-    var year: Optional[Int] = None
-    var day: Optional[Int] = None
-    var part: Optional[Int] = None
-
-    for i, arg in enumerate(args):
-        if arg == "-y":
-            year = Int(args[i + 1])
-        if arg == "-d":
-            day = Int(args[i + 1])
-        if arg == "-p":
-            part = Int(args[i + 1])
-
-    return {year, day, part}
-
-
 fn test_from_config[year: Int, *Solutions: AdventSolution]() raises:
-    var args = parse_args()
+    var args = Args()
     var config = parse_config()
 
     @parameter
@@ -107,9 +81,7 @@ fn test_from_config[year: Int, *Solutions: AdventSolution]() raises:
         ref days_data = config.find(year)
 
         if not days_data:
-            raise "provided year {} is not configured on the config file.".format(
-                year
-            )
+            return
 
         ref part_to_cases_map = days_data.unsafe_value().find(d)
 
@@ -150,12 +122,13 @@ fn test_from_config[year: Int, *Solutions: AdventSolution]() raises:
 
 
 fn main() raises:
-    var args = parse_args()
+    var args = Args()
+    var config = parse_config()
     var ts = TestSuite(cli_args=List[StaticString]())
 
     @parameter
     for year_it in solutions.Solutions:
         alias Y, S = year_it
-        if not args.year or args.year.unsafe_value() == Y:
+        if Y in config and (not args.year or args.year.unsafe_value() == Y):
             ts.test[test_from_config[Y, *S]]()
     ts^.run()
