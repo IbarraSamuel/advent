@@ -21,7 +21,7 @@ fn run_tests(
     var _day = day.or_else(-1)
     var _part = part.or_else(-1)
     # TODO: when moving to generic one, remove 2025
-    var cmd = "mojo src/2025/test_solutions.mojo"
+    var cmd = "mojo src/test_solutions.mojo"
     if year:
         cmd.write(" -y {}".format(year[]))
     if day:
@@ -45,8 +45,6 @@ fn main() raises:
             return
         raise e
 
-    var input_path = "inputs/{}".format(args.year)
-
     if args.mode == "test":
         run_tests(args.year, args.day, args.part)
 
@@ -55,6 +53,7 @@ fn main() raises:
         alias Y, S = Solution
         if not args.year or args.year[] == Y:
             var input_path = "inputs/{}".format(Y)
+            print("<==", Y, "==>")
             if args.mode == "run":
                 run[*S](input_path, args.day, args.part)
             if args.mode == "bench":

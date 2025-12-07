@@ -1,5 +1,6 @@
 from pathlib import Path
 import benchmark
+from solutions import Solutions
 from pathlib import _dir_of_current_file
 from testing import assert_equal
 from builtin import Variadic
@@ -71,7 +72,7 @@ trait AdventSolution:
 fn run[
     *solutions: AdventSolution
 ](input_path: StringSlice, day: Optional[Int], part: Optional[Int]) raises:
-    var filepath = _dir_of_current_file() / "../../.." / input_path
+    var filepath = _dir_of_current_file() / "../.." / input_path
     alias n_sols = Variadic.size(solutions)
 
     @parameter
@@ -101,7 +102,7 @@ fn bench[
     time_unit: TimeUnit,
     *solutions: AdventSolution,
 ](input_path: StringSlice, day: Optional[Int], part: Optional[Int]) raises:
-    var filepath = _dir_of_current_file() / "../../.." / input_path
+    var filepath = _dir_of_current_file() / "../.." / input_path
     alias n_sols = Variadic.size(solutions)
 
     @parameter
