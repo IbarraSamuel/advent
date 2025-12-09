@@ -9,10 +9,10 @@ import sys
 
 @register_passable("trivial")
 struct Part[value: __mlir_type.`!pop.int_literal`](Equatable):
-    alias one = Part(1)
-    alias two = Part(2)
+    comptime one = Part(1)
+    comptime two = Part(2)
 
-    alias number = IntLiteral[Self.value]()
+    comptime number = IntLiteral[Self.value]()
 
     @implicit
     @always_inline("builtin")
@@ -35,11 +35,11 @@ struct Part[value: __mlir_type.`!pop.int_literal`](Equatable):
 
 @register_passable("trivial")
 struct TimeUnit[value: __mlir_type.`!kgen.string`]:
-    alias ms = TimeUnit("ms")
-    alias ns = TimeUnit("ns")
-    alias s = TimeUnit("s")
+    comptime ms = TimeUnit("ms")
+    comptime ns = TimeUnit("ns")
+    comptime s = TimeUnit("s")
 
-    alias unit = StringLiteral[Self.value]()
+    comptime unit = StringLiteral[Self.value]()
 
     @implicit
     @always_inline("builtin")
@@ -58,7 +58,7 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`]:
 
 
 trait AdventSolution:
-    alias T: Intable = Int32
+    comptime T: Intable = Int32
 
     @staticmethod
     fn part_1(data: StringSlice) -> Self.T:
@@ -73,14 +73,14 @@ fn run[
     *solutions: AdventSolution
 ](input_path: StringSlice, day: Optional[Int], part: Optional[Int]) raises:
     var filepath = _dir_of_current_file() / "../.." / input_path
-    alias n_sols = Variadic.size(solutions)
+    comptime n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
         if day and day[] != i + 1:
             continue
 
-        alias Sol = solutions[i]
+        comptime Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
         var file = filepath / String("day", day, ".txt")
@@ -103,14 +103,14 @@ fn bench[
     *solutions: AdventSolution,
 ](input_path: StringSlice, day: Optional[Int], part: Optional[Int]) raises:
     var filepath = _dir_of_current_file() / "../.." / input_path
-    alias n_sols = Variadic.size(solutions)
+    comptime n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
         if day and day[] != i + 1:
             continue
 
-        alias Sol = solutions[i]
+        comptime Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
         var file = filepath / String("day", day, ".txt")
@@ -150,7 +150,7 @@ Any combination should work.
 
 @fieldwise_init
 struct Args:
-    alias HELP = HELP_STRING
+    comptime HELP = HELP_STRING
 
     var mode: String
     var year: Optional[Int]

@@ -3,7 +3,7 @@ from advent_utils import AdventSolution
 
 
 struct Solution(AdventSolution):
-    alias T = Int32
+    comptime T = Int32
 
     @staticmethod
     fn part_1(data: StringSlice) -> Self.T:
