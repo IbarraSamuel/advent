@@ -20,14 +20,12 @@ struct Case(ImplicitlyCopyable):
 fn parse_config() raises -> Years:
     # TODO:NOT USE PYTHON HERE IF POSSIBLE.
     var toml = Python.import_module("tomllib")
-    var pprint = Python.import_module("pprint").pprint
 
     var loc = _dir_of_current_file() / "../.."
     var config_loc = loc / "advent_config.toml"
     var data = config_loc.read_text()
 
     var py_data = toml.loads(data)
-    pprint(py_data)
     var year_data = py_data[PythonObject("tests")][PythonObject("year")]
     # print("year data:", year_data)
 
@@ -94,7 +92,7 @@ fn test_from_config[year: Int, *Solutions: AdventSolution]() raises:
 
         @parameter
         for part in range(2):
-            alias p = part + 1
+            comptime p = part + 1
             if not args.part or args.part.unsafe_value() == p:
                 var test_cases = part_to_cases_map.unsafe_value().get(p)
                 if not test_cases:
@@ -103,7 +101,7 @@ fn test_from_config[year: Int, *Solutions: AdventSolution]() raises:
                     )
 
                 for test_case in test_cases.unsafe_value():
-                    alias runner = S.part_1 if p == 1 else S.part_2
+                    comptime runner = S.part_1 if p == 1 else S.part_2
                     var res = Int(runner(test_case.file.read_text()))
                     var status = (
                         "PASSED" if res == test_case.expected else "FAILED"
@@ -130,7 +128,7 @@ fn main() raises:
 
     @parameter
     for year_it in solutions.Solutions:
-        alias Y, S = year_it
+        comptime Y, S = year_it
         if Y in config and (not args.year or args.year.unsafe_value() == Y):
             ts.test[test_from_config[Y, *S]]()
     ts^.run()

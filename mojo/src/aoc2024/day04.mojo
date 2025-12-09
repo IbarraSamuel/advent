@@ -1,12 +1,12 @@
 from advent_utils import AdventSolution
 
 
-alias `M` = ord('M')
-alias `A` = ord('A')
-alias `S` = ord('S')
+comptime `M` = ord('M')
+comptime `A` = ord('A')
+comptime `S` = ord('S')
 
 struct Solution(AdventSolution):
-    alias T = Int32
+    comptime T = Int32
 
     @staticmethod
     fn part_1(data: StringSlice) -> Self.T:
@@ -14,7 +14,7 @@ struct Solution(AdventSolution):
 
         ```mojo
         from advent_utils import test
-        import days
+        import aoc2025 as days
 
         test[days.day04.Solution, file="tests/2024/day04.txt", part=1, expected=18]()
         test[days.day04.Solution, file="tests/2024/day044.txt", part=1, expected=4]()
@@ -85,7 +85,7 @@ struct Solution(AdventSolution):
 
         ```mojo
         from advent_utils import test
-        import days
+        import aoc2025 as days
 
         test[days.day04.Solution, file="tests/2024/day032.txt", part=2, expected=9]()
         ```

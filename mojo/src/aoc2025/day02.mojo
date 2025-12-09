@@ -20,7 +20,7 @@ fn calc_simd(
 
 
 fn slice_to_num(slice: StringSlice) -> Int:
-    alias zeroord = ord("0")
+    comptime zeroord = ord("0")
     var bts = slice.as_bytes()
     if len(bts) == 1:
         return Int(bts[0] - zeroord)
@@ -28,9 +28,9 @@ fn slice_to_num(slice: StringSlice) -> Int:
 
 
 struct Solution(AdventSolution):
-    alias T = Int32
-    alias IdxSIMD = SIMD[DType.int8, 8](0, 1, 2, 3, 4, 5, 6, 7)
-    alias ZeroSIMD = SIMD[DType.int8, 8](0)
+    comptime T = Int32
+    comptime IdxSIMD = SIMD[DType.int8, 8](0, 1, 2, 3, 4, 5, 6, 7)
+    comptime ZeroSIMD = SIMD[DType.int8, 8](0)
 
     @staticmethod
     fn part_1(data: StringSlice) -> Self.T:
@@ -38,7 +38,7 @@ struct Solution(AdventSolution):
 
         ```mojo
         from advent_utils import test
-        from days.day02 import Solution
+        from aoc2025.day02 import Solution
 
         test[Solution, file="tests/2024/day02.txt", part=1, expected=2]()
 
@@ -70,7 +70,7 @@ struct Solution(AdventSolution):
 
         ```mojo
         from advent_utils import test
-        from days.day02 import Solution
+        from aoc2025.day02 import Solution
 
         test[Solution, file="tests/2024/day02.txt", part=2, expected=4]()
         test[Solution, file="tests/2024/day022.txt", part=2, expected=28]()
