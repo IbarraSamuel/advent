@@ -20,12 +20,14 @@ struct Case(ImplicitlyCopyable):
 fn parse_config() raises -> Years:
     # TODO:NOT USE PYTHON HERE IF POSSIBLE.
     var toml = Python.import_module("tomllib")
+    var pprint = Python.import_module("pprint").pprint
 
     var loc = _dir_of_current_file() / "../.."
     var config_loc = loc / "advent_config.toml"
     var data = config_loc.read_text()
 
     var py_data = toml.loads(data)
+    pprint(py_data)
     var year_data = py_data[PythonObject("tests")][PythonObject("year")]
     # print("year data:", year_data)
 
@@ -72,7 +74,7 @@ fn test_from_config[year: Int, *Solutions: AdventSolution]() raises:
 
     @parameter
     for i in range(Variadic.size(Solutions)):
-        alias S = Solutions[i]
+        comptime S = Solutions[i]
 
         if args.day and i + 1 != args.day.unsafe_value():
             continue
