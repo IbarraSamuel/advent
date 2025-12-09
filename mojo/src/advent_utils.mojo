@@ -189,3 +189,15 @@ struct Args:
                 part = Int(args[i + 1])
 
         return Args(mode=mode, year=year, day=day, part=part)
+
+
+fn test[
+    S: AdventSolution,
+    file: StringLiteral,
+    part: Part,
+    expected: IntLiteral,
+]() raises:
+    comptime Solver = S.part_1 if part == 1 else S.part_2
+    var input_path = _dir_of_current_file() / "../.." / file
+    var result = Solver(input_path.read_text())
+    assert_equal(Int(result), expected)

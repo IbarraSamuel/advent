@@ -39,7 +39,7 @@ fn main() raises:
 
     @parameter
     for Solution in Solutions:
-        alias Y, S = Solution
+        comptime Y, S = Solution
         if not args.year or args.year[] == Y:
             var input_path = "inputs/{}".format(Y)
             print("<==", Y, "==>")

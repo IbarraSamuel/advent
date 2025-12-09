@@ -3,14 +3,14 @@ from advent_utils import AdventSolution
 
 
 struct Solution(AdventSolution):
-    alias T = Int32
+    comptime T = Int32
 
     @staticmethod
     fn part_1(data: StringSlice) -> Self.T:
         """Part 1 test.
 
         ```mojo
-        from days.day01 import Solution
+        from aoc2025.day01 import Solution
         from advent_utils import test
         test[Solution, file="tests/2024/day01.txt", part=1, expected=11]()
         ```
@@ -46,7 +46,7 @@ struct Solution(AdventSolution):
         """Part 2 test.
 
         ```mojo
-        from days.day01 import Solution
+        from aoc2025.day01 import Solution
         from advent_utils import test
         test[Solution, file="tests/2024/day01.txt", part=2, expected=31]()
         ```

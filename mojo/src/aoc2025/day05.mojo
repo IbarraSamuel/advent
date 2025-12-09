@@ -20,12 +20,12 @@ struct Solution(AdventSolution):
 
         ```mojo
         from advent_utils import test
-        from days.day01 import Solution
+        from aoc2025.day01 import Solution
 
         test[Solution, file="tests/2024/day05.txt", part=1, expected=143]()
         ```
         """
-        alias zord = ord("0")
+        comptime zord = ord("0")
         var tot = SIMD[DType.int32, 1024](0)
         var order_split = data.find("\n\n")
         var rest = data[order_split + 2 :]
@@ -111,13 +111,13 @@ struct Solution(AdventSolution):
 
         ```mojo
         from advent_utils import test
-        from days.day01 import Solution
+        from aoc2025.day01 import Solution
 
         test[Solution, file="tests/2024/day05.txt", part=2, expected=123]()
         ```
         """
-        alias zord = ord("0")
-        alias indexes = build_indexes[DType.uint8, 32]()
+        comptime zord = ord("0")
+        comptime indexes = build_indexes[DType.uint8, 32]()
 
         var tot = SIMD[DType.int32, 1024](0)
         var split_idx = data.find("\n\n")
