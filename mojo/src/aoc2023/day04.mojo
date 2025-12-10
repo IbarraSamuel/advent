@@ -1,12 +1,13 @@
 from algorithm.functional import parallelize
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.uint32
+struct Solution(AdventSolution):
+    comptime T = UInt32
 
     @staticmethod
-    fn part_1[o: Origin](input: List[StringSlice[o]]) -> UInt32:
+    fn part_1(data: StringSlice) -> UInt32:
+        var input = data.splitlines()
         var total = 0
 
         @parameter
@@ -49,7 +50,8 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2[o: Origin](input: List[StringSlice[o]]) -> UInt32:
+    fn part_2(data: StringSlice) -> UInt32:
+        var input = data.splitlines()
         var total = 0
         var amount = List[Int]()
         for _ in range(len(input)):

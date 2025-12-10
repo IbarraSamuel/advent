@@ -1,11 +1,12 @@
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.uint32
+struct Solution(AdventSolution):
+    comptime T = UInt32
 
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
+    fn part_1(data: StringSlice) -> UInt32:
+        var lines = data.splitlines()
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
         var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
@@ -35,7 +36,8 @@ struct Solution(ListSolution):
         return m
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
+    fn part_2(data: StringSlice) -> UInt32:
+        var lines = data.splitlines()
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
         var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
@@ -65,7 +67,7 @@ struct Solution(ListSolution):
         return m
 
 
-alias MapRangeTp = Tuple[Int, Int, Int]
+comptime MapRangeTp = Tuple[Int, Int, Int]
 
 
 struct MapRange(Copyable, Movable):
@@ -127,33 +129,35 @@ fn calc_ranges(
 
     if y < a or b < x:
         # No overlaps. Just give back what you have.
-        return List(num), List(False)
+        return [num], [False]
 
     var delta = map.dest_start - map.src_start
 
     if x < a and b < y:
         # The mapper range is all inside the num range. You need now 3 ranges.
-        return List(
-            NumRange(x, a), NumRange(a + delta, b + delta), NumRange(b, y)
-        ), List(False, True, False)
+        return [
+            NumRange(x, a),
+            NumRange(a + delta, b + delta),
+            NumRange(b, y),
+        ], [False, True, False]
 
     if a <= x < b:
         # The lower part of the range is part of map range.
         if y < b:
             # The num range is fully inside the map range. We need 3 ranges.
-            return List(NumRange(x + delta, y + delta)), List(True)
+            return [NumRange(x + delta, y + delta)], [True]
         else:
             # The num range is partially part of map range (The beginign part). We Need 3 ranges.
-            return List(
+            return [
                 NumRange(x + delta, b + delta),
                 NumRange(b, y),
-            ), List(True, False)
+            ], [True, False]
     else:
         # The only option is that we have the end between map start and end. We need to create 3 ranges.
-        return List(
+        return [
             NumRange(x, a),
             NumRange(a + delta, y + delta),
-        ), List(False, True)
+        ], [False, True]
 
 
 fn map_ranges(

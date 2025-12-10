@@ -1,9 +1,9 @@
 from collections import Dict
 from memory import Span
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
 
-alias COMMA = ord(",")
+comptime COMMA = ord(",")
 
 
 @always_inline("nodebug")
@@ -56,14 +56,15 @@ fn add_elems[
         return
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.int32
+struct Solution(AdventSolution):
+    comptime T = Int32
 
     @staticmethod
-    fn part_1[o: Origin](data: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_1(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
         t = 0
         acc = 0
-        for v in data[0].as_bytes():
+        for v in lines[0].as_bytes():
             if v == COMMA:
                 t += Int(acc)
                 acc = 0
@@ -72,9 +73,10 @@ struct Solution(ListSolution):
         return t + acc
 
     @staticmethod
-    fn part_2[o: Origin](data: List[StringSlice[o]]) -> Scalar[Self.dtype]:
-        d = data[0]
-        elems = Dict[Int, List[Tuple[StringSlice[o], Int]]](
+    fn part_2(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
+        var d = lines[0]
+        elems = Dict[Int, List[Tuple[StringSlice[data.Immutable.origin], Int]]](
             power_of_two_initial_capacity=256
         )
 

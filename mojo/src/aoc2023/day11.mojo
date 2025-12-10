@@ -1,6 +1,6 @@
 from collections import Optional
 from utils import IndexList
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
 
 fn str_to_int(s: String) -> Optional[Int]:
@@ -10,11 +10,12 @@ fn str_to_int(s: String) -> Optional[Int]:
         return None
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.uint32
+struct Solution(AdventSolution):
+    comptime T = UInt32
 
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
+    fn part_1(data: StringSlice) -> UInt32:
+        var lines = data.splitlines()
         nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=len(lines))
         empty_c = List[Int](capacity=lines[0].byte_length())
@@ -60,7 +61,8 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
+    fn part_2(data: StringSlice) -> UInt32:
+        var lines = data.splitlines()
         nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=len(lines))
         empty_c = List[Int](capacity=lines[0].byte_length())

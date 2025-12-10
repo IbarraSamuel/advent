@@ -1,10 +1,10 @@
 from algorithm import parallelize
 import os
 from collections import Optional
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
-alias Size = 32
-alias Line = SIMD[DType.int64, Size]
+comptime Size = 32
+comptime Line = SIMD[DType.int64, Size]
 
 
 fn calc_prev_and_next(var value: Line, last: Int) -> Tuple[Int64, Int64]:
@@ -40,11 +40,12 @@ fn create_line(v: StringSlice) -> Tuple[Line, Int]:
     return (line, len(values))
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.int64
+struct Solution(AdventSolution):
+    comptime T = Int64
 
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_1(data: StringSlice) -> Int64:
+        var lines = data.splitlines()
         tot = SIMD[DType.int64, 256](0)
 
         @parameter
@@ -57,7 +58,8 @@ struct Solution(ListSolution):
         return tot.reduce_add()
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_2(data: StringSlice) -> Int64:
+        var lines = data.splitlines()
         tot = SIMD[DType.int64, 256](0)
 
         @parameter

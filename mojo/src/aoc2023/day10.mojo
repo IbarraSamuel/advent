@@ -3,34 +3,39 @@ from collections import Dict, OptionalReg, OptionalReg
 import os
 from algorithm import parallelize
 from testing import assert_equal, assert_true, assert_false
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 from builtin.globals import global_constant
 
-alias Position = IndexList[2]
-alias EMPTY_POS = Position()
-alias Movement = StaticTuple[Position, 2]
+comptime Position = IndexList[2]
+comptime EMPTY_POS = Position()
+comptime Movement = StaticTuple[Position, 2]
 
-alias Vertical: StaticString = "|"
-alias Horizontal: StaticString = "-"
-alias UpRight: StaticString = "L"
-alias UpLeft: StaticString = "J"
-alias DownLeft: StaticString = "7"
-alias DownRight: StaticString = "F"
-alias Ground: StaticString = "."
-alias Start: StaticString = "S"
+comptime Vertical: StaticString = "|"
+comptime Horizontal: StaticString = "-"
+comptime UpRight: StaticString = "L"
+comptime UpLeft: StaticString = "J"
+comptime DownLeft: StaticString = "7"
+comptime DownRight: StaticString = "F"
+comptime Ground: StaticString = "."
+comptime Start: StaticString = "S"
 
-alias VALID_PIPES = List(
-    Vertical, Horizontal, UpRight, UpLeft, DownRight, DownLeft
-)
-alias INVALID_PIPES = List(Ground, Start)
-# alias VALID_DIAG = [Horizontal, Vertical, UpRight, DownLeft]
+comptime VALID_PIPES = [
+    Vertical,
+    Horizontal,
+    UpRight,
+    UpLeft,
+    DownRight,
+    DownLeft,
+]
+comptime INVALID_PIPES = [Ground, Start]
+# comptime VALID_DIAG = [Horizontal, Vertical, UpRight, DownLeft]
 
-alias UP: Position = (0, -1)
-alias DOWN: Position = (0, 1)
-alias LEFT: Position = (-1, 0)
-alias RIGHT: Position = (1, 0)
+comptime UP: Position = (0, -1)
+comptime DOWN: Position = (0, 1)
+comptime LEFT: Position = (-1, 0)
+comptime RIGHT: Position = (1, 0)
 
-alias PIPE_TO_MOV = List(
+comptime PIPE_TO_MOV = [
     (Vertical, Movement(DOWN, UP)),
     (Horizontal, Movement(LEFT, RIGHT)),
     (UpRight, Movement(UP, RIGHT)),
@@ -39,18 +44,17 @@ alias PIPE_TO_MOV = List(
     (DownLeft, Movement(DOWN, LEFT)),
     (Ground, Movement(UP, UP)),
     (Start, Movement(UP, UP)),
-)
+]
 
 
 fn get_pipe_and_mov(char: StringSlice) -> Tuple[StaticString, Movement]:
     @parameter
     for idx in range(len(PIPE_TO_MOV)):
-        alias pp = PIPE_TO_MOV[idx]
+        comptime pp = PIPE_TO_MOV[idx]
         if char == pp[0]:
             return pp
 
     os.abort("This should never happen")
-    return (StaticString("bad"), Movement())
 
 
 @always_inline
@@ -82,14 +86,12 @@ fn find_connected_pipe[
                     return (x, y)
 
     os.abort("Error here. Cannot find connected pipe")
-    return EMPTY_POS
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.int32
-
+struct Solution(AdventSolution):
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Int32:
+    fn part_1(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
         prev = EMPTY_POS
         for y in range(len(lines)):
             for x in range(lines[0].byte_length()):
@@ -113,7 +115,8 @@ struct Solution(ListSolution):
         return total // 2
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Int32:
+    fn part_2(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
         p1 = EMPTY_POS
 
         for y in range(len(lines)):

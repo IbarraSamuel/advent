@@ -1,4 +1,4 @@
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 from collections import Dict
 
 
@@ -7,11 +7,11 @@ from time import sleep
 
 @register_passable("trivial")
 struct Dir:
-    alias UP: Self = 1
-    alias RIGHT: Self = 2
-    alias DOWN: Self = 3
-    alias LEFT: Self = 4
-    alias ERROR = Self(0)
+    comptime UP: Self = 1
+    comptime RIGHT: Self = 2
+    comptime DOWN: Self = 3
+    comptime LEFT: Self = 4
+    comptime ERROR = Self(0)
     var v: Int
 
     @implicit
@@ -35,27 +35,25 @@ struct Dir:
         tp = (1, 0)
 
 
-alias DUP = Dir.UP.delta()
-alias DDOWN = Dir.DOWN.delta()
-alias DLEFT = Dir.LEFT.delta()
-alias DRIGHT = Dir.RIGHT.delta()
+comptime DUP = Dir.UP.delta()
+comptime DDOWN = Dir.DOWN.delta()
+comptime DLEFT = Dir.LEFT.delta()
+comptime DRIGHT = Dir.RIGHT.delta()
 
-alias DIRS = [Dir.UP, Dir.RIGHT, Dir.DOWN, Dir.LEFT]
-alias DIFS = [DUP, DRIGHT, DDOWN, DLEFT]
+comptime DIRS = [Dir.UP, Dir.RIGHT, Dir.DOWN, Dir.LEFT]
+comptime DIFS = [DUP, DRIGHT, DDOWN, DLEFT]
 
-alias CONST_OFFSET: Int = ord("0")
+comptime CONST_OFFSET: Int = ord("0")
 
 
 # IMPL
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.int32
-
+struct Solution(AdventSolution):
     @staticmethod
-    fn part_1[o: Origin](data: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_1(data: StringSlice) -> Int32:
         return 0
 
     @staticmethod
-    fn part_2[o: Origin](data: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_2(data: StringSlice) -> Int32:
         return 0

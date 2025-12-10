@@ -1,47 +1,103 @@
-[[tests.year.2025.day.1.part.1]]
-file = "day01.txt"
-expected=11
+[tests.year.2025]
 
-[[tests.year.2025.day.1.part.2]]
-file = "day01.txt"
-expected=31
+day.1.part.1 = [{ file = "day01.txt", expected = 11 }]
+day.1.part.2 = [{ file = "day01.txt", expected = 31 }]
 
-[[tests.year.2025.day.2.part.1]]
-file = "day02.txt"
-expected=2
+day.2.part.1 = [{ file = "day02.txt", expected = 2 }]
+day.2.part.2 = [
+    { file = "day02.txt", expected = 4 },
+    { file = "day022.txt", expected = 28 },
+]
 
-[[tests.year.2025.day.2.part.2]]
-file = "day02.txt"
-expected=4
+day.3.part.1 = [{ file = "day03.txt", expected = 161 }]
+day.3.part.2 = [{ file = "day032.txt", expected = 48 }]
 
-[[tests.year.2025.day.2.part.2]]
-file = "day022.txt"
-expected=28
+day.4.part.1 = [
+    { file = "day04.txt", expected = 18 },
+    { file = "day044.txt", expected = 4 },
+]
+day.4.part.2 = [{ file = "day04.txt", expected = 9 }]
 
-[[tests.year.2025.day.3.part.1]]
-file = "day03.txt"
-expected=161
+day.5.part.1 = [{ file = "day05.txt", expected = 143 }]
+day.5.part.2 = [{ file = "day05.txt", expected = 123 }]
 
-[[tests.year.2025.day.3.part.2]]
-file = "day032.txt"
-expected=48
+[tests.year.2024]
 
-[[tests.year.2025.day.4.part.1]]
-file = "day04.txt"
-expected=18
+day.1.part.1 = [{ file = "day01.txt", expected = 11 }]
+day.1.part.2 = [{ file = "day01.txt", expected = 31 }]
 
-[[tests.year.2025.day.4.part.1]]
-file = "day044.txt"
-expected=4
+day.2.part.1 = [{ file = "day02.txt", expected = 2 }]
+day.2.part.2 = [
+    { file = "day02.txt", expected = 4 },
+    { file = "day022.txt", expected = 28 },
+]
 
-[[tests.year.2025.day.4.part.2]]
-file = "day04.txt"
-expected=9
+day.3.part.1 = [{ file = "day03.txt", expected = 161 }]
+day.3.part.2 = [{ file = "day032.txt", expected = 48 }]
 
-[[tests.year.2025.day.5.part.1]]
-file = "day05.txt"
-expected=143
+day.4.part.1 = [
+    { file = "day04.txt", expected = 18 },
+    { file = "day044.txt", expected = 4 },
+]
+day.4.part.2 = [{ file = "day04.txt", expected = 9 }]
 
-[[tests.year.2025.day.5.part.2]]
-file = "day05.txt"
-expected=123
+day.5.part.1 = [{ file = "day05.txt", expected = 143 }]
+day.5.part.2 = [{ file = "day05.txt", expected = 123 }]
+
+[tests.year.2023]
+
+day.1.part.1 = [{file = "day1_1.txt", expected = 142 }]
+day.1.part.2 = [{file = "day1_2.txt", expected = 281 }]
+
+day.2.part.1 = [{file = "day2_1.txt", expected = 8 }]
+day.2.part.2 = [{file = "day2_1.txt", expected = 2286 }]
+
+day.3.part.1 = [{file = "day3_1.txt", expected = 4631 }]
+day.3.part.2 = [{file = "day3_1.txt", expected = 467835 }]
+
+day.4.part.1 = [{file = "day4_1.txt", expected = 13 }]
+day.4.part.2 = [{file = "day4_1.txt", expected = 30 }]
+
+day.5.part.1 = [{file = "day5_1.txt", expected = 35 }]
+day.5.part.2 = [{file = "day5_1.txt", expected = 46 }]
+
+day.6.part.1 = [{file = "day6.txt", expected = 288 }]
+day.6.part.2 = [{file = "day6.txt", expected = 71503 }]
+
+day.7.part.1 = [{file = "day7.txt", expected = 6440 }]
+day.7.part.2 = [{file = "day7.txt", expected = 5905 }]
+
+day.8.part.1 = [{file = "day8_1.txt", expected = 2 }]
+day.8.part.2 = [{file = "day8_2.txt", expected = 6 }]
+
+day.9.part.1 = [{file = "day9.txt", expected = 114 }]
+day.9.part.2 = [{file = "day9.txt", expected = 2 }]
+
+day.10.part.1 = [{file = "day10.txt", expected = 8 }]
+day.10.part.2 = [
+    {file = "day10_2.txt", expected = 4 },
+    {file = "day10_3.txt", expected = 8 },
+    {file = "day10_4.txt", expected = 10 },
+]
+
+day.11.part.1 = [{file = "day11.txt", expected = 374 }]
+day.11.part.2 = [{file = "day11.txt", expected = 82000210 }]
+
+day.12.part.1 = [{file = "day12.txt", expected = 21 }]
+day.12.part.2 = [{file = "day12.txt", expected = 525152 }]
+
+day.13.part.1 = [{file = "day13.txt", expected = 405 }]
+day.13.part.2 = [{file = "day13.txt", expected = 400 }]
+
+day.14.part.1 = [{file = "day14.txt", expected = 136 }]
+day.14.part.2 = [{file = "day14.txt", expected = 64 }]
+
+day.15.part.1 = [{file = "day15.txt", expected = 1320 }]
+day.15.part.2 = [{file = "day15.txt", expected = 145 }]
+
+day.16.part.1 = [{file = "day16.txt", expected = 46 }]
+day.16.part.2 = [{file = "day16.txt", expected = 51 }]
+
+day.17.part.1 = [{file = "day17.txt", expected = 102 }]
+day.17.part.2 = [{file = "day17.txt", expected = 123 }]
+

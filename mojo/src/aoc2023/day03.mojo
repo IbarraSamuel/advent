@@ -2,7 +2,7 @@ from algorithm.functional import vectorize
 from collections import Set
 from utils import IndexList
 from hashlib.hasher import Hasher
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
 
 @fieldwise_init
@@ -105,28 +105,31 @@ fn check_window[
     total += local_result[0] * local_result[1]
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.uint32
+struct Solution(AdventSolution):
+    comptime T = UInt32
 
     @staticmethod
-    fn part_1[o: Origin](input: List[StringSlice[o]]) -> UInt32:
-        var points = List[Point]()
+    fn part_1(data: StringSlice) -> UInt32:
+        var input = data.splitlines()
         var x_len = len(input[0])
         var y_len = len(input)
+        var points = List[Point](length=x_len, fill=Point(0, 0))
 
-        @parameter
-        fn check_line[v: Int](y: Int):
-            @parameter
-            fn check_position[v: Int](x: Int):
+        fn check_line[
+            v: Int
+        ](y: Int) unified {read input, read x_len, mut points}:
+            fn check_position[
+                v: Int
+            ](x: Int) unified {mut points, read y, read input}:
                 if (
                     input[y][x] != StaticString(".")
                     and not String(input[y][x]).isdigit()
                 ):
-                    points.append(Point(x, y))
+                    points[x] = Point(x, y)
 
-            vectorize[check_position, 1](x_len)
+            vectorize[1](x_len, check_position)
 
-        vectorize[check_line, 1](y_len)
+        vectorize[1](y_len, check_line)
 
         var total = 0
         var results = Set[Point]()
@@ -136,21 +139,24 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2[o: Origin](input: List[StringSlice[o]]) -> UInt32:
-        var points = List[Point]()
+    fn part_2(data: StringSlice) -> UInt32:
+        var input = data.splitlines()
         var x_len = len(input[0])
         var y_len = len(input)
+        var points = List[Point](length=x_len, fill=Point(0, 0))
 
-        @parameter
-        fn check_line[v: Int](y: Int):
-            @parameter
-            fn check_position[v: Int](x: Int):
+        fn check_line[
+            v: Int
+        ](y: Int) unified {read input, read x_len, mut points}:
+            fn check_position_[
+                v: Int
+            ](x: Int) unified {read y, read input, mut points}:
                 if input[y][x] == "*":
-                    points.append(Point(x, y))
+                    points[x] = Point(x, y)
 
-            vectorize[check_position, 1](x_len)
+            vectorize[1](x_len, check_position_)
 
-        vectorize[check_line, 1](y_len)
+        vectorize[1](y_len, check_line)
 
         var total = 0
         var results = Set[Point]()

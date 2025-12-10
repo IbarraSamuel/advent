@@ -121,14 +121,61 @@ fn test_from_config[year: Int, *Solutions: AdventSolution]() raises:
                     assert_equal(res, test_case.expected)
 
 
-fn main() raises:
+fn test_solution[year: Int, day: Int, S: AdventSolution, part: Int]() raises:
     var args = Args()
     var config = parse_config()
+
+    ref test_cases = config[year][day][part]
+
+    for test_case in test_cases:
+        comptime runner = S.part_1 if part == 1 else S.part_2
+        var res = Int(runner(test_case.file.read_text()))
+        var status = "PASSED" if res == test_case.expected else "FAILED"
+        print(
+            "[TEST] [{}] Year {} Day {} Part {} file {}"
+            " (result: {} vs expected: {})".format(
+                status,
+                year,
+                day,
+                part,
+                test_case.file.name(),
+                res,
+                test_case.expected,
+            )
+        )
+        assert_equal(res, test_case.expected)
+
+
+fn run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
+    if not (Y in config and (not args.year or args.year.unsafe_value() == Y)):
+        return
+
+    ref day_data = config.find(Y)
+    if not day_data:
+        return
+
     var ts = TestSuite(cli_args=List[StaticString]())
 
     @parameter
-    for year_it in solutions.Solutions:
-        comptime Y, S = year_it
-        if Y in config and (not args.year or args.year.unsafe_value() == Y):
-            ts.test[test_from_config[Y, *S]]()
+    for i in range(Variadic.size(S)):
+        comptime day = i + 1
+
+        ref parts_data = day_data.unsafe_value().find(day)
+        if not parts_data:
+            continue
+
+        if args.day and args.day.unsafe_value() != day:
+            continue
+
+        @parameter
+        for part in range(1, 3):
+            ref part_list = parts_data.unsafe_value().find(part)
+            if not part_list:
+                continue
+
+            if args.part and args.part.unsafe_value() != part:
+                continue
+
+            ts.test[test_solution[Y, day, S[i], part]]()
+
     ts^.run()

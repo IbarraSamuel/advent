@@ -1,9 +1,9 @@
 from algorithm.functional import vectorize
 from algorithm.reduction import sum, _simd_sum
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
-alias Game = Tuple[Int, Int, Int]
-alias max_game: Game = (12, 13, 14)
+comptime Game = Tuple[Int, Int, Int]
+comptime max_game: Game = (12, 13, 14)
 
 
 @always_inline
@@ -52,15 +52,13 @@ fn calc_max(game: Game, other: Game) -> Game:
     )
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.uint32
-
+struct Solution(AdventSolution):
     @staticmethod
-    fn part_1[o: Origin](input: List[StringSlice[o]]) -> Scalar[Self.dtype]:
-        var total = UInt32(0)
+    fn part_1(data: StringSlice) -> Int32:
+        var input = data.splitlines()
+        var total = Int32(0)
 
-        @parameter
-        fn calc_line[v: Int](idx: Int) capturing:
+        fn calc_line[v: Int](idx: Int) unified {read input, mut total}:
             cards = input[idx][input[idx].find(": ") + 2 :].split("; ")
 
             for card in cards:
@@ -69,16 +67,16 @@ struct Solution(ListSolution):
                     return
             total += idx + 1
 
-        vectorize[calc_line, 1](len(input))
+        vectorize[1](len(input), calc_line)
 
         return total
 
     @staticmethod
-    fn part_2[o: Origin](input: List[StringSlice[o]]) -> Scalar[Self.dtype]:
-        var simd = SIMD[DType.uint32, 128]()
+    fn part_2(data: StringSlice) -> Int32:
+        var input = data.splitlines()
+        var simd = SIMD[DType.int32, 128]()
 
-        @parameter
-        fn set_result[v: Int](idx: Int):
+        fn set_result[v: Int](idx: Int) unified {mut simd, read input}:
             var max_card = 0, 0, 0
             var first_space = input[idx].find(": ") + 2
             cards = input[idx][first_space:].split("; ")
@@ -89,5 +87,5 @@ struct Solution(ListSolution):
 
             simd[idx] = max_card[0] * max_card[1] * max_card[2]
 
-        vectorize[set_result, 1](len(input))
+        vectorize[1](len(input), set_result)
         return simd.reduce_add()

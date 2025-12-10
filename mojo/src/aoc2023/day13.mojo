@@ -1,73 +1,83 @@
 from collections.string import StringSlice
 from collections.optional import OptionalReg
 from algorithm import parallelize
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
 
-fn is_mirror[o: Origin](values: List[StringSlice[o]]) -> OptionalReg[Int]:
+fn is_mirror[o: Origin](values: Span[StringSlice[o]]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         mn = min(i, len(values) - i)
         f = values[i - mn : i]
         l = values[i : i + mn]
-        l.reverse()
-        if f == l:
-            return i
+        for i in range(len(f)):
+            if f[i] == l[len(l) - i - 1]:
+                return i
+        # l.reverse()
+        # if f == l:
+        #     return i
     return None
 
 
-fn is_mirror(values: List[String]) -> OptionalReg[Int]:
+fn is_mirror(values: Span[String]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         mn = min(i, len(values) - i)
         f = values[i - mn : i]
         l = values[i : i + mn]
-        l.reverse()
-        if f == l:
-            return i
+        # l.reverse()
+        # if f == l:
+        #     return i
+        for i in range(len(f)):
+            if f[i] == l[len(l) - i - 1]:
+                return i
     return None
 
 
-fn almost_a_mirror[o: Origin](values: List[StringSlice[o]]) -> OptionalReg[Int]:
+fn almost_a_mirror[o: Origin](values: Span[StringSlice[o]]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         mn = min(i, len(values) - i)
         p1 = values[i - mn : i]
         p2 = values[i : i + mn]
-        p2.reverse()
+        # p2.reverse()
         dif = 0
         for i in range(mn):
-            if p1[i] != p2[i]:
+            if p1[i] != p2[len(p2) - i - 1]:
                 for j in range(len(p1[i])):
-                    if p1[i][j] != p2[i][j]:
+                    if p1[i][j] != p2[len(p2) - i - 1][j]:
                         dif += 1
         if dif == 1:
             return i
     return None
 
 
-fn almost_a_mirror(values: List[String]) -> OptionalReg[Int]:
+fn almost_a_mirror(values: Span[String]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         mn = min(i, len(values) - i)
         p1 = values[i - mn : i]
         p2 = values[i : i + mn]
-        p2.reverse()
+        # p2.reverse()
         dif = 0
+        # for i in range(mn):
+        #     if p1[i] != p2[i]:
+        #         for j in range(len(p1[i])):
+        #             if p1[i][j] != p2[i][j]:
+        #                 dif += 1
         for i in range(mn):
-            if p1[i] != p2[i]:
+            if p1[i] != p2[len(p2) - i - 1]:
                 for j in range(len(p1[i])):
-                    if p1[i][j] != p2[i][j]:
+                    if p1[i][j] != p2[len(p2) - i - 1][j]:
                         dif += 1
         if dif == 1:
             return i
     return None
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.int32
-
+struct Solution(AdventSolution):
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
-        total = SIMD[Self.dtype, 128]()
-        # total = Scalar[Self.dtype]()
-        spaces = List[Int](-1)
+    fn part_1(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
+        total = SIMD[DType.int32, 128]()
+        # total = Int32()
+        spaces = [1]
         for i in range(len(lines)):
             if not lines[i]:
                 spaces.append(i)
@@ -98,10 +108,11 @@ struct Solution(ListSolution):
         return total.reduce_add()
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
-        total = SIMD[Self.dtype, 128]()
-        # total = Scalar[Self.dtype]()
-        spaces = List[Int](-1)
+    fn part_2(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
+        total = SIMD[DType.int32, 128]()
+        # total = Int32()
+        spaces = [-1]
         for i in range(len(lines)):
             if not lines[i]:
                 spaces.append(i)

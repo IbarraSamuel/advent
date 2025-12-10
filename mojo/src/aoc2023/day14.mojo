@@ -1,14 +1,14 @@
 from collections import Dict
 from algorithm.functional import parallelize
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
-alias Direction = Int
-alias UP = 1
-alias DOWN = 2
-alias LEFT = 3
-alias RIGHT = 4
-alias HORIZONTAL = [LEFT, RIGHT]
-alias POSITIVE = [RIGHT, DOWN]
+comptime Direction = Int
+comptime UP = 1
+comptime DOWN = 2
+comptime LEFT = 3
+comptime RIGHT = 4
+comptime HORIZONTAL = [LEFT, RIGHT]
+comptime POSITIVE = [RIGHT, DOWN]
 
 
 # Possible new design
@@ -19,8 +19,8 @@ alias POSITIVE = [RIGHT, DOWN]
 
 
 fn calculate[direction: Direction](maze: String) -> Int:
-    alias positive = direction in POSITIVE
-    alias horizontal = direction in HORIZONTAL
+    comptime positive = direction in POSITIVE
+    comptime horizontal = direction in HORIZONTAL
     len = len(maze)
     x_max = maze.find("\n")
     y_max = len // (x_max + 1)
@@ -91,17 +91,17 @@ fn tilt[times: Int = 1](mut maze: String):
         maze = StringSlice("").join(newlines^)
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.int32
-
+struct Solution(AdventSolution):
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_1(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
         maze = "\n".join(lines) + "\n"
         tilt[1](maze)
         return calculate[RIGHT](maze)
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_2(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
         maze = "\n".join(lines) + "\n"
         mazes = Dict[String, Int](power_of_two_initial_capacity=256)
 
