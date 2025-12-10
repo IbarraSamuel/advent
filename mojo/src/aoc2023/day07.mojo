@@ -1,14 +1,14 @@
 from collections import Dict
 from memory import Span
 import sys
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
-alias CardType = DType.uint8
+comptime CardType = DType.uint8
 
 
 struct HandMode:
-    alias First = HandMode(1)
-    alias Second = HandMode(2)
+    comptime First = HandMode(1)
+    comptime Second = HandMode(2)
     var value: UInt8
 
     fn __init__(out self, value: UInt8):
@@ -20,7 +20,7 @@ struct HandMode:
 
 @register_passable("trivial")
 struct Hand[mode: HandMode](Comparable & Copyable & Movable):
-    alias type = SIMD[CardType, 8]
+    comptime type = SIMD[CardType, 8]
     var value: Self.type
     var level: UInt8
     var bid: UInt32
@@ -32,7 +32,7 @@ struct Hand[mode: HandMode](Comparable & Copyable & Movable):
 
         @parameter
         for idx in range(5):
-            self.value[idx] = Card[mode](s[idx]).value
+            self.value[idx] = Card[Self.mode](s[idx]).value
 
         self.level = 1
         self._calc_level(s)
@@ -46,7 +46,7 @@ struct Hand[mode: HandMode](Comparable & Copyable & Movable):
             chars[s[i]] = chars.get(s[i], 0) + 1
 
         @parameter
-        if mode == HandMode.Second:
+        if Self.mode == HandMode.Second:
             j_val = chars.pop("J", 0)
             max_v, max_c = 0, String("")
 
@@ -109,11 +109,11 @@ struct Hand[mode: HandMode](Comparable & Copyable & Movable):
 @register_passable("trivial")
 struct Card[mode: HandMode]:
     var value: Scalar[CardType]
-    alias A = Self(14)
-    alias K = Self(13)
-    alias Q = Self(12)
-    alias J = Self(11 if mode == HandMode.First else 1)
-    alias T = Self(10)
+    comptime A = Self(14)
+    comptime K = Self(13)
+    comptime Q = Self(12)
+    comptime J = Self(11 if Self.mode == HandMode.First else 1)
+    comptime T = Self(10)
 
     fn __init__(out self, v: Int):
         self.value = v
@@ -142,13 +142,14 @@ fn parse_int(string: StringSlice) -> Int:
         return 0
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.uint32
-    alias Hand1 = Hand[HandMode.First]
-    alias Hand2 = Hand[HandMode.Second]
+struct Solution(AdventSolution):
+    comptime T = UInt32
+    comptime Hand1 = Hand[HandMode.First]
+    comptime Hand2 = Hand[HandMode.Second]
 
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
+    fn part_1(data: StringSlice) -> UInt32:
+        var lines = data.splitlines()
         cards = List[Self.Hand1](capacity=1000)
         for line in lines:
             cards.append(Self.Hand1(line))
@@ -162,7 +163,8 @@ struct Solution(ListSolution):
         return total
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
+    fn part_2(data: StringSlice) -> UInt32:
+        var lines = data.splitlines()
         cards = List[Self.Hand2](capacity=1000)
         for line in lines:
             cards.append(Self.Hand2(line))

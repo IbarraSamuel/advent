@@ -1,26 +1,26 @@
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 from utils import IndexList, Index
 from hashlib.hasher import Hasher
 from collections.set import Set
 from algorithm import parallelize
 import os
 
-alias Dir = Int
-alias RIGHT: Dir = 4
-alias DOWN: Dir = 1
-alias LEFT: Dir = 2
-alias UP: Dir = 3
-alias NO_DIR: Dir = 0
+comptime Dir = Int
+comptime RIGHT: Dir = 4
+comptime DOWN: Dir = 1
+comptime LEFT: Dir = 2
+comptime UP: Dir = 3
+comptime NO_DIR: Dir = 0
 
-alias Mirr = Int
-alias HORIZONTAL: Mirr = ord("-")
-alias VERTICAL: Mirr = ord("|")
-alias DIAG_45: Mirr = ord("/")
-alias DIAG_135: Mirr = ord("\\")
-alias MIRRORS = (HORIZONTAL, VERTICAL, DIAG_135, DIAG_45)
+comptime Mirr = Int
+comptime HORIZONTAL: Mirr = ord("-")
+comptime VERTICAL: Mirr = ord("|")
+comptime DIAG_45: Mirr = ord("/")
+comptime DIAG_135: Mirr = ord("\\")
+comptime MIRRORS = (HORIZONTAL, VERTICAL, DIAG_135, DIAG_45)
 
-alias DOT = ord(".")
-alias LN = ord("\n")
+comptime DOT = ord(".")
+comptime LN = ord("\n")
 
 
 # # @always_inline("nodebug")
@@ -93,7 +93,6 @@ fn reflect(v: Dir, mirror: UInt8) -> Tuple[Dir, Dir]:
         return LEFT, RIGHT
 
     os.abort("Hey, this should be unreachable.! This should be splitted")
-    return NO_DIR, NO_DIR
 
 
 # # @always_inline("nodebug")
@@ -160,7 +159,7 @@ fn calc_energized[
     if ord(map[pos[1]][pos[0]]) not in MIRRORS:
         pos, _ = calc_new_pos(dir, pos, map, sp, readed, cache)
 
-    queue = List[Tuple[Dir, IndexList[2]]]((dir, pos))
+    queue = [(dir, pos)]
 
     while queue:
         dir, pos = queue.pop()
@@ -191,11 +190,10 @@ fn calc_energized[
     return len(readed)
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.int32
-
+struct Solution(AdventSolution):
     @staticmethod
-    fn part_1[o: Origin](map: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_1(data: StringSlice) -> Int32:
+        var map = data.splitlines()
         # 46 .. 7199
         pos = Index(0, 0)
         dir = RIGHT
@@ -204,8 +202,9 @@ struct Solution(ListSolution):
         return calc_energized(map, sp, pos, dir)
 
     @staticmethod
-    fn part_2[o: Origin](map: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_2(data: StringSlice) -> Int32:
         # 51 .. 7438
+        var map = data.splitlines()
         sp = len(map[0]), len(map)
         ym, xm = sp[0], sp[1] - 1
         indexes = List[Tuple[IndexList[2], Dir]](capacity=(ym + xm) * 2)

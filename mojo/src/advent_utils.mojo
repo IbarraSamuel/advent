@@ -5,6 +5,7 @@ from pathlib import _dir_of_current_file
 from testing import assert_equal
 from builtin import Variadic
 import sys
+import os
 
 
 @register_passable("trivial")
@@ -71,28 +72,27 @@ trait AdventSolution:
 
 fn run[
     *solutions: AdventSolution
-](input_path: StringSlice, day: Optional[Int], part: Optional[Int]) raises:
-    var filepath = _dir_of_current_file() / "../.." / input_path
+](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
     comptime n_sols = Variadic.size(solutions)
 
     @parameter
     for i in range(n_sols):
-        if day and day[] != i + 1:
+        if day and day.unsafe_value() != i + 1:
             continue
 
         comptime Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
-        var file = filepath / String("day", day, ".txt")
+        var file = input_dir / String("day", day, ".txt")
         var data = file.read_text().as_string_slice()
 
         print("Day", day, "=>")
 
-        if not part or part[] == 1:
+        if not part or part.unsafe_value() == 1:
             var p1: Sol.T = Sol.part_1(data)
             print("\tPart 1:", Int(p1))
 
-        if not part or part[] == 2:
+        if not part or part.unsafe_value() == 2:
             var p2: Sol.T = Sol.part_2(data)
             print("\tPart 2:", Int(p2), end="\n\n")
 
@@ -101,8 +101,7 @@ fn bench[
     iters: Int,
     time_unit: TimeUnit,
     *solutions: AdventSolution,
-](input_path: StringSlice, day: Optional[Int], part: Optional[Int]) raises:
-    var filepath = _dir_of_current_file() / "../.." / input_path
+](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
     comptime n_sols = Variadic.size(solutions)
 
     @parameter
@@ -113,7 +112,7 @@ fn bench[
         comptime Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
-        var file = filepath / String("day", day, ".txt")
+        var file = input_dir / String("day", day, ".txt")
         var data = file.read_text().as_string_slice()
 
         @parameter

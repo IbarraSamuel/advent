@@ -3,13 +3,13 @@ from collections import Dict, Optional
 from utils import IndexList
 from math import log, ceil
 from algorithm import parallelize
-from advent_utils import ListSolution
+from advent_utils import AdventSolution
 
-alias LEFT = "L"
-alias RIGHT = "R"
-alias Indexer[o: Origin] = Dict[StringSlice[o], Int]
+comptime LEFT = "L"
+comptime RIGHT = "R"
+comptime Indexer[o: Origin] = Dict[StringSlice[o], Int]
 
-alias default_lpv = List[IndexList[2]]()
+comptime default_lpv = List[IndexList[2]]()
 
 
 fn lcm[tp: DType, //](first: Scalar[tp], second: Scalar[tp]) -> Scalar[tp]:
@@ -33,20 +33,23 @@ fn key_in_list(k: Int, lstp: List[IndexList[2]]) -> Optional[Int]:
     return None
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.uint32
+struct Solution(AdventSolution):
+    comptime T = UInt32
 
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
+    fn part_1(data: StringSlice) -> UInt32:
+        var lines = data.splitlines()
         data_len = len(lines) - 2
-        dct = Indexer[o](power_of_two_initial_capacity=ceil_2pow(data_len))
-        var key: StringSlice[o]
+        dct = Indexer[data.Immutable.origin](
+            power_of_two_initial_capacity=ceil_2pow(data_len)
+        )
+        var key: data.Immutable
         for l in lines:
             if l.startswith("AAA"):
                 key = l[0:3]
                 break
         else:
-            key = StringSlice[o]()
+            key = data.Immutable()
         iterations = 0
 
         for idx in range(2, len(lines)):
@@ -67,10 +70,13 @@ struct Solution(ListSolution):
         return iterations
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> UInt32:
+    fn part_2(data: StringSlice) -> UInt32:
+        var lines = data.splitlines()
         data_len = len(lines)
         iter_len = lines[0].byte_length()
-        dct = Indexer[o](power_of_two_initial_capacity=ceil_2pow(data_len - 2))
+        dct = Indexer[data.Immutable.origin](
+            power_of_two_initial_capacity=ceil_2pow(data_len - 2)
+        )
         init_nodes = List[Int](capacity=8)
 
         for idx in range(2, len(lines)):
@@ -85,7 +91,7 @@ struct Solution(ListSolution):
             pos = lines[init_nodes[idx]][:3]
             done = False
             loop_no = 0
-            readed = Dict[StringSlice[o], Int](
+            readed = Dict[data.Immutable, Int](
                 power_of_two_initial_capacity=128
             )
             while not done:

@@ -1,9 +1,9 @@
-from advent_utils import SIMDResult, ListSolution
+from advent_utils import AdventSolution
 from collections import Dict, Optional
 from algorithm.functional import parallelize
 from builtin.globals import global_constant
 
-alias MapList = {
+comptime MapList = {
     "one": 1,
     "two": 2,
     "three": 3,
@@ -24,7 +24,7 @@ alias MapList = {
     "9": 9,
 }
 
-# alias NUM_MAP: List[(StaticString, Int)] = [
+# comptime NUM_MAP: List[(StaticString, Int)] = [
 #     (StaticString("two"), 2),
 #     (StaticString("three"), 3),
 #     (StaticString("four"), 4),
@@ -45,12 +45,11 @@ alias MapList = {
 # ]
 
 
-struct Solution(ListSolution):
-    alias dtype = DType.uint32
-
+struct Solution(AdventSolution):
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
-        var total = SIMDResult(0)
+    fn part_1(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
+        var total = SIMD[DType.int32, 1024](0)
 
         @parameter
         fn calc_line(idx: Int):
@@ -62,8 +61,9 @@ struct Solution(ListSolution):
         return total.reduce_add()
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
-        var total = SIMDResult(0)
+    fn part_2(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
+        var total = SIMD[DType.int32, 1024](0)
 
         @parameter
         fn calc_line(idx: Int):
@@ -112,8 +112,8 @@ fn line_value(line: StringSlice) -> Int:
     for kv in map_list.items():
         var key = kv.key
         var value = kv.value
-        # alias k = MapList[i][0]
-        # alias v = MapList[i][1]
+        # comptime k = MapList[i][0]
+        # comptime v = MapList[i][1]
         var mn = line.find(key)
         var mx = line.rfind(key)
 

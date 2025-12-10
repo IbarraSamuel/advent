@@ -1,4 +1,4 @@
-from advent_utils import SIMDResult, ListSolution
+from advent_utils import AdventSolution
 from algorithm import parallelize
 from collections import Dict
 import os
@@ -7,9 +7,9 @@ from hashlib.hasher import Hasher
 
 
 @fieldwise_init
-struct CacheKey(KeyElement, Movable):
+struct CacheKey[o: ImmutOrigin](KeyElement, Movable):
     var cfg: String
-    var nums: List[Int]
+    var nums: Span[Int, Self.o]
 
     fn __hash__[H: Hasher](self, mut hasher: H):
         hasher.update(self.cfg)
@@ -30,7 +30,9 @@ struct CacheKey(KeyElement, Movable):
 
 
 fn count(
-    cfg: StringSlice, nums: List[Int], mut cache: Dict[CacheKey, Int]
+    cfg: StringSlice,
+    nums: Span[mut=False, Int],
+    mut cache: Dict[CacheKey[nums.origin], Int],
 ) -> Int:
     if (not cfg and not nums) or (not nums and "#" not in cfg):
         return 1
@@ -59,13 +61,12 @@ fn count(
     return result
 
 
-struct Solution(ListSolution):
+struct Solution(AdventSolution):
     """Solution for day 12."""
 
-    alias dtype = DType.uint64
-
     @staticmethod
-    fn part_1[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_1(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
         total = SIMD[DType.uint32, 1024](0)
 
         @parameter
@@ -80,21 +81,26 @@ struct Solution(ListSolution):
                     nums.append(Int(num))
             except:
                 os.abort("This should never happen")
-            cache = Dict[CacheKey, Int]()
+
+            cache = Dict[
+                CacheKey[ImmutOrigin.cast_from[origin_of(nums)]], Int
+            ]()
             total[idx] = count(cfg, nums^, cache)
             # total[idx] = count(cfg, nums)
 
         parallelize[calc_line](len(lines))
-        return total.reduce_add().cast[DType.uint64]()
+        return total.reduce_add().cast[DType.int32]()
 
     @staticmethod
-    fn part_2[o: Origin](lines: List[StringSlice[o]]) -> Scalar[Self.dtype]:
+    fn part_2(data: StringSlice) -> Int32:
+        var lines = data.splitlines()
         total = SIMD[DType.uint64, 1024](0)
 
         @parameter
         fn calc_line(idx: Int):
             splitted = lines[idx].split()
-            cfg, nums_chr = String(splitted[0]), splitted[1]
+            cfg = String(splitted[0])
+            nums_chr = splitted[1]
             nums = List[Int]()
             try:
                 splitted_nums = nums_chr.split(",")
@@ -102,11 +108,15 @@ struct Solution(ListSolution):
                     nums.append(Int(num))
             except:
                 os.abort("This should never happen")
-            cfg = (("?" + cfg) * 5)[1:]
+
+            cfg = String((("?" + cfg) * 5)[1:])
             nums *= 5
-            cache = Dict[CacheKey, Int]()
+            # span = nums[:]
+            cache = Dict[
+                CacheKey[ImmutOrigin.cast_from[origin_of(nums)]], Int
+            ]()
             total[idx] = count(cfg, nums^, cache)
             # total[idx] = count(cfg, nums)
 
         parallelize[calc_line](len(lines))
-        return total.reduce_add()
+        return total.reduce_add().cast[DType.int32]()
