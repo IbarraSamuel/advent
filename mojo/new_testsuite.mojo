@@ -13,31 +13,18 @@ from testing.suite import (
 from builtin import Variadic
 
 
-struct _Test[fn_type: fn () raises unified](Copyable, Movable):
-    """A single test to run."""
-
-    var test_fn: Pointer[Self.fn_type, MutAnyOrigin]
-    var name: StaticString
-
-    fn __init__(out self, mut f: Self.fn_type, name: StaticString):
-        self.test_fn = Pointer[origin=MutAnyOrigin](to=f)
-        self.name = name
-
-
 fn main() raises:
-    fn unified_test() unified {}:
+    fn unified_test() unified {read}:
         print("unified")
 
-    fn unified_second_test() unified {}:
+    fn unified_second_test() unified {read}:
         print("unified")
 
-    fn normal_test() raises:
-        pass
-
-    var ts = TestSuite(cli_args=List[StaticString]())
-    ts.test(unified_test, "unified_test")
-    ts.test(unified_second_test, "unified_second")
-    ts^.run()
+    var cli_args = List[StaticString]()
+    TestSuite(cli_args=cli_args^)
+        .test(unified_test^, "normal_test")
+        .test(unified_second_test^, "unified_second_test")
+        .run()
 
 
 @explicit_destroy("TestSuite must be destroyed via `run()`")
@@ -78,10 +65,8 @@ struct TestSuite[*fn_types: fn () raises unified](Movable):
     ```
     """
 
-    var tests: Tuple[*Self.fn_types]
-    comptime test_names = Variadic.splat[
-        StaticString, Variadic.size(Self.fn_types)
-    ]
+    var tests: Tuple[*Variadic.types[T=Movable, *Self.fn_types]]
+    var test_names: List[StaticString]
     """The list of tests registered in this suite."""
 
     var location: _SourceLocation
@@ -98,100 +83,50 @@ struct TestSuite[*fn_types: fn () raises unified](Movable):
 
     @always_inline
     fn __init__(
-        out self,
-        *,
-        test: Some[fn () raises unified],
+        out self: TestSuite[],
         location: Optional[_SourceLocation] = None,
         var cli_args: Optional[List[StaticString]] = None,
     ):
         """Create a new test suite.
 
         Args:
-            test: The test to start building the testsuite.
             location: The location of the test suite (defaults to
                 `__call_location`).
             cli_args: The command line arguments to pass to the test suite
                 (defaults to `sys.argv()`).
         """
-        self.tests = List[_Test[Self.fn_type]]()
+        self.tests = {}
+        self.test_names = {}
         self.location = location.or_else(__call_location())
         self.skip_list = {}
         self.allow_list = None  # None means no allow list specified.
         self.cli_args = cli_args.or_else(List[StaticString](argv()))
 
-    # fn _register_tests[test_funcs: Tuple, /](mut self) raises:
-    #     """Internal function to prevent all registrations from being inlined."""
-
-    #     @parameter
-    #     for idx in range(len(test_funcs)):
-    #         comptime test_func = test_funcs[idx]
-
-    #         @parameter
-    #         if get_function_name[test_func]().startswith("test_"):
-
-    #             @parameter
-    #             if _type_is_eq[type_of(test_func), _Test.fn_type]():
-    #                 self.test[test_func]()
-    #             else:
-    #                 raise Error(
-    #                     "test function '",
-    #                     get_function_name[test_func](),
-    #                     "' has nonconforming signature",
-    #                 )
-
-    # @always_inline
-    # @staticmethod
-    # fn discover_tests[
-    #     test_funcs: Tuple, /
-    # ](
-    #     *,
-    #     location: Optional[_SourceLocation] = None,
-    #     var cli_args: Optional[List[StaticString]] = None,
-    # ) raises -> Self:
-    #     """Discover tests from the given list of functions, and register them.
-
-    #     Parameters:
-    #         test_funcs: The pack of functions to discover tests from. In most
-    #             cases, callers should pass `__functions_in_module()`.
-
-    #     Args:
-    #         location: The location of the test suite (defaults to
-    #             `__call_location`).
-    #         cli_args: The command line arguments to pass to the test suite
-    #             (defaults to `sys.argv()`).
-
-    #     Raises:
-    #         If test discovery fails (e.g. because of a nonconforming test
-    #         function signature).
-
-    #     Returns:
-    #         A new TestSuite with all discovered tests registered.
-    #     """
-
-    #     var suite = Self(
-    #         location=location.or_else(__call_location()), cli_args=cli_args^
-    #     )
-    #     try:
-    #         suite._register_tests[test_funcs]()
-    #     except e:
-    #         suite^.abandon()
-    #         raise e
-    #     return suite^
-
-    fn test(mut self, mut func: Self.fn_type, name: StaticString):
+    fn test[f: fn () raises unified](
+        deinit self,
+        var func: f,
+        out o: TestSuite[
+            *Variadic.concat[T=fn() raises unified, Self.fn_types, Variadic.types[f]]
+        ][],
+        name: StaticString,
+    ):
         """Registers a test to be run."""
-        # get_function_name[type_of(f)]
-        self.tests.append(_Test(func, name))
+        __mlir_op.`lit.ownership.mark_initialized`(__get_mvalue_as_litref(o))
 
-    fn skip[f: _Test.fn_type](mut self, name: StaticString):
+        var new_tests = self.tests.concat[f]((func^,))
+        o.tests = new_tests^
+        o.test_names = self.test_names^
+        o.location = self.location
+        o.skip_list = self.skip_list^
+        o.allow_list = self.allow_list^
+        o.cli_args = self.cli_args^
+
+    fn skip(mut self, name: StaticString):
         """Registers a test to be skipped.
 
         If attempting to skip a test that is not registered in the suite (either
         explicitly or via automatic discovery), an error will be raised when the
         suite is run.
-
-        Parameters:
-            f: The function to skip.
         """
         # comptime skipped_name = get_function_name[f]()
         self.skip_list.add(name)
@@ -222,8 +157,8 @@ struct TestSuite[*fn_types: fn () raises unified](Movable):
             raise Error("expected test name(s) after '--only' or '--skip'")
 
         var discovered_tests = Set[String]()
-        for test in self.tests:
-            discovered_tests.add(test.name)
+        for test_nm in self.test_names:
+            discovered_tests.add(test_nm)
 
         for idx in range(2, num_args):
             var arg = args[idx]
@@ -239,21 +174,21 @@ struct TestSuite[*fn_types: fn () raises unified](Movable):
             else:
                 self.skip_list.add(arg)
 
-    fn _should_skip(self, test: _Test) -> Bool:
-        if test.name in self.skip_list:
+    fn _should_skip(self, test_nm: StaticString) -> Bool:
+        if test_nm in self.skip_list:
             return True
         if not self.allow_list:
             return False
         # SAFETY: We know that `self.allow_list` is not `None` here.
-        return test.name not in self.allow_list.unsafe_value()
+        return test_nm not in self.allow_list.unsafe_value()
 
     fn _validate_skip_list(self) raises:
         # TODO: _Test doesn't conform to Equatable, so we can't use
         # `in` here. Also, we might wanna do this in O(1) time.
         for test_name in self.skip_list:
             var found = False
-            for test in self.tests:
-                if test.name == test_name:
+            for test_nm in self.test_names:
+                if test_nm == test_name:
                     found = True
                     break
             if not found:
@@ -290,15 +225,18 @@ struct TestSuite[*fn_types: fn () raises unified](Movable):
             self.allow_list = Set[String]()
 
         var reports = List[TestReport](capacity=len(self.tests))
-        for test in self.tests:
-            if self._should_skip(test):
-                reports.append(TestReport.skipped(name=test.name))
+
+        @parameter
+        for test_idx in range(Variadic.size(Self.fn_types)):
+            var test_nm = self.test_names[test_idx]
+            if self._should_skip(test_nm):
+                reports.append(TestReport.skipped(name=test_nm))
                 continue
 
             var error: Optional[Error] = None
             var start = perf_counter_ns()
             try:
-                test.test_fn[]()
+                self.tests[test_idx]()
             except e:
                 error = {e^}
             var duration = perf_counter_ns() - start
@@ -306,12 +244,12 @@ struct TestSuite[*fn_types: fn () raises unified](Movable):
             if error:
                 reports.append(
                     TestReport.failed(
-                        name=test.name, duration_ns=duration, error=error.take()
+                        name=test_nm, duration_ns=duration, error=error.take()
                     )
                 )
             else:
                 reports.append(
-                    TestReport.passed(name=test.name, duration_ns=duration)
+                    TestReport.passed(name=test_nm, duration_ns=duration)
                 )
 
         return TestSuiteReport(reports=reports^, location=self.location)
