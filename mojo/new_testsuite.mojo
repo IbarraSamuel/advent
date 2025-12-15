@@ -24,8 +24,7 @@ fn main() raises:
 
     # var cli_args = List[StaticString]()
 
-    var ts = TestSuite()
-        .add_tests((unified_test,))
+    var ts = TestSuite((unified_test,))
         .add_tests((unified_second_test,))
         # .run()
         # .abandon()
@@ -35,14 +34,19 @@ fn main() raises:
         var fnm = get_type_name[ts.fn_types[fi]]()
         print(fnm)
         ref test = ts.tests[fi]
-        trait_downcast[fn() raises unified](test)()
+        ref t = trait_downcast[fn() raises unified](test)
+        try:
+            t()
+            print("success", fnm)
+        except:
+            print("failed", fnm)
     ts^.abandon()
 
 
 # trait Fn(fn() raises unified, Movable):
 #     pass
 
-# @explicit_destroy("TestSuite must be destroyed via `run()`")
+@explicit_destroy("TestSuite must be destroyed via `run()`")
 struct TestSuite[*fn_types: Movable](Movable):
     """A suite of tests to run.
 
