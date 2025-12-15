@@ -1,5 +1,5 @@
 from builtin.variadics import Variadic
-from compile.reflection import get_type_name
+from compile.reflection import get_function_name, get_type_name
 from builtin.rebind import trait_downcast
 from testing.suite import (
     __call_location,
@@ -13,19 +13,21 @@ from time import perf_counter_ns
 
 @fieldwise_init
 @explicit_destroy("run() or abandon() the TestSuite")
-struct TestSuite[*ts: Movable](Movable):
+struct UnifiedTestSuite[*ts: Movable](Movable):
     var tests: Tuple[*Self.ts]
     var location: _SourceLocation
 
     fn __init__(
-        out self: TestSuite[], location: Optional[_SourceLocation] = None
+        out self: UnifiedTestSuite[], location: Optional[_SourceLocation] = None
     ):
         self.tests = {}
         self.location = location.or_else(__call_location())
 
     fn test(
         deinit self, var other: Some[fn () raises unified]
-    ) -> TestSuite[*Variadic.concat[Self.ts, Variadic.types[type_of(other)]]]:
+    ) -> UnifiedTestSuite[
+        *Variadic.concat[Self.ts, Variadic.types[type_of(other)]]
+    ]:
         return {self.tests.concat((other^,)), self.location}
 
     fn abandon(deinit self):
@@ -65,22 +67,48 @@ struct TestSuite[*ts: Movable](Movable):
         print(report)
 
 
-fn main() raises:
-    var ts = TestSuite()
+@fieldwise_init
+@explicit_destroy("run() or abandon() the TestSuite")
+struct TestSuite(Movable):
+    var tests: List[Tuple[StaticString, fn () raises]]
+    var location: _SourceLocation
 
-    fn fa() raises unified {}:
-        raise "Something went wrong"
+    fn __init__(
+        out self: TestSuite[], location: Optional[_SourceLocation] = None
+    ):
+        self.tests = {}
+        self.location = location.or_else(__call_location())
 
-    var ts1 = ts^.test(fa^)
+    fn test[func: fn () raises](mut self, name: Optional[StaticString] = None):
+        self.tests.append((name.or_else(get_function_name[func]()), func))
 
-    fn fb() raises unified {}:
-        print("fb")
+    fn abandon(deinit self):
+        pass
 
-    var ts2 = ts1^.test(fb^)
+    fn run(deinit self) raises:
+        var size = len(self.tests)
+        var reports = List[TestReport](capacity=size)
 
-    fn fc() raises unified {}:
-        print("fc")
+        for name, test in self.tests:
+            var error: Optional[Error] = None
+            var start = perf_counter_ns()
+            try:
+                test()
+            except e:
+                error = {e^}
+            var duration = perf_counter_ns() - start
+            var result = TestResult.PASS if not error else TestResult.FAIL
+            var report = TestReport(
+                name=name,
+                duration_ns=duration,
+                result=result,
+                error=error.or_else({}),
+            )
+            reports.append(report^)
 
-    var ts3 = ts2^.test(fc^)
+        var report = TestSuiteReport(reports=reports^, location=self.location)
 
-    ts3^.run()
+        if report.failures > 0:
+            raise Error(report)
+
+        print(report)

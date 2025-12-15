@@ -1,4 +1,5 @@
-from testing import TestSuite, assert_equal
+from testing import assert_equal
+from test_suite import TestSuite
 from advent_utils import AdventSolution, Solutions, Args
 from pathlib import _dir_of_current_file, Path
 from python import Python, PythonObject
@@ -66,61 +67,6 @@ fn parse_config() raises -> Years:
     return years^
 
 
-fn test_from_config[year: Int, *Solutions: AdventSolution]() raises:
-    var args = Args()
-    var config = parse_config()
-
-    @parameter
-    for i in range(Variadic.size(Solutions)):
-        comptime S = Solutions[i]
-
-        if args.day and i + 1 != args.day.unsafe_value():
-            continue
-
-        var d: Int = i + 1 if not args.day else args.day.unsafe_value()
-        ref days_data = config.find(year)
-
-        if not days_data:
-            return
-
-        ref part_to_cases_map = days_data.unsafe_value().find(d)
-
-        if not part_to_cases_map:
-            raise "provided day {} is not configured for year: {} in the config file.".format(
-                d, args.year
-            )
-
-        @parameter
-        for part in range(2):
-            comptime p = part + 1
-            if not args.part or args.part.unsafe_value() == p:
-                var test_cases = part_to_cases_map.unsafe_value().get(p)
-                if not test_cases:
-                    raise "provided part {} for day {} for year {} is not in the config file.".format(
-                        p, d, year
-                    )
-
-                for test_case in test_cases.unsafe_value():
-                    comptime runner = S.part_1 if p == 1 else S.part_2
-                    var res = Int(runner(test_case.file.read_text()))
-                    var status = (
-                        "PASSED" if res == test_case.expected else "FAILED"
-                    )
-                    print(
-                        "[TEST] [{}] Year {} Day {} Part {} file {}"
-                        " (result: {} vs expected: {})".format(
-                            status,
-                            year,
-                            d,
-                            p,
-                            test_case.file.name(),
-                            res,
-                            test_case.expected,
-                        )
-                    )
-                    assert_equal(res, test_case.expected)
-
-
 fn test_solution[year: Int, day: Int, S: AdventSolution, part: Int]() raises:
     var args = Args()
     var config = parse_config()
@@ -130,19 +76,6 @@ fn test_solution[year: Int, day: Int, S: AdventSolution, part: Int]() raises:
     for test_case in test_cases:
         comptime runner = S.part_1 if part == 1 else S.part_2
         var res = Int(runner(test_case.file.read_text()))
-        var status = "PASSED" if res == test_case.expected else "FAILED"
-        print(
-            "[TEST] [{}] Year {} Day {} Part {} file {}"
-            " (result: {} vs expected: {})".format(
-                status,
-                year,
-                day,
-                part,
-                test_case.file.name(),
-                res,
-                test_case.expected,
-            )
-        )
         assert_equal(res, test_case.expected)
 
 
@@ -154,7 +87,7 @@ fn run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
     if not day_data:
         return
 
-    var ts = TestSuite(cli_args=List[StaticString]())
+    var ts = TestSuite()
 
     @parameter
     for i in range(Variadic.size(S)):
@@ -176,6 +109,9 @@ fn run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
             if args.part and args.part.unsafe_value() != part:
                 continue
 
-            ts.test[test_solution[Y, day, S[i], part]]()
+            comptime tname: StaticString = String(
+                "Year ", Y, " Day ", day, " Part ", part
+            )
+            ts.test[test_solution[Y, day, S[i], part]](tname)
 
     ts^.run()
