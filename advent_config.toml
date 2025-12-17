@@ -1,25 +1,6 @@
 [tests.year.2025]
 
-day.1.part.1 = [{ file = "day01.txt", expected = 11 }]
-day.1.part.2 = [{ file = "day01.txt", expected = 31 }]
-
-day.2.part.1 = [{ file = "day02.txt", expected = 2 }]
-day.2.part.2 = [
-    { file = "day02.txt", expected = 4 },
-    { file = "day022.txt", expected = 28 },
-]
-
-day.3.part.1 = [{ file = "day03.txt", expected = 161 }]
-day.3.part.2 = [{ file = "day032.txt", expected = 48 }]
-
-day.4.part.1 = [
-    { file = "day04.txt", expected = 18 },
-    { file = "day044.txt", expected = 4 },
-]
-day.4.part.2 = [{ file = "day04.txt", expected = 9 }]
-
-day.5.part.1 = [{ file = "day05.txt", expected = 143 }]
-day.5.part.2 = [{ file = "day05.txt", expected = 123 }]
+day.1.part.1 = [{ file = "day01.txt", expected = 3 }]
 
 [tests.year.2024]
 
