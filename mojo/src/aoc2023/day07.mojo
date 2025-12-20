@@ -19,7 +19,7 @@ struct HandMode:
 
 
 @register_passable("trivial")
-struct Hand[mode: HandMode](Comparable & Copyable & Movable):
+struct Hand[mode: HandMode](Comparable):
     comptime type = SIMD[CardType, 8]
     var value: Self.type
     var level: UInt8

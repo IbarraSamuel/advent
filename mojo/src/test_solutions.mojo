@@ -13,7 +13,7 @@ comptime TestCases = List[Case]
 
 
 @fieldwise_init
-struct Case(ImplicitlyCopyable):
+struct Case(Copyable):
     var file: Path
     var expected: Int
 

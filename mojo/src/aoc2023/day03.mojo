@@ -6,7 +6,7 @@ from advent_utils import AdventSolution
 
 
 @fieldwise_init
-struct Point(Copyable, KeyElement):
+struct Point(KeyElement):
     var x: Int
     var y: Int
 

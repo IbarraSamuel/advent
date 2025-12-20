@@ -32,4 +32,7 @@ fn main() raises:
         elif args.mode == "bench":
             bench[1000, "ms", *S](input_path, args.day, args.part)
         elif args.mode == "test":
-            run_tests[Y, *S](args, config)
+            try:
+                run_tests[Y, *S](args, config)
+            except e:
+                print(e^)
