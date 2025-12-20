@@ -70,7 +70,7 @@ struct Solution(AdventSolution):
 comptime MapRangeTp = Tuple[Int, Int, Int]
 
 
-struct MapRange(Copyable, Movable):
+struct MapRange(ImplicitlyCopyable):
     var src_start: Int
     var dest_start: Int
     var length: Int
