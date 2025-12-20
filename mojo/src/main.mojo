@@ -15,7 +15,7 @@ fn main() raises:
         if String(e) == HELP_STRING:
             print(e)
             return
-        raise e
+        raise e^
 
     var project_dir = _dir_of_current_file() / "../.."
 
