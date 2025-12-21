@@ -24,31 +24,35 @@ comptime LN = ord("\n")
 
 
 # @always_inline("nodebug")
-fn opposite(v: Dir) -> Int:
+fn opposite(v: Dir) -> Dir:
     if v == DOWN:
         return UP
     elif v == UP:
         return DOWN
     elif v == RIGHT:
         return LEFT
-    else:  # left
+    elif v == LEFT:  # left
         return RIGHT
+
+    os.abort("No correct direction provided to mirrors.")
 
 
 # # @always_inline("nodebug")
-fn delta(v: Int) -> IndexList[2]:
+fn delta(v: Dir) -> IndexList[2]:
     if v == DOWN:
         return Index(1, 0)
     elif v == UP:
         return Index(-1, 0)
     elif v == RIGHT:
         return Index(0, 1)
-    else:  # Left
+    elif v == LEFT:  # Left
         return Index(0, -1)
+
+    os.abort("No correct direction provided to delta")
 
 
 # # @always_inline
-fn reflect(v: Dir, mirror: UInt8) -> Tuple[Dir, Dir]:
+fn reflect(v: Dir, mirror: Mirr) -> Tuple[Dir, Dir]:
     """Self is the position relative to the mirror.
 
     Returns
@@ -65,16 +69,16 @@ fn reflect(v: Dir, mirror: UInt8) -> Tuple[Dir, Dir]:
         return opposite(v), NO_DIR
 
     if (v == RIGHT and mirror == DIAG_45) or (v == LEFT and mirror == DIAG_135):
-        return DOWN, NO_DIR
-
-    if (v == RIGHT and mirror == DIAG_135) or (v == LEFT and mirror == DIAG_45):
         return UP, NO_DIR
 
+    if (v == RIGHT and mirror == DIAG_135) or (v == LEFT and mirror == DIAG_45):
+        return DOWN, NO_DIR
+
     if (v == UP and mirror == DIAG_45) or (v == DOWN and mirror == DIAG_135):
-        return LEFT, NO_DIR
+        return RIGHT, NO_DIR
 
     if (v == UP and mirror == DIAG_135) or (v == DOWN and mirror == DIAG_45):
-        return RIGHT, NO_DIR
+        return LEFT, NO_DIR
 
     if mirror == VERTICAL and v in (LEFT, RIGHT):
         return UP, DOWN
@@ -116,7 +120,7 @@ fn calc_new_pos[
     dir: Dir,
     pos: IndexList[2],
     map: List[StringSlice[o]],
-    sp: Tuple[Int, Int],
+    dims: Tuple[Int, Int],
     mut readed: Set[Int],
     mut cache: Set[Cache],
     # mut s: String,
@@ -126,10 +130,10 @@ fn calc_new_pos[
     while map[npos[1]][npos[0]] == "." or npos == pos:
         npos = npos + dt
         k = Cache(npos, dir)
-        if oob(npos, sp) or map[npos[1]][npos[0]] == "\n" or k in cache:
+        if oob(npos, dims) or map[npos[1]][npos[0]] == "\n" or k in cache:
             npos = npos - dt
             break
-        readed.add(npos[1] * sp[0] + npos[0])
+        readed.add(npos[1] * dims[0] + npos[0])
         cache.add(k)
     mv = pos - npos
     return npos, abs(mv[0]) + abs(mv[1])
