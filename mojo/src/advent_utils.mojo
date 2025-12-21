@@ -126,10 +126,12 @@ fn bench[
         print(">>> Day", day, "<<<")
         if not part or part[] == 1:
             print("Part 1:")
-            benchmark.run[part_1](max_iters=iters).print(time_unit.unit)
+            report = benchmark.run[part_1](max_iters=iters)
+            print(report.mean(time_unit.unit), time_unit.unit)
         if not part or part[] == 2:
             print("Part 2:")
-            benchmark.run[part_2](max_iters=iters).print(time_unit.unit)
+            report = benchmark.run[part_2](max_iters=iters)
+            print(report.mean(time_unit.unit), time_unit.unit)
 
         print()
 
