@@ -33,7 +33,7 @@ day.1.part.2 = [{file = "day1_2.txt", expected = 281 }]
 day.2.part.1 = [{file = "day2_1.txt", expected = 8 }]
 day.2.part.2 = [{file = "day2_1.txt", expected = 2286 }]
 
-day.3.part.1 = [{file = "day3_1.txt", expected = 4631 }]
+day.3.part.1 = [{file = "day3_1.txt", expected = 4361 }]
 day.3.part.2 = [{file = "day3_1.txt", expected = 467835 }]
 
 day.4.part.1 = [{file = "day4_1.txt", expected = 13 }]
