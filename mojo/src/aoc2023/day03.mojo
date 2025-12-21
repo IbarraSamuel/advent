@@ -3,164 +3,165 @@ from collections import Set
 from utils import IndexList
 from hashlib.hasher import Hasher
 from advent_utils import AdventSolution
+import os
 
 
-@fieldwise_init
-struct Point(KeyElement):
-    var x: Int
-    var y: Int
+struct AstrInfo(Copyable, Equatable):
+    var pos: Tuple[Int, Int]
+    var value: Int
+    var count: Int
 
-    fn __hash__(self, mut hasher: Some[Hasher]):
-        hasher.update(self.x)
-        hasher.update(self.y)
+    fn __init__(out self, x: Int, y: Int):
+        self.pos = (x, y)
+        self.value = 0
+        self.count = 1
 
     fn __eq__(self, other: Self) -> Bool:
-        return self.x == other.x and self.y == other.y
-
-    fn copy(self) -> Self:
-        return Point(self.x, self.y)
-
-
-fn parse_number[dir: Int](s: StringSlice, pos: Int) -> Tuple[String, Int]:
-    var current = s[pos]
-    var left: String = ""
-    var lpos: Int = pos
-    var right: String = ""
-
-    if pos > 0 and s[pos - 1].isdigit() and dir <= 0:
-        left, lpos = parse_number[-1](s, pos - 1)
-
-    if pos < len(s) - 1 and s[pos + 1].isdigit() and dir >= 0:
-        right, _ = parse_number[+1](s, pos + 1)
-    current = left + current + right
-    return current, lpos
-
-
-fn check_window[
-    origin: Origin
-](
-    point: Point,
-    input: List[StringSlice[origin]],
-    mut results: Set[Point],
-    mut total: Int,
-):
-    var min_x = max(point.x - 1, 0)
-    var max_x = min(point.x + 1, len(input[0]) - 1)
-    var min_y = max(point.y - 1, 0)
-    var max_y = min(point.y + 1, len(input) - 1)
-    var first_x: Int
-    var to_parse: String
-
-    for y in range(min_y, max_y + 1):
-        for x in range(min_x, max_x + 1):
-            if String(input[y][x]).isdigit():
-                to_parse, first_x = parse_number[0](input[y], x)
-                var current_point = Point(first_x, y)
-                if current_point not in results:
-                    results.add(current_point)
-                    try:
-                        total += atol(to_parse)
-                    except:
-                        pass
-
-
-fn check_window[
-    origin: Origin, //, number_limit: Int
-](
-    point: Point,
-    input: List[StringSlice[origin]],
-    mut results: Set[Point],
-    mut total: Int,
-):
-    var min_x = max(point.x - 1, 0)
-    var max_x = min(point.x + 1, len(input[0]) - 1)
-    var min_y = max(point.y - 1, 0)
-    var max_y = min(point.y + 1, len(input) - 1)
-    var first_x: Int
-    var to_parse: String
-    var old_results = results.copy()
-    var local_result: IndexList[2] = (0, 0)
-    var local_count = 0
-
-    for y in range(min_y, max_y + 1):
-        for x in range(min_x, max_x + 1):
-            if String(input[y][x]).isdigit():
-                to_parse, first_x = parse_number[0](input[y], x)
-                var current_point = Point(first_x, y)
-                if current_point not in results:
-                    local_count += 1
-                    if local_count > number_limit:
-                        results = old_results^
-                        return
-                    results.add(current_point)
-                    try:
-                        local_result[local_count - 1] = atol(to_parse)
-                    except:
-                        pass
-
-    if local_count < number_limit:
-        results = old_results^
-        return
-
-    total += local_result[0] * local_result[1]
+        return self.pos == other.pos
 
 
 struct Solution(AdventSolution):
-    comptime T = UInt32
+    comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> UInt32:
+    fn part_1(data: StringSlice) -> Int:
         var input = data.splitlines()
-        var x_len = len(input[0])
-        var y_len = len(input)
-        var points = List[Point](length=x_len, fill=Point(0, 0))
+        var tot = 0
 
-        fn check_line[
-            v: Int
-        ](y: Int) unified {read input, read x_len, mut points}:
-            fn check_position[
-                v: Int
-            ](x: Int) unified {mut points, read y, read input}:
-                if (
-                    input[y][x] != StaticString(".")
-                    and not String(input[y][x]).isdigit()
+        for y, line in enumerate(input):
+            var max_x = len(line) - 1
+            x = 0
+            while x < max_x:
+                if not line[x].isdigit():
+                    x += 1
+                    continue
+
+                has_asterisc = False
+
+                var min_y = max(0, y - 1)
+                var max_y = min(len(input) - 1, y + 1)
+                var min_x = max(0, x - 1)
+
+                if x - 1 >= min_x:
+                    for yi in range(min_y, max_y + 1):
+                        if input[yi][x - 1] != ".":
+                            has_asterisc = True
+                            break
+
+                var val: Int
+                try:
+                    val = Int(line[x])
+                except:
+                    os.abort("Invalid input for str to int conversion")
+
+                if not has_asterisc and (
+                    (y != min_y and input[min_y][x] != ".")
+                    or (y != max_y and input[max_y][x] != ".")
                 ):
-                    points[x] = Point(x, y)
+                    has_asterisc = True
 
-            vectorize[1](x_len, check_position)
+                while x + 1 < len(line) and input[y][x + 1].isdigit():
+                    x += 1
+                    try:
+                        val = val * 10 + Int(input[y][x])
+                    except:
+                        os.abort(
+                            "invalid input for str to int conversion on"
+                            " while loop"
+                        )
+                    if not has_asterisc and (
+                        (y != min_y and input[min_y][x] != ".")
+                        or (y != max_y and input[max_y][x] != ".")
+                    ):
+                        has_asterisc = True
 
-        vectorize[1](y_len, check_line)
+                if not has_asterisc and x + 1 < len(line):
+                    for yi in range(min_y, max_y + 1):
+                        if input[yi][x + 1] != ".":
+                            has_asterisc = True
+                            break
 
-        var total = 0
-        var results = Set[Point]()
-        for point in points:
-            check_window(point, input, results, total)
+                if has_asterisc:
+                    tot += val
 
-        return total
+                x += 2
+
+        return tot
 
     @staticmethod
-    fn part_2(data: StringSlice) -> UInt32:
+    fn part_2(data: StringSlice) -> Int:
         var input = data.splitlines()
-        var x_len = len(input[0])
-        var y_len = len(input)
-        var points = List[Point](length=x_len, fill=Point(0, 0))
+        var astr = List[AstrInfo](capacity=1000)
+        var tot = 0
 
-        fn check_line[
-            v: Int
-        ](y: Int) unified {read input, read x_len, mut points}:
-            fn check_position_[
-                v: Int
-            ](x: Int) unified {read y, read input, mut points}:
-                if input[y][x] == "*":
-                    points[x] = Point(x, y)
+        for y, line in enumerate(input):
+            var max_x = len(line) - 1
+            x = 0
+            while x < max_x:
+                if not line[x].isdigit():
+                    x += 1
+                    continue
 
-            vectorize[1](x_len, check_position_)
+                var asterisc = Optional[AstrInfo]()
 
-        vectorize[1](y_len, check_line)
+                var min_y = max(0, y - 1)
+                var max_y = min(len(input) - 1, y + 1)
+                var min_x = max(0, x - 1)
 
-        var total = 0
-        var results = Set[Point]()
-        for point in points:
-            check_window[2](point, input, results, total)
+                if x - 1 >= min_x:
+                    for yi in range(min_y, max_y + 1):
+                        if input[yi][x - 1] == "*":
+                            asterisc = AstrInfo(x - 1, yi)
+                            break
 
-        return total
+                var val: Int
+                try:
+                    val = Int(line[x])
+                except:
+                    os.abort("Invalid input for str to int conversion")
+
+                if not asterisc and y != min_y and input[min_y][x] == "*":
+                    asterisc = AstrInfo(x, min_y)
+
+                if not asterisc and y != max_y and input[max_y][x] == "*":
+                    asterisc = AstrInfo(x, max_y)
+
+                while x + 1 < len(line) and input[y][x + 1].isdigit():
+                    x += 1
+                    try:
+                        val = val * 10 + Int(input[y][x])
+                    except:
+                        os.abort(
+                            "invalid input for str to int conversion on"
+                            " while loop"
+                        )
+                    if not asterisc and y != min_y and input[min_y][x] == "*":
+                        asterisc = AstrInfo(x, min_y)
+
+                    if not asterisc and y != max_y and input[max_y][x] == "*":
+                        asterisc = AstrInfo(x, max_y)
+
+                if not asterisc and x + 1 < len(line):
+                    for yi in range(min_y, max_y + 1):
+                        if input[yi][x + 1] == "*":
+                            asterisc = AstrInfo(x + 1, yi)
+                            break
+
+                if asterisc:
+                    for ref a in astr:
+                        if a == asterisc.unsafe_value():
+                            a.count += 1
+                            if a.count == 2:
+                                a.value *= val
+                                tot += a.value
+                            if a.count == 3:
+                                tot -= a.value
+                            break
+                    else:
+                        var a = asterisc.take()
+                        a.value = val
+                        astr.append(a^)
+
+                x += 2
+
+        return tot
