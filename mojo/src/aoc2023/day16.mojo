@@ -23,16 +23,6 @@ comptime DOT = ord(".")
 comptime LN = ord("\n")
 
 
-# # @always_inline("nodebug")
-# fn dir_repr(v: Int) -> String:
-#     return (
-#         "UP" if v
-#         == UP else "DOWN" if v
-#         == DOWN else "LEFT" if v
-#         == LEFT else "RIGHT"
-#     )
-
-
 # @always_inline("nodebug")
 fn opposite(v: Dir) -> Int:
     if v == DOWN:

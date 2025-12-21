@@ -5,29 +5,38 @@ from algorithm import parallelize
 from testing import assert_equal, assert_true, assert_false
 from advent_utils import AdventSolution
 from builtin.globals import global_constant
+from sys.intrinsics import unlikely
 
 comptime Position = IndexList[2]
 comptime EMPTY_POS = Position()
 comptime Movement = StaticTuple[Position, 2]
 
-comptime Vertical: StaticString = "|"
-comptime Horizontal: StaticString = "-"
-comptime UpRight: StaticString = "L"
-comptime UpLeft: StaticString = "J"
-comptime DownLeft: StaticString = "7"
-comptime DownRight: StaticString = "F"
-comptime Ground: StaticString = "."
-comptime Start: StaticString = "S"
+comptime Vertical = "|"
+comptime Horizontal = "-"
+comptime UpRight = "L"
+comptime UpLeft = "J"
+comptime DownLeft = "7"
+comptime DownRight = "F"
+comptime Ground = "."
+comptime Start = "S"
+comptime V = Codepoint(ord("|"))
+comptime H = Codepoint(ord("-"))
+comptime UR = Codepoint(ord("L"))
+comptime UL = Codepoint(ord("J"))
+comptime DL = Codepoint(ord("7"))
+comptime DR = Codepoint(ord("F"))
+comptime G = Codepoint(ord("."))
+comptime S = Codepoint(ord("S"))
 
-comptime VALID_PIPES = [
+comptime VALID_PIPES = (
     Vertical,
     Horizontal,
     UpRight,
     UpLeft,
     DownRight,
     DownLeft,
-]
-comptime INVALID_PIPES = [Ground, Start]
+)
+comptime INVALID_PIPES = (Ground, Start)
 # comptime VALID_DIAG = [Horizontal, Vertical, UpRight, DownLeft]
 
 comptime UP: Position = (0, -1)
@@ -47,10 +56,9 @@ comptime PIPE_TO_MOV = [
 ]
 
 
-fn get_pipe_and_mov(char: StringSlice) -> Tuple[StaticString, Movement]:
+fn get_pipe_and_mov(char: StringSlice) -> Tuple[String, Movement]:
     @parameter
-    for idx in range(len(PIPE_TO_MOV)):
-        comptime pp = PIPE_TO_MOV[idx]
+    for pp in PIPE_TO_MOV:
         if char == pp[0]:
             return pp
 
@@ -70,9 +78,7 @@ fn next_position(
 fn find_connected_pipe[
     o: Origin
 ](pos: Position, map: List[StringSlice[o]]) -> Position:
-    # ref valid_pipes = global_constant[VALID_PIPES]()
-    ref valid_pipes = materialize[VALID_PIPES]()
-    xr, yr = map[0].byte_length(), len(map)
+    xr, yr = len(map[0]), len(map)
     xi, yi = pos[0], pos[1]
     xmin, xmax = max(0, xi - 1), min(xr - 1, xi + 1)
     ymin, ymax = max(0, yi - 1), min(yr - 1, yi + 1)
@@ -80,7 +86,7 @@ fn find_connected_pipe[
     for x in range(xmin, xmax + 1):
         for y in range(ymin, ymax + 1):
             ch, mov = get_pipe_and_mov(map[y][x])
-            if ch in valid_pipes:
+            if ch in materialize[VALID_PIPES]():
                 diff = pos - (x, y)
                 if diff == mov[0] or diff == mov[1]:
                     return (x, y)
@@ -88,14 +94,138 @@ fn find_connected_pipe[
     os.abort("Error here. Cannot find connected pipe")
 
 
+fn infer_start[
+    o: Origin
+](x: Int, y: Int, map: List[StringSlice[o]]) -> Codepoint:
+    ref line = map[y]
+    var new_c = Optional[Codepoint](None)
+    var found = False
+    var in_x = False
+    var before = False
+    if x - 1 >= 0 and line[x - 1] in (UpRight, DownRight, Horizontal):
+        found = True
+        in_x = True
+        before = True
+
+    if x + 1 < len(line) and line[x + 1] in (
+        UpLeft,
+        DownLeft,
+        Horizontal,
+    ):
+        if found:
+            new_c = H
+        else:
+            found = True
+            in_x = True
+
+    if (
+        y - 1 >= 0
+        and map[y - 1][x] in (DownLeft, DownRight, Vertical)
+        and not new_c
+    ):
+        if found:
+            new_c = UL if before else UR
+
+    if (
+        y + 1 < len(map)
+        and map[y + 1][x] in (UpLeft, UpRight, Vertical)
+        and not new_c
+    ):
+        new_c = V if not in_x else DL if before else DR
+    return new_c.take()
+
+
+fn check_line(
+    line: StringSlice,
+    pipes: List[String],
+    y: Int,
+    lines: List[StringSlice[line.origin]],
+) -> Int:
+    var in_values = 0
+    var mid_in = Optional[Codepoint](None)
+    var is_in = False
+    for x, cc in enumerate(line.codepoints()):
+        var c = cc
+        if unlikely(cc == S):
+            c = infer_start(x, y, lines)
+
+        if pipes[y][x] != StringSlice("#"):
+            if is_in:
+                in_values += 1
+            continue
+
+        if c == V:
+            is_in ^= True
+        elif c in (UR, DR):
+            mid_in = c
+        elif c == DL:
+            if mid_in.value() == UR:
+                is_in ^= True
+            mid_in = None
+        elif c == UL:
+            if mid_in.value() == DR:
+                is_in ^= True
+            mid_in = None
+    return in_values
+
+
+fn check_connect_near[
+    o: Origin
+](
+    map: List[StringSlice[o]],
+    position: Tuple[Int, Int],
+    *,
+    ignore: Optional[Tuple[Int, Int]] = None,
+    set_pipe: Optional[Codepoint] = None,
+) -> Tuple[Int, Int]:
+    x, y = position
+
+    var pipe = Codepoint(map[y].as_bytes()[x])
+    if unlikely(Bool(set_pipe)):
+        pipe = set_pipe.value()
+
+    if (
+        pipe in (UL, DL, H)
+        and map[y][x - 1] in (UpRight, DownRight, Horizontal)
+        and (unlikely(not ignore) or ignore.value() != (x - 1, y))
+    ):
+        return (x - 1, y)
+    if (
+        pipe in (UR, DR, H)
+        and map[y][x + 1] in (UpLeft, DownLeft, Horizontal)
+        and (unlikely(not ignore) or ignore.value() != (x + 1, y))
+    ):
+        return (x + 1, y)
+    if (
+        pipe in (UL, UR, V)
+        and map[y - 1][x] in (DownLeft, DownRight, Vertical)
+        and (unlikely(not ignore) or ignore.value() != (x, y - 1))
+    ):
+        return (x, y - 1)
+    if (
+        pipe in (DL, DR, V)
+        and map[y + 1][x] in (UpLeft, UpRight, Vertical)
+        and (unlikely(not ignore) or ignore.value() != (x, y + 1))
+    ):
+        return (x, y + 1)
+    if map[y - 1][x] == Start:
+        return (x, y - 1)
+    if map[y + 1][x] == Start:
+        return (x, y + 1)
+    if map[y][x - 1] == Start:
+        return (x - 1, y)
+    if map[y][x + 1] == Start:
+        return (x + 1, y)
+    os.abort("No connected pipe found")
+
+
 struct Solution(AdventSolution):
     @staticmethod
     fn part_1(data: StringSlice) -> Int32:
         var lines = data.splitlines()
         prev = EMPTY_POS
-        for y in range(len(lines)):
-            for x in range(lines[0].byte_length()):
-                c = lines[y][x]
+        for y, line in enumerate(lines):
+            for x, c in enumerate(line.codepoint_slices()):
                 if c == Start:
                     prev = (x, y)
                     break
@@ -117,28 +247,27 @@ struct Solution(AdventSolution):
     @staticmethod
     fn part_2(data: StringSlice) -> Int32:
         var lines = data.splitlines()
-        p1 = EMPTY_POS
+        var pipes_mask = List[String](
+            fill="." * len(lines[0]), length=len(lines)
+        )
 
-        for y in range(len(lines)):
-            for x in range(lines[0].byte_length()):
-                if lines[y][x] == Start:
-                    p1 = (x, y)
-                    break
-            if p1 != EMPTY_POS:
-                break
+        var idx = data.find("S")
+        var start = idx % (len(lines[0]) + 1), idx // (len(lines[0]) + 1)
+        pipes_mask[start[1]].as_bytes_mut()[start[0]] = ord("#")
 
-        p2 = find_connected_pipe(p1, lines)
+        var prev = start
+        var curr = check_connect_near(
+            lines, prev, set_pipe=infer_start(start[0], start[1], lines)
+        )
+        pipes_mask[curr[1]].as_bytes_mut()[curr[0]] = ord("#")
 
-        area = 0
-        n = 1
+        while curr != start:
+            next = check_connect_near(lines, curr, ignore=prev)
+            pipes_mask[next[1]].as_bytes_mut()[next[0]] = ord("#")
+            prev, curr = curr, next
 
-        while True:
-            n += 1
-            char, mov = get_pipe_and_mov(lines[p2[1]][p2[0]])
-            npos = next_position(p1, p2, mov)
-            p1, p2 = p2, npos
-            area += p1[0] * p2[1] - p1[1] * p2[0]
-            if char == Start:
-                break
+        var tot = 0
+        for y, line in enumerate(lines):
+            tot += check_line(line, pipes_mask, y, lines)
 
-        return (abs(area) // 2) - (n // 2) + 1
+        return tot
