@@ -128,6 +128,7 @@ fn bench[
             var report = benchmark.run[part_1](max_iters=iters)
             var time = Int(report.mean(time_unit.unit) * 1e6) / 1e6
             print("\tPart 1:", time, time_unit.unit)
+
         if not part or part.unsafe_value() == 2:
             var report = benchmark.run[part_2](max_iters=iters)
             var time = Int(report.mean(time_unit.unit) * 1e6) / 1e6
