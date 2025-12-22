@@ -1,6 +1,7 @@
 [tests.year.2025]
 
 day.1.part.1 = [{ file = "day01.txt", expected = 3 }]
+day.1.part.2 = [{ file = "day01.txt", expected = 6 }]
 
 [tests.year.2024]
 
