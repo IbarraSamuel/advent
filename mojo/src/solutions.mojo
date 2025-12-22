@@ -20,7 +20,6 @@ comptime Solutions2023 = Variadic.types[
     aoc2023.day14.Solution,
     aoc2023.day15.Solution,
     aoc2023.day16.Solution,
-    aoc2023.day17.Solution,
 ]
 comptime Solutions2024 = Variadic.types[
     T=AdventSolution,

@@ -79,6 +79,3 @@ day.15.part.2 = [{file = "day15.txt", expected = 145 }]
 day.16.part.1 = [{file = "day16.txt", expected = 46 }]
 day.16.part.2 = [{file = "day16.txt", expected = 51 }]
 
-day.17.part.1 = [{file = "day17.txt", expected = 102 }]
-day.17.part.2 = [{file = "day17.txt", expected = 123 }]
-
