@@ -82,9 +82,7 @@ struct Solution(AdventSolution):
             except:
                 os.abort("This should never happen")
 
-            cache = Dict[
-                CacheKey[ImmutOrigin.cast_from[origin_of(nums)]], Int
-            ]()
+            cache = Dict[CacheKey[ImmutOrigin(origin_of(nums))], Int]()
             total[idx] = count(cfg, nums^, cache)
             # total[idx] = count(cfg, nums)
 
@@ -112,9 +110,7 @@ struct Solution(AdventSolution):
             cfg = String((("?" + cfg) * 5)[1:])
             nums *= 5
             # span = nums[:]
-            cache = Dict[
-                CacheKey[ImmutOrigin.cast_from[origin_of(nums)]], Int
-            ]()
+            cache = Dict[CacheKey[ImmutOrigin(origin_of(nums))], Int]()
             total[idx] = count(cfg, nums^, cache)
             # total[idx] = count(cfg, nums)
 
