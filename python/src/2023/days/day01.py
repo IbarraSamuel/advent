@@ -34,13 +34,27 @@ class Solution:
 
     @staticmethod
     def part_1(lines: Sequence[str]) -> int:
-        """Day 1 result."""
+        """
+        Solution for part 1.
+
+        Returns
+        -------
+        the result of part 1.
+
+        """
         only_numbers = [_filter_digit_chars(line) for line in lines]
-        return sum(int(n[0] + n[-1]) for n in only_numbers)  # noqa: DOC201
+        return sum(int(n[0] + n[-1]) for n in only_numbers)
 
     @staticmethod
     def part_2(lines: Sequence[str]) -> int:
-        """Day 2 result."""
+        """
+        Solution for part 2.
+
+        Returns
+        -------
+        The result of part 2
+
+        """
         total = 0
         for line in lines:
             first, _ = min(
@@ -52,4 +66,4 @@ class Solution:
                 key=operator.itemgetter(1),
             )
             total += IM[first] * 10 + IM[last]
-        return total  # noqa: DOC201
+        return total

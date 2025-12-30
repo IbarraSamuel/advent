@@ -3,7 +3,6 @@
 from collections.abc import Sequence
 
 
-
 def count(
     cfg: str, nums: tuple[int, ...], cache: dict[tuple[str, tuple[int, ...]], int]
 ) -> int:
@@ -23,8 +22,6 @@ def count(
 
     key = (cfg, nums)
     if key in cache:
-        print(cfg, end="--")
-        print(list(nums), end="--cached\n")
         return cache[key]
 
     result = 0
@@ -40,8 +37,6 @@ def count(
         result += count(cfg[nums[0] + 1 :], nums[1:], cache)
 
     cache[key] = result
-    print(cfg, end="--")
-    print(list(nums))
     return result
 
 
@@ -66,6 +61,5 @@ class Solution:
             cfg = "?".join([cfg] * 5)
             nums *= 5
             result = count(cfg, nums, {})
-            print(result)
             total += result
         return total

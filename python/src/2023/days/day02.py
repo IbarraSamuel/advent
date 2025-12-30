@@ -19,7 +19,14 @@ class Game:
 
     @staticmethod
     def from_card(card: str) -> Game:
-        """Create a game from a card."""
+        """
+        Create a game from a card.
+
+        Returns
+        -------
+        a new game object.
+
+        """
         self = Game(0, 0, 0)
         rgb = card.split(", ")
         for color in rgb:
@@ -31,31 +38,66 @@ class Game:
             else:
                 self.b += int(v)
 
-        return self  # noqa: DOC201
+        return self
 
     @staticmethod
     def max_from_cards(cards: str) -> Game:
-        """Create a game from cards."""
+        """
+        Create a game from cards.
+
+        Returns
+        -------
+        A new game object,
+
+        """
         self = Game(0, 0, 0)
         for card in cards.split("; "):
             self = self.max(Game.from_card(card))
-        return self  # noqa: DOC201
+        return self
 
     def __contains__(self, other: Self) -> bool:
-        """Check if self contains other."""
-        return self.r >= other.r and self.g >= other.g and self.b >= other.b  # noqa: DOC201
+        """
+        Check if self contains other.
+
+        Returns
+        -------
+        If the game contains another game inside.
+
+        """
+        return self.r >= other.r and self.g >= other.g and self.b >= other.b
 
     def max(self, other: Self) -> Game:
-        """Return the max of self and other."""
-        return Game(max(self.r, other.r), max(self.g, other.g), max(self.b, other.b))  # noqa: DOC201
+        """
+        Return the max of self and other.
+
+        Returns
+        -------
+        The max game.
+
+        """
+        return Game(max(self.r, other.r), max(self.g, other.g), max(self.b, other.b))
 
     def __add__(self, other: Self) -> Game:
-        """Add two games."""
-        return Game(self.r + other.r, self.g + other.g, self.b + other.b)  # noqa: DOC201
+        """
+        Add two games.
+
+        Returns
+        -------
+        The concatenated game
+
+        """
+        return Game(self.r + other.r, self.g + other.g, self.b + other.b)
 
     def product(self) -> int:
-        """Return the product of each color."""
-        return self.r * self.g * self.b  # noqa: DOC201
+        """
+        Return the product of each color.
+
+        Returns
+        -------
+        The multiplication of all fields
+
+        """
+        return self.r * self.g * self.b
 
 
 MAX_GAME = Game(12, 13, 14)
@@ -66,8 +108,15 @@ class Solution:
 
     @staticmethod
     def part_1(lines: Sequence[str]) -> int:
-        """Return the solution for day 1."""
-        return sum(  # noqa: DOC201
+        """
+        Return the solution for day 1.
+
+        Returns
+        -------
+        The part 1 solution.
+
+        """
+        return sum(
             idx + 1
             for idx, line in enumerate(lines)
             if Game.max_from_cards(line.split(": ")[1]) in MAX_GAME
@@ -75,5 +124,12 @@ class Solution:
 
     @staticmethod
     def part_2(lines: Sequence[str]) -> int:
-        """Return the solution for day 2."""
-        return sum(Game.max_from_cards(line.split(": ")[1]).product() for line in lines)  # noqa: DOC201
+        """
+        Return the solution for day 2.
+
+        Returns
+        -------
+        The part 2 solution.
+
+        """
+        return sum(Game.max_from_cards(line.split(": ")[1]).product() for line in lines)

@@ -1,12 +1,11 @@
 import sys
 
+
 def read_input() -> list[str]:
-    lst = sys.argv
-    return lst
+    return sys.argv
 
-    sep_lst = [v.split() for v in lst]
+    [v.split() for v in lst]
+    return None
 
-    name = "   samuel ibarra  "
-    print("'"+ name.strip()+ "'")
 
 read_input()

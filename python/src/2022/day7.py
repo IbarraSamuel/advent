@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import pathlib
 from dataclasses import dataclass
 
 # from enum import Enum
@@ -81,7 +83,7 @@ def next_iteration(
 ) -> tuple[list[Prompt], Folder | None, Folder | None]:
     lst, cwd, p = acc
     out = map_input(n, cwd, p)
-    new_list = lst + [out]
+    new_list = [*lst, out]
 
     # PREV ITER
     new_cwd = (
@@ -104,30 +106,25 @@ def calculate_size(prompt: Prompt) -> int:
     return (
         prompt.size
         if isinstance(prompt, File)
-        else sum([calculate_size(p) for p in prompt.content])
+        else sum(calculate_size(p) for p in prompt.content)
         if isinstance(prompt, Folder)
         else 0
     )
 
 
-def calculate_result(input: list[str]):
+def calculate_result(input: list[str]) -> None:
     initial: tuple[list[Prompt], Folder | None, Folder | None] = ([], None, None)
     mapped = reduce(
         next_iteration,
         input,
         initial,
     )
-    print(*mapped[0], sep="\n\n")
-    print(*(print(f) for f in mapped[0] if isinstance(f, Folder)))
     sizes = [calculate_size(f) for f in mapped[0] if isinstance(f, Folder)]
-    print(sizes)
-    valid = [s for s in sizes if s <= 100000]
-    print(sum(sizes))
-    print(sum(valid))
+    [s for s in sizes if s <= 100000]
 
 
-def main():
-    with open("../rust/inputs/day7.txt", "rt") as f:
+def main() -> None:
+    with pathlib.Path("../rust/inputs/day7.txt").open(encoding="utf-8") as f:
         prod = f.readlines()
 
 #     test = """$ cd /
