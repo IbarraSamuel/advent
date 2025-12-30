@@ -6,8 +6,7 @@ class Solution:
 
     @staticmethod
     def part_1(data: str) -> int:
-        """
-        Day 1 solution.
+        """Day 1 solution.
 
         ```python3
         >>> from advent_utils import test
@@ -25,14 +24,13 @@ class Solution:
         return sum(
             abs(a - b)
             for a, b in zip(
-                sorted(a for a, _ in nums), sorted(b for _, b in nums), strict=False
+                sorted(a for a, _ in nums), sorted(b for _, b in nums), strict=False,
             )
         )
 
     @staticmethod
     def part_2(data: str) -> int:
-        """
-        Day 2 solution.
+        """Day 2 solution.
 
         ```python3
         >>> from advent_utils import test

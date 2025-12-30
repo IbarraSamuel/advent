@@ -13,8 +13,7 @@ class Stringable(Protocol):
 
 
 def read_input(path: str) -> list[str]:
-    """
-    Read input file into a polars DataFrame.
+    """Read input file into a polars DataFrame.
 
     Returns
     -------

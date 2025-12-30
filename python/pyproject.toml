@@ -17,16 +17,17 @@ reportImplicitRelativeImport = false
 [tool.ruff.lint]
 select = ["ALL"]
 preview = true
-ignore = [
-    "D203",   # One blank line before class docstring. Conflicts with D213.
-    "D212",   # No blank lines allowed before function docstring. Conflicts with D213.
-    "COM812", # Conflicts with Formatter
-    "ISC001", # Conflicts with Formatter
+extend-ignore = [
     "CPY001",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
 ]
 
 [tool.ty.environment]
-root = ["src/2023", "src/2024"]
+root = ["src/aoc2023", "src/aoc2024"]
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"
