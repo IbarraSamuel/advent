@@ -1,12 +1,17 @@
 """Day 12 results."""
+from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 def count(
     cfg: str, nums: tuple[int, ...], cache: dict[tuple[str, tuple[int, ...]], int],
 ) -> int:
-    """Define all possible combos.
+    """
+    Define all possible combos.
 
     Returns
     -------

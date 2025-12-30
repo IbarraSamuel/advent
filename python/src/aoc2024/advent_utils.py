@@ -34,7 +34,8 @@ def run(path: str, *solutions: Solution) -> None:
 
 
 def test(path: str, solution: type[Solution], part: int) -> int:
-    """Test the solution. It will return the result.
+    """
+    Test the solution. It will return the result.
 
     Returns
     -------

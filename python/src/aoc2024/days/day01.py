@@ -6,7 +6,8 @@ class Solution:
 
     @staticmethod
     def part_1(data: str) -> int:
-        """Day 1 solution.
+        """
+        Day 1 solution.
 
         ```python3
         >>> from advent_utils import test
@@ -30,7 +31,8 @@ class Solution:
 
     @staticmethod
     def part_2(data: str) -> int:
-        """Day 2 solution.
+        """
+        Day 2 solution.
 
         ```python3
         >>> from advent_utils import test
