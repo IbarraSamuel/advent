@@ -1,5 +1,5 @@
-from functools import reduce
 import pathlib
+from functools import reduce
 
 
 def count_increases(measurements: list[int]):
@@ -10,18 +10,16 @@ def count_increases(measurements: list[int]):
 
 
 def count_with_noise(measurements: list[int]):
-    groups = [[i + j for j in range(3)] for i in range(measurements.__len__() - 2)]
-    values = [sum([measurements[i] for i in g]) for g in groups]
-    ans = count_increases(values)
-    return ans
+    groups = [[i + j for j in range(3)] for i in range(len(measurements) - 2)]
+    values = [sum(measurements[i] for i in g) for g in groups]
+    return count_increases(values)
 
 
-def main():
+def main() -> None:
     file = pathlib.Path(__file__).parent / "example.txt"
-    with open(file, "rt") as f:
+    with pathlib.Path(file).open(encoding="utf-8") as f:
         input_values = f.readlines()
-        measurements = [int(m.strip()) for m in input_values if m.strip().isnumeric()]
-    print(count_with_noise(measurements))
+        [int(m.strip()) for m in input_values if m.strip().isnumeric()]
 
 
 if __name__ == "__main__":
