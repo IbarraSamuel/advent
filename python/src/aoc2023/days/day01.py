@@ -1,7 +1,11 @@
 """Day 1 result."""
+from __future__ import annotations
 
 import operator
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 IM = {
     "one": 1,
@@ -34,7 +38,8 @@ class Solution:
 
     @staticmethod
     def part_1(lines: Sequence[str]) -> int:
-        """Solution for part 1.
+        """
+        Solution for part 1.
 
         Returns
         -------
@@ -46,7 +51,8 @@ class Solution:
 
     @staticmethod
     def part_2(lines: Sequence[str]) -> int:
-        """Solution for part 2.
+        """
+        Solution for part 2.
 
         Returns
         -------

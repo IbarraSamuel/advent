@@ -1,8 +1,11 @@
 """Utility functions for Advent of Code."""
+from __future__ import annotations
 
-from collections.abc import Sequence
 from pathlib import Path
-from typing import Protocol, override
+from typing import TYPE_CHECKING, Protocol, override
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class Stringable(Protocol):
@@ -13,7 +16,8 @@ class Stringable(Protocol):
 
 
 def read_input(path: str) -> list[str]:
-    """Read input file into a polars DataFrame.
+    """
+    Read input file into a polars DataFrame.
 
     Returns
     -------

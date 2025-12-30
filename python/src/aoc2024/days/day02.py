@@ -8,7 +8,8 @@ class Solution:
 
     @staticmethod
     def part_1(data: str) -> int:
-        """Part 1 solution.
+        """
+        Part 1 solution.
 
         ```python3
         >>> f = open("../tests/2024/day02.txt")
@@ -35,7 +36,8 @@ class Solution:
 
     @staticmethod
     def part_2(data: str) -> int:
-        """Part 2 solution.
+        """
+        Part 2 solution.
 
         ```python3
         >>> f = open("../tests/2024/day02.txt")

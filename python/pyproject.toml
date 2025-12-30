@@ -14,9 +14,10 @@ pythonVersion = "3.14"
 reportMissingTypeStubs = false
 reportImplicitRelativeImport = false
 
+[tool.ruff]
+extend = "~/tools/configs/ruff/ruff.toml"
+
 [tool.ruff.lint]
-select = ["ALL"]
-preview = true
 extend-ignore = [
     "CPY001",
     "D100",

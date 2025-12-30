@@ -19,7 +19,8 @@ class Game:
 
     @staticmethod
     def from_card(card: str) -> Game:
-        """Create a game from a card.
+        """
+        Create a game from a card.
 
         Returns
         -------
@@ -41,7 +42,8 @@ class Game:
 
     @staticmethod
     def max_from_cards(cards: str) -> Game:
-        """Create a game from cards.
+        """
+        Create a game from cards.
 
         Returns
         -------
@@ -54,7 +56,8 @@ class Game:
         return self
 
     def __contains__(self, other: Self) -> bool:
-        """Check if self contains other.
+        """
+        Check if self contains other.
 
         Returns
         -------
@@ -64,7 +67,8 @@ class Game:
         return self.r >= other.r and self.g >= other.g and self.b >= other.b
 
     def max(self, other: Self) -> Game:
-        """Return the max of self and other.
+        """
+        Return the max of self and other.
 
         Returns
         -------
@@ -74,7 +78,8 @@ class Game:
         return Game(max(self.r, other.r), max(self.g, other.g), max(self.b, other.b))
 
     def __add__(self, other: Self) -> Game:
-        """Add two games.
+        """
+        Add two games.
 
         Returns
         -------
@@ -84,7 +89,8 @@ class Game:
         return Game(self.r + other.r, self.g + other.g, self.b + other.b)
 
     def product(self) -> int:
-        """Return the product of each color.
+        """
+        Return the product of each color.
 
         Returns
         -------
@@ -102,7 +108,8 @@ class Solution:
 
     @staticmethod
     def part_1(lines: Sequence[str]) -> int:
-        """Return the solution for day 1.
+        """
+        Return the solution for day 1.
 
         Returns
         -------
@@ -117,7 +124,8 @@ class Solution:
 
     @staticmethod
     def part_2(lines: Sequence[str]) -> int:
-        """Return the solution for day 2.
+        """
+        Return the solution for day 2.
 
         Returns
         -------
