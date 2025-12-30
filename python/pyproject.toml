@@ -3,7 +3,7 @@ name = "python"
 version = "0.1.0"
 description = "Advent of Code!"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = []
 
 [tool.basedpyright]
@@ -32,7 +32,7 @@ root = ["src/aoc2023", "src/aoc2024"]
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"
-testpaths = ["src/2024"]
+testpaths = ["src/aoc2024"]
 
 [dependency-groups]
 dev = [

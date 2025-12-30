@@ -10,7 +10,7 @@ class Solution:
         Day 1 solution.
 
         ```python3
-        >>> from advent_utils import test
+        >>> from aoc2024.advent_utils import test
         >>> test("tests/2024/day01.txt", Solution, 1)
         11
 
@@ -25,7 +25,7 @@ class Solution:
         return sum(
             abs(a - b)
             for a, b in zip(
-                sorted(a for a, _ in nums), sorted(b for _, b in nums), strict=False,
+                sorted(a for a, _ in nums), sorted(b for _, b in nums), strict=False
             )
         )
 
@@ -35,8 +35,8 @@ class Solution:
         Day 2 solution.
 
         ```python3
-        >>> from advent_utils import test
-        >>> test("tests/2024/day01.txt", solution, 2)
+        >>> from aoc2024.advent_utils import test
+        >>> test("tests/2024/day01.txt", Solution, 2)
         31
 
         Returns
