@@ -4,10 +4,9 @@ from collections.abc import Sequence
 
 
 def count(
-    cfg: str, nums: tuple[int, ...], cache: dict[tuple[str, tuple[int, ...]], int]
+    cfg: str, nums: tuple[int, ...], cache: dict[tuple[str, tuple[int, ...]], int],
 ) -> int:
-    """
-    Define all possible combos.
+    """Define all possible combos.
 
     Returns
     -------

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pathlib
 from dataclasses import dataclass
-
-# from enum import Enum
 from functools import reduce
+
+MAX_SIZE = 100000
 
 
 @dataclass(slots=True)
@@ -42,8 +42,6 @@ def map_input(prompt: str, cwd: Folder | None, parent: Folder | None) -> Prompt:
     val: Prompt
     match tuple(prompt.split(" ")):
         case ("$", "cd", ".."):
-            # if cwd and cwd.parent:
-            #     cwd.parent.content += [cwd] if cwd else []
             val = (
                 MoveOut(to=parent)
                 if parent
@@ -73,13 +71,14 @@ def map_input(prompt: str, cwd: Folder | None, parent: Folder | None) -> Prompt:
             if cwd:
                 cwd.content += [val]
         case _:
-            msg = f"No pattern covered {tuple(prompt.split(" "))}"
+            msg = f"No pattern covered {tuple(prompt.split(' '))}"
             raise ValueError(msg)
     return val
 
 
 def next_iteration(
-    acc: tuple[list[Prompt], Folder | None, Folder | None], n: str
+    acc: tuple[list[Prompt], Folder | None, Folder | None],
+    n: str,
 ) -> tuple[list[Prompt], Folder | None, Folder | None]:
     lst, cwd, p = acc
     out = map_input(n, cwd, p)
@@ -112,44 +111,44 @@ def calculate_size(prompt: Prompt) -> int:
     )
 
 
-def calculate_result(input: list[str]) -> None:
+def calculate_result(_input: list[str]) -> None:
     initial: tuple[list[Prompt], Folder | None, Folder | None] = ([], None, None)
     mapped = reduce(
         next_iteration,
-        input,
+        _input,
         initial,
     )
     sizes = [calculate_size(f) for f in mapped[0] if isinstance(f, Folder)]
-    [s for s in sizes if s <= 100000]
+    [s for s in sizes if s <= MAX_SIZE]
 
 
 def main() -> None:
     with pathlib.Path("../rust/inputs/day7.txt").open(encoding="utf-8") as f:
         prod = f.readlines()
 
-#     test = """$ cd /
-# $ ls
-# dir a
-# 14848514 b.txt
-# 8504156 c.dat
-# dir d
-# $ cd a
-# $ ls
-# dir e
-# 29116 f
-# 2557 g
-# 62596 h.lst
-# $ cd e
-# $ ls
-# 584 i
-# $ cd ..
-# $ cd ..
-# $ cd d
-# $ ls
-# 4060174 j
-# 8033020 d.log
-# 5626152 d.ext
-# 7214296 k"""
+    #     test = """$ cd /
+    # $ ls
+    # dir a
+    # 14848514 b.txt
+    # 8504156 c.dat
+    # dir d
+    # $ cd a
+    # $ ls
+    # dir e
+    # 29116 f
+    # 2557 g
+    # 62596 h.lst
+    # $ cd e
+    # $ ls
+    # 584 i
+    # $ cd ..
+    # $ cd ..
+    # $ cd d
+    # $ ls
+    # 4060174 j
+    # 8033020 d.log
+    # 5626152 d.ext
+    # 7214296 k"""
     calculate_result(prod)
 
 

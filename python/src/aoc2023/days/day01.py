@@ -34,8 +34,7 @@ class Solution:
 
     @staticmethod
     def part_1(lines: Sequence[str]) -> int:
-        """
-        Solution for part 1.
+        """Solution for part 1.
 
         Returns
         -------
@@ -47,8 +46,7 @@ class Solution:
 
     @staticmethod
     def part_2(lines: Sequence[str]) -> int:
-        """
-        Solution for part 2.
+        """Solution for part 2.
 
         Returns
         -------
