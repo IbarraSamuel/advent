@@ -1,5 +1,5 @@
 from builtin.variadics import Variadic
-from compile.reflection import get_function_name, get_type_name
+from reflection import get_function_name, get_type_name
 from builtin.rebind import trait_downcast
 from testing.suite import (
     __call_location,
@@ -30,6 +30,7 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
     ]:
         return {self.tests.concat((other^,)), self.location}
 
+    @always_inline("nodebug")
     fn abandon(deinit self):
         pass
 
