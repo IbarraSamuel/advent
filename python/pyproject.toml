@@ -7,7 +7,7 @@ requires-python = ">=3.14"
 dependencies = []
 
 [tool.basedpyright]
-include = ["2023", "2024"]
+include = ["src/aoc2023", "src/aoc2024"]
 pythonPlatform = "All"
 typeCheckingMode = "all"
 pythonVersion = "3.14"
