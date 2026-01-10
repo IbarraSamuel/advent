@@ -9,5 +9,5 @@ dependencies = [
 ]
 
 [[tool.uv.index]]
-url = "https://dl.modular.com/public/nightly/python/simple/"
+url = "https://whl.modular.com/nightly/simple/"
 default = true
