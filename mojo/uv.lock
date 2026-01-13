@@ -15,10 +15,10 @@ requires-dist = [{ name = "mojo-compiler", specifier = ">=0.26.1.0.dev2025122205
 
 [[package]]
 name = "mojo-compiler"
-version = "0.26.1.0.dev2026011105"
+version = "0.26.1.0.dev2026011220"
 source = { registry = "https://whl.modular.com/nightly/simple/" }
 wheels = [
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.1.0.dev2026011105-py3-none-macosx_13_0_arm64.whl", hash = "sha256:9924d3d31f950cc7ff131c84f1f69566ceb34d31b074167762b489435c9ec908" },
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.1.0.dev2026011105-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:9ff43ac9fc9b57635c88fbcbd8b4b00209c5dbf86bc7793f9c797e44fc60df55" },
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.1.0.dev2026011105-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:f0e0c001211b3bf1ee8d80f9487e7e55fea0cd41441af4ce1a3fe6e1632d2663" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.1.0.dev2026011220-py3-none-macosx_13_0_arm64.whl", hash = "sha256:8f4bc0be8666ab9af357a4f2e5b898a6eea9812f409b1a5285b13ffd00692a00" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.1.0.dev2026011220-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:10dde707e6db1c0cdf3e606abd53b5676f1b6f0ed9b1d4fc94656fe0db730966" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.1.0.dev2026011220-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:09c5cffb7733e95dd916ad4fe539332be540ccbb3452e65b2cc286da7a71b661" },
 ]
