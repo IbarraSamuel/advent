@@ -87,9 +87,9 @@ fn first_numeric(line: StringSlice) -> Tuple[Int, Int]:
 
     while pos <= end:
         if fval == 0:
-            to_int(line[pos], fval)
+            to_int(line[pos : pos + 1], fval)
         if not lval:
-            to_int(line[end - pos], lval)
+            to_int(line[end - pos : end - pos + 1], lval)
 
         if not fval or not lval:
             pos += 1

@@ -1,5 +1,7 @@
 from advent_utils import AdventSolution
 
+comptime R = ord("R")
+
 
 struct Solution(AdventSolution):
     @staticmethod
@@ -7,7 +9,7 @@ struct Solution(AdventSolution):
         var loc = 50
         var pwd = 0
         for line in data.splitlines():
-            var sign = 1 if line[0] == "R" else -1
+            var sign = 1 if line.as_bytes()[0] == R else -1
             var num = line[1:]
             var n: Int
             try:
@@ -24,7 +26,7 @@ struct Solution(AdventSolution):
         var loc = 50
         var pwd = 0
         for line in data.splitlines():
-            var sign = 1 if line[0] == "R" else -1
+            var sign = 1 if line.as_bytes()[0] == R else -1
             var num = line[1:]
             var n: Int
             try:
