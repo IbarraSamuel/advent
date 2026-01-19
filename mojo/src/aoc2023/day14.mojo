@@ -10,7 +10,8 @@ comptime RIGHT = 4
 comptime HORIZONTAL = [LEFT, RIGHT]
 comptime POSITIVE = [RIGHT, DOWN]
 
-
+comptime ord_o = ord("O")
+comptime ord_ht = ord("#")
 # Possible new design
 # 1. Collect all rocks and rolls into a list of indices for each one.
 # 2. Collect them in a way that we could check quickly from left to right, parallelizing row
@@ -50,7 +51,7 @@ fn calculate[direction: Direction](maze: String) -> Int:
     tot = 0
     for r in r_iter:
         for c in c_iter:
-            if maze[r * mx + c] == "O":
+            if maze.as_bytes()[r * mx + c] == ord_o:
                 tot += abs(1 + (c) * mx // x_max - rev_corr)
     return tot
 
@@ -70,9 +71,9 @@ fn tilt[times: Int = 1](mut maze: String):
             ly = y_max
 
             for y in reversed(range(y_max)):
-                if maze[y * (x_max + 1) + x] == "O":
+                if maze.as_bytes()[y * (x_max + 1) + x] == ord_o:
                     count += 1
-                elif maze[y * (x_max + 1) + x] == "#":
+                elif maze.as_bytes()[y * (x_max + 1) + x] == ord_ht:
                     line.write(
                         "." * (ly - y - 1 - count),
                         "O" * count,

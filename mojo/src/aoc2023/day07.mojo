@@ -43,7 +43,8 @@ struct Hand[mode: HandMode](Comparable):
 
         @parameter
         for i in range(5):
-            chars[s[i : i + 1]] = chars.get(s[i : i + 1], 0) + 1
+            ref k = String(s[i : i + 1])
+            chars[k] = chars.get(k, 0) + 1
 
         @parameter
         if Self.mode == HandMode.Second:
@@ -52,11 +53,12 @@ struct Hand[mode: HandMode](Comparable):
 
             @parameter
             for i in range(5):
-                if s[i : i + 1] != "J":
-                    cv = chars.get(s[i : i + 1], 0)
+                ref si = String(s[i : i + 1])
+                if si != "J":
+                    cv = chars.get(si, 0)
                     if cv > max_v:
                         max_v = cv
-                        max_c = s[i : i + 1]
+                        max_c = si
 
             if max_c and max_v:
                 chars[max_c] = max_v + j_val
@@ -118,7 +120,7 @@ struct Card[mode: HandMode]:
     fn __init__(out self, v: Int):
         self.value = v
 
-    fn __init__(out self, v: String):
+    fn __init__(out self, v: StringSlice[mut=False]):
         if v == "A":
             self = Self.A
         elif v == "K":

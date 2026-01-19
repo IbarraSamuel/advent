@@ -26,7 +26,7 @@ struct Solution(AdventSolution):
         for i in range(len(lines)):
             empty_line = True
             for j in range(lines[0].byte_length()):
-                if lines[i][j] == "#":
+                if lines[i][j : j + 1] == "#":
                     nums.append((i, j))
                     # The col is not empty anymore
                     if empty_c_flg[j]:
@@ -73,7 +73,7 @@ struct Solution(AdventSolution):
         for i in range(len(lines)):
             empty_line = True
             for j in range(lines[0].byte_length()):
-                if lines[i][j] == "#":
+                if lines[i][j : j + 1] == "#":
                     nums.append((i, j))
                     # The col is not empty anymore
                     if empty_c_flg[j]:

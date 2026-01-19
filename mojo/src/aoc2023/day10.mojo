@@ -11,14 +11,14 @@ comptime Position = IndexList[2]
 comptime EMPTY_POS = Position()
 comptime Movement = StaticTuple[Position, 2]
 
-comptime Vertical = "|"
-comptime Horizontal = "-"
-comptime UpRight = "L"
-comptime UpLeft = "J"
-comptime DownLeft = "7"
-comptime DownRight = "F"
-comptime Ground = "."
-comptime Start = "S"
+comptime Vertical: Byte = ord("|")
+comptime Horizontal: Byte = ord("-")
+comptime UpRight: Byte = ord("L")
+comptime UpLeft: Byte = ord("J")
+comptime DownLeft: Byte = ord("7")
+comptime DownRight: Byte = ord("F")
+comptime Ground: Byte = ord(".")
+comptime Start: Byte = ord("S")
 comptime V = Codepoint(ord("|"))
 comptime H = Codepoint(ord("-"))
 comptime UR = Codepoint(ord("L"))
@@ -56,7 +56,7 @@ comptime PIPE_TO_MOV = [
 ]
 
 
-fn get_pipe_and_mov(char: StringSlice) -> Tuple[String, Movement]:
+fn get_pipe_and_mov(char: Byte) -> Tuple[Byte, Movement]:
     @parameter
     for pp in PIPE_TO_MOV:
         if char == pp[0]:
@@ -85,7 +85,7 @@ fn find_connected_pipe[
 
     for x in range(xmin, xmax + 1):
         for y in range(ymin, ymax + 1):
-            ch, mov = get_pipe_and_mov(map[y][x])
+            ch, mov = get_pipe_and_mov(map[y].as_bytes()[x])
             if ch in materialize[VALID_PIPES]():
                 diff = pos - (x, y)
                 if diff == mov[0] or diff == mov[1]:
@@ -102,12 +102,16 @@ fn infer_start[
     var found = False
     var in_x = False
     var before = False
-    if x - 1 >= 0 and line[x - 1] in (UpRight, DownRight, Horizontal):
+    if x - 1 >= 0 and line.as_bytes()[x - 1] in (
+        UpRight,
+        DownRight,
+        Horizontal,
+    ):
         found = True
         in_x = True
         before = True
 
-    if x + 1 < len(line) and line[x + 1] in (
+    if x + 1 < len(line) and line.as_bytes()[x + 1] in (
         UpLeft,
         DownLeft,
         Horizontal,
@@ -120,7 +124,7 @@ fn infer_start[
 
     if (
         y - 1 >= 0
-        and map[y - 1][x] in (DownLeft, DownRight, Vertical)
+        and map[y - 1].as_bytes()[x] in (DownLeft, DownRight, Vertical)
         and not new_c
     ):
         if found:
@@ -128,7 +132,7 @@ fn infer_start[
 
     if (
         y + 1 < len(map)
-        and map[y + 1][x] in (UpLeft, UpRight, Vertical)
+        and map[y + 1].as_bytes()[x] in (UpLeft, UpRight, Vertical)
         and not new_c
     ):
         new_c = V if not in_x else DL if before else DR
@@ -149,7 +153,7 @@ fn check_line(
         if unlikely(cc == S):
             c = infer_start(x, y, lines)
 
-        if pipes[y][x] != StringSlice("#"):
+        if pipes[y].as_bytes()[x] != ord("#"):
             if is_in:
                 in_values += 1
             continue
@@ -186,35 +190,35 @@ fn check_connect_near[
 
     if (
         pipe in (UL, DL, H)
-        and map[y][x - 1] in (UpRight, DownRight, Horizontal)
+        and map[y].as_bytes()[x - 1] in (UpRight, DownRight, Horizontal)
         and (unlikely(not ignore) or ignore.value() != (x - 1, y))
     ):
         return (x - 1, y)
     if (
         pipe in (UR, DR, H)
-        and map[y][x + 1] in (UpLeft, DownLeft, Horizontal)
+        and map[y].as_bytes()[x + 1] in (UpLeft, DownLeft, Horizontal)
         and (unlikely(not ignore) or ignore.value() != (x + 1, y))
     ):
         return (x + 1, y)
     if (
         pipe in (UL, UR, V)
-        and map[y - 1][x] in (DownLeft, DownRight, Vertical)
+        and map[y - 1].as_bytes()[x] in (DownLeft, DownRight, Vertical)
         and (unlikely(not ignore) or ignore.value() != (x, y - 1))
     ):
         return (x, y - 1)
     if (
         pipe in (DL, DR, V)
-        and map[y + 1][x] in (UpLeft, UpRight, Vertical)
+        and map[y + 1].as_bytes()[x] in (UpLeft, UpRight, Vertical)
         and (unlikely(not ignore) or ignore.value() != (x, y + 1))
     ):
         return (x, y + 1)
-    if map[y - 1][x] == Start:
+    if map[y - 1].as_bytes()[x] == Start:
         return (x, y - 1)
-    if map[y + 1][x] == Start:
+    if map[y + 1].as_bytes()[x] == Start:
         return (x, y + 1)
-    if map[y][x - 1] == Start:
+    if map[y].as_bytes()[x - 1] == Start:
         return (x - 1, y)
-    if map[y][x + 1] == Start:
+    if map[y].as_bytes()[x + 1] == Start:
         return (x + 1, y)
     os.abort("No connected pipe found")
 
@@ -225,8 +229,8 @@ struct Solution(AdventSolution):
         var lines = data.splitlines()
         prev = EMPTY_POS
         for y, line in enumerate(lines):
-            for x, c in enumerate(line.codepoint_slices()):
-                if c == Start:
+            for x, c in enumerate(line.codepoints()):
+                if c == Codepoint(Start):
                     prev = (x, y)
                     break
             if prev != EMPTY_POS:
@@ -236,7 +240,7 @@ struct Solution(AdventSolution):
         total = 1
         while True:
             total += 1
-            ch, mov = get_pipe_and_mov(lines[next[1]][next[0]])
+            ch, mov = get_pipe_and_mov(lines[next[1]].as_bytes()[next[0]])
             npos = next_position(previous=prev, curr_pos=next, movement=mov)
             prev, next = next, npos
             if ch == Start:
