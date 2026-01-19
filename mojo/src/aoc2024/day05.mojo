@@ -61,7 +61,7 @@ struct Solution(AdventSolution):
             var line = lines[idx]
             var readed_idx = 3
             while True:
-                if line[readed_idx - 1] == "\n":
+                if line.as_bytes()[readed_idx - 1] == ord("\n"):
                     # We finalize the line
                     bts = line.as_bytes()[
                         len(line) // 2 - 1 : len(line) // 2 + 1
@@ -157,7 +157,8 @@ struct Solution(AdventSolution):
 
 
 fn order_manual[
-    o: Origin, //,
+    o: Origin,
+    //,
     indexes: SIMD[DType.uint8, 32],
     zeroidx: SIMD[DType.uint8, 32] = SIMD[DType.uint8, 32](0),
 ](

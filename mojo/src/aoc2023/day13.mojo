@@ -47,7 +47,7 @@ fn almost_a_mirror[o: Origin](values: Span[StringSlice[o]]) -> OptionalReg[Int]:
         for i in range(mn):
             if p1[i] != p2[len(p2) - i - 1]:
                 for j in range(len(p1[i])):
-                    if p1[i][j] != p2[len(p2) - i - 1][j]:
+                    if p1[i].as_bytes()[j] != p2[len(p2) - i - 1].as_bytes()[j]:
                         dif += 1
         if dif == 1:
             return i
@@ -63,7 +63,7 @@ fn almost_a_mirror(values: Span[String]) -> OptionalReg[Int]:
         for i in range(mn):
             if p1[i] != p2[len(p2) - i - 1]:
                 for j in range(len(p1[i])):
-                    if p1[i][j] != p2[len(p2) - i - 1][j]:
+                    if p1[i].as_bytes()[j] != p2[len(p2) - i - 1].as_bytes()[j]:
                         dif += 1
         if dif == 1:
             return i
@@ -98,7 +98,7 @@ struct Solution(AdventSolution):
             for j in range(new_len):
                 new_str = String(capacity=len(group))
                 for k in range(len(group)):
-                    new_str.write(group[k][j])
+                    new_str.write(group[k][j : j + 1])
                 new_group.append(new_str)
 
             total[i] = is_mirror(new_group).value()
@@ -132,7 +132,7 @@ struct Solution(AdventSolution):
             for j in range(new_len):
                 new_str = String(capacity=len(group))
                 for k in range(len(group)):
-                    new_str.write(group[k][j])
+                    new_str.write(group[k][j : j + 1])
                 new_group.append(new_str)
 
             # total += almost_a_mirror(new_group).value()

@@ -47,13 +47,13 @@ fn count(
 
     result = 0
 
-    if cfg[0] in ".?":
+    if cfg[:1] in ".?":
         result += count(cfg[1:], nums, cache)
 
-    if cfg[0] in "#?" and (
+    if cfg[:1] in "#?" and (
         nums[0] <= len(cfg)
         and "." not in cfg[: nums[0]]
-        and (nums[0] == len(cfg) or cfg[nums[0]] != StaticString("#"))
+        and (nums[0] == len(cfg) or cfg[nums[0] : nums[0] + 1] != "#")
     ):
         result += count(cfg[nums[0] + 1 :], nums[1:], cache)
 

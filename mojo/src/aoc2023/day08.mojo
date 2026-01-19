@@ -81,7 +81,7 @@ struct Solution(AdventSolution):
 
         for idx in range(2, len(lines)):
             dct[lines[idx][:3]] = idx
-            if lines[idx][2] == "A":
+            if lines[idx][2:3] == "A":
                 init_nodes.append(idx)
 
         results = SIMD[DType.uint32, 8](0)
@@ -105,7 +105,7 @@ struct Solution(AdventSolution):
                     readed[pos] = i + iter_len * loop_no
 
                     pos = (
-                        lines[dct.get(pos).value()][7:10] if lines[0][i]
+                        lines[dct.get(pos).value()][7:10] if lines[0][i : i + 1]
                         == LEFT else lines[dct.get(pos).value()][12:15]
                     )
                 if results[idx] != 0:

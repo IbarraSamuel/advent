@@ -10,7 +10,7 @@ struct Solution(AdventSolution):
 
         ```mojo
         from advent_utils import test
-        from aoc2025.day03 import Solution
+        from aoc2024.day03 import Solution
 
         test[Solution, file="tests/2024/day03.txt", part=1, expected=161]()
         ```
@@ -51,7 +51,7 @@ struct Solution(AdventSolution):
 
         ```mojo
         from advent_utils import test
-        from aoc2025.day03 import Solution
+        from aoc2024.day03 import Solution
 
         test[Solution, file="tests/2024/day032.txt", part=2, expected=48]()
         ```
