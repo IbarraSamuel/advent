@@ -55,14 +55,14 @@ fn parse_config() raises -> Years:
                     var floc = (
                         loc / "tests" / String(year) / String(file_location)
                     )
-                    var tcase = Case(floc, Int(test_expects))
+                    var tcase = Case(floc, Int(py=test_expects))
                     cases.append(tcase^)
 
-                parts[Int(part)] = cases^
+                parts[Int(py=part)] = cases^
 
-            days[Int(day)] = parts^
+            days[Int(py=day)] = parts^
 
-        years[Int(year)] = days^
+        years[Int(py=year)] = days^
 
     return years^
 

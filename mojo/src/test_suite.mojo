@@ -1,9 +1,12 @@
 from builtin.variadics import Variadic
-from reflection import get_function_name, get_type_name
+from reflection import (
+    get_function_name,
+    get_type_name,
+    call_location,
+    SourceLocation,
+)
 from builtin.rebind import trait_downcast
 from testing.suite import (
-    __call_location,
-    _SourceLocation,
     TestReport,
     TestResult,
     TestSuiteReport,
@@ -15,13 +18,13 @@ from time import perf_counter_ns
 @explicit_destroy("run() or abandon() the TestSuite")
 struct UnifiedTestSuite[*ts: Movable](Movable):
     var tests: Tuple[*Self.ts]
-    var location: _SourceLocation
+    var location: SourceLocation
 
     fn __init__(
-        out self: UnifiedTestSuite[], location: Optional[_SourceLocation] = None
+        out self: UnifiedTestSuite[], location: Optional[SourceLocation] = None
     ):
         self.tests = {}
-        self.location = location.or_else(__call_location())
+        self.location = location.or_else(call_location())
 
     fn test(
         deinit self, var other: Some[fn () raises unified]
@@ -63,7 +66,7 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
         var report = TestSuiteReport(reports=reports^, location=self.location)
 
         if report.failures > 0:
-            raise Error(report)
+            raise Error(report^)
 
         print(report)
 
@@ -72,13 +75,13 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
 @explicit_destroy("run() or abandon() the TestSuite")
 struct TestSuite(Movable):
     var tests: List[Tuple[StaticString, fn () raises]]
-    var location: _SourceLocation
+    var location: SourceLocation
 
     fn __init__(
-        out self: TestSuite[], location: Optional[_SourceLocation] = None
+        out self: TestSuite[], location: Optional[SourceLocation] = None
     ):
         self.tests = {}
-        self.location = location.or_else(__call_location())
+        self.location = location.or_else(call_location())
 
     fn test[func: fn () raises](mut self, name: Optional[StaticString] = None):
         self.tests.append((name.or_else(get_function_name[func]()), func))
@@ -110,6 +113,6 @@ struct TestSuite(Movable):
         var report = TestSuiteReport(reports=reports^, location=self.location)
 
         if report.failures > 0:
-            raise Error(report)
+            raise Error(report^)
 
         print(report)
