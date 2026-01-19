@@ -32,7 +32,7 @@ struct Hand[mode: HandMode](Comparable):
 
         @parameter
         for idx in range(5):
-            self.value[idx] = Card[Self.mode](s[idx]).value
+            self.value[idx] = Card[Self.mode](s[idx : idx + 1]).value
 
         self.level = 1
         self._calc_level(s)
@@ -43,7 +43,7 @@ struct Hand[mode: HandMode](Comparable):
 
         @parameter
         for i in range(5):
-            chars[s[i]] = chars.get(s[i], 0) + 1
+            chars[s[i : i + 1]] = chars.get(s[i : i + 1], 0) + 1
 
         @parameter
         if Self.mode == HandMode.Second:
@@ -52,11 +52,11 @@ struct Hand[mode: HandMode](Comparable):
 
             @parameter
             for i in range(5):
-                if s[i] != "J":
-                    cv = chars.get(s[i], 0)
+                if s[i : i + 1] != "J":
+                    cv = chars.get(s[i : i + 1], 0)
                     if cv > max_v:
                         max_v = cv
-                        max_c = s[i]
+                        max_c = s[i : i + 1]
 
             if max_c and max_v:
                 chars[max_c] = max_v + j_val
