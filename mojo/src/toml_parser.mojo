@@ -25,18 +25,7 @@ struct TomlWarning:
     comptime SpaceAfterDot = 2
 
 
-# @fieldwise_init
-# struct Array[T: Copyable](Copyable):
-#     var inner: List[Self.T]
-
-
-# @fieldwise_init
-# struct Table[V: Copyable & ImplicitlyDestructible](Copyable):
-#     var inner: Dict[String, Self.V]
-
-
-@fieldwise_init
-struct TomlType[o: ImmutOrigin](Copyable & ImplicitlyDestructible):
+struct TomlType[o: ImmutOrigin](Copyable, ImplicitlyDestructible, Writable):
     comptime String = StringSlice[Self.o]
     comptime Integer = Int
     comptime Float = Float64
@@ -49,6 +38,45 @@ struct TomlType[o: ImmutOrigin](Copyable & ImplicitlyDestructible):
     comptime Table = Dict[StringSlice[Self.o], TomlType[Self.o]]
 
     var inner: AnyTomlType[Self.o]
+
+    fn __init__(out self, var v: AnyTomlType[Self.o]):
+        self.inner = v
+
+    fn write_to(self, mut w: Some[Writer]):
+        ref anytype = self.inner
+        if anytype.isa[self.String]():
+            w.write("String(", anytype[self.String], ")")
+        elif anytype.isa[self.Integer]():
+            w.write("Integer(", anytype[self.Integer], ")")
+        elif anytype.isa[self.Float]():
+            w.write("Float(", anytype[self.Float], ")")
+        elif anytype.isa[self.Boolean]():
+            w.write("Boolean(", anytype[self.Boolean], ")")
+        elif anytype.isa[self.OffsetDateTime]():
+            w.write("OffsetDateTime(", anytype[self.OffsetDateTime], ")")
+        elif anytype.isa[self.LocalDateTime]():
+            w.write("LocalDateTime(", anytype[self.LocalDateTime], ")")
+        elif anytype.isa[self.Date]():
+            w.write("Date(", anytype[self.Date], ")")
+        elif anytype.isa[self.Time]():
+            w.write("Time(", anytype[self.Time], ")")
+
+        elif anytype.isa[self.Array]():
+            w.write("[")
+            ref v = anytype[self.Array]
+            for vi in v:
+                w.write(vi, ",")
+            w.write("]")
+
+        elif anytype.isa[self.Table]():
+            w.write("{")
+            ref v = anytype[self.Table]
+            for vi in v.items():
+                w.write('"', vi.key, '": ', vi.value, ", ")
+            w.write("}")
+
+        else:
+            os.abort("no type found to be represented.")
 
 
 comptime AnyTomlType[o: ImmutOrigin] = Variant[
@@ -76,46 +104,33 @@ fn get_absolute_idx(
 
 fn parse_multiline_string[
     o: ImmutOrigin
-](
-    orig_content: StringSlice[o],
-    lines: List[StringSlice[o]],
-    mut line_idx: Int,
-    var from_char_idx: Int,
-) -> TomlType[o]:
-    ref line = lines[line_idx]
-    from_char_idx = get_absolute_idx(orig_content, line_idx, from_char_idx)
+](content: StringSlice[o], var idx: Int) -> TomlType[o]:
+    var close_char = idx + 3
 
-    var close_char = from_char_idx + 3
-
-    while (scape_idx := line.find('/"', close_char)) != -1:
+    while (scape_idx := content.find('/"', close_char)) != -1:
         close_char = scape_idx + 1
 
-    char_end = line.find('"""', close_char)
-    return TomlType[o](orig_content[from_char_idx + 1 : char_end])
+    char_end = content.find('"""', close_char)
+    var final_content = AnyTomlType[o](content[idx + 1 : char_end])
+    return TomlType[o](final_content)
 
 
 fn parse_string[
     o: ImmutOrigin
-](line: StringSlice[o], from_char_idx: Int) -> TomlType[o]:
+](content: StringSlice[o], from_char_idx: Int) -> TomlType[o]:
     var close_char = from_char_idx + 1
 
-    while (scape_idx := line.find('/"', close_char)) != -1:
+    while (scape_idx := content.find('/"', close_char)) != -1:
         close_char = scape_idx + 1
 
-    char_end = line.find('"', close_char)
-    return TomlType[o](line[from_char_idx + 1 : char_end])
+    char_end = content.find('"', close_char)
+    var final_content = AnyTomlType[o](content[from_char_idx + 1 : char_end])
+    return TomlType[o](final_content)
 
 
 fn parse_inline_table[
     o: ImmutOrigin
-](
-    orig_content: StringSlice[o],
-    # lines: List[StringSlice[o]],
-    mut line_idx: Int,
-    var from_char_idx: Int,
-) -> TomlType[o]:
-    from_char_idx = get_absolute_idx(orig_content, line_idx, from_char_idx)
-
+](orig_content: StringSlice[o], mut from_char_idx: Int) -> TomlType[o]:
     var close_char = from_char_idx + 1
 
     var list_nested = 0
@@ -172,7 +187,7 @@ fn parse_inline_table[
             var kk = obj_str[:eq_idx].strip()
             var val = obj_str[eq_idx + 1 :].strip()
             var _lidx = 0
-            var toml_obj = parse_value(val, val.splitlines(), _lidx, 0)
+            var toml_obj = parse_value(val, _lidx)
             objs[kk] = toml_obj^
             cip = ci + 1
         ci += 1
@@ -182,10 +197,12 @@ fn parse_inline_table[
         var kk = obj_str[:eq_idx].strip()
         var val = obj_str[eq_idx + 1 :].strip()
         var _lidx = 0
-        var toml_obj = parse_value(val, val.splitlines(), _lidx, 0)
+        var toml_obj = parse_value(val, _lidx)
         objs[kk] = toml_obj^
 
-    return TomlType[o](objs^)
+    from_char_idx = ci + 1
+    var toml_obj = AnyTomlType[o](objs^)
+    return TomlType[o](toml_obj^)
 
 
 fn parse_inline_list[
@@ -193,11 +210,11 @@ fn parse_inline_list[
 ](
     orig_content: StringSlice[o],
     # lines: List[StringSlice[o]],
-    mut line_idx: Int,
-    var from_char_idx: Int,
+    # mut line_idx: Int,
+    mut from_char_idx: Int,
 ) -> TomlType[o]:
     # ref line = lines[line_idx]
-    from_char_idx = get_absolute_idx(orig_content, line_idx, from_char_idx)
+    # from_char_idx = get_absolute_idx(orig_content, line_idx, from_char_idx)
 
     var close_char = from_char_idx + 1
 
@@ -252,16 +269,17 @@ fn parse_inline_list[
         ):
             var obj_str = orig_content[cip:ci].strip()
             var _lidx = 0
-            var toml_obj = parse_value(obj_str, obj_str.splitlines(), _lidx, 0)
+            var toml_obj = parse_value(obj_str, _lidx)
             objs.append(toml_obj^)
             cip = ci + 1
         ci += 1
 
     var obj_str = orig_content[cip:ci]
     var _lidx = 0
-    var toml_obj = parse_value(obj_str, obj_str.splitlines(), _lidx, 0)
+    var toml_obj = parse_value(obj_str, _lidx)
     objs.append(toml_obj^)
 
+    from_char_idx = ci
     return TomlType[o](objs^)
 
 
@@ -291,41 +309,38 @@ fn string_to_type[o: ImmutOrigin](str_value: StringSlice[o]) -> TomlType[o]:
 
 fn parse_value[
     o: ImmutOrigin
-](
-    full_content: StringSlice[o],
-    lines: List[StringSlice[o]],
-    mut line_idx: Int,
-    from_char_idx: Int,
-) -> TomlType[o]:
-    ref line_i = lines[line_idx]
-    var multiline_string_start = line_i.find('"""', from_char_idx)
-    var string_start = line_i.find('"', from_char_idx)
-    var list_start = line_i.find("[", from_char_idx)
-    var table_start = line_i.find("{", from_char_idx)
+](file_content: StringSlice[o], mut idx: Int) -> TomlType[o]:
+    var multiline_string_start = file_content.find('"""', idx)
+    var string_start = file_content.find('"', idx)
+    var list_start = file_content.find("[", idx)
+    var table_start = file_content.find("{", idx)
 
     var content: TomlType[o]
-    if multiline_string_start < min(list_start, table_start):
+    if multiline_string_start < min(list_start, table_start):  # Fix
         content = parse_multiline_string(
-            full_content,
-            lines,
-            line_idx=line_idx,
-            from_char_idx=multiline_string_start,
+            file_content, idx=multiline_string_start
         )
-    elif string_start < min(list_start, table_start):
+        idx = multiline_string_start
+
+    elif string_start < min(list_start, table_start):  # Fix
         content = parse_string(
-            line_i,
-            from_char_idx=multiline_string_start,
+            file_content, from_char_idx=multiline_string_start
         )
-    elif list_start < table_start:
-        content = parse_inline_list(
-            full_content, line_idx=line_idx, from_char_idx=list_start
-        )
-    elif table_start < list_start:
-        content = parse_inline_table(
-            full_content, line_idx=line_idx, from_char_idx=list_start
-        )
+        idx = multiline_string_start
+
+    elif list_start < table_start:  # Fix
+        content = parse_inline_list(file_content, from_char_idx=list_start)
+        idx = list_start
+
+    elif table_start < list_start:  # Fix
+        content = parse_inline_table(file_content, from_char_idx=table_start)
+        idx = list_start
+
     else:
-        content = string_to_type(line_i[from_char_idx:])
+        var eol = file_content.find("\n", idx + 1)
+        var line = file_content[idx:eol]
+        content = string_to_type(line)
+        idx = eol + 1
 
     return content^
 
@@ -368,101 +383,93 @@ fn update_base_with_kv[
 
 fn try_get_kv_pair[
     o: ImmutOrigin
-](
-    full_content: StringSlice[o], lines: List[StringSlice[o]], mut line_idx: Int
-) -> Optional[Tuple[StringSlice[o], TomlType[o]]]:
-    ref line = lines[line_idx]
-    if (eq_idx := line.find("=")) == -1:
+](file_content: StringSlice[o], mut idx: Int) -> Optional[
+    Tuple[StringSlice[o], TomlType[o]]
+]:
+    if (eq_idx := file_content.find("=", idx + 1)) == -1:
         return None
 
-    var key = line[:eq_idx].strip()
-    var content = parse_value(
-        full_content, lines, line_idx=line_idx, from_char_idx=eq_idx + 1
-    )
+    var key = file_content[idx + 1 : eq_idx].strip()
+    var content = parse_value(file_content, idx=eq_idx)
+    idx = eq_idx
     return key, content^
+
+
+fn parse_table[
+    o: ImmutOrigin
+](full_content: StringSlice[o], mut char_idx: Int) -> TomlType[o]:
+    # Clean start
+    var i_content = TomlType[o].Table()
+
+    # The only possibility to stop is to find another table or table list
+    var end_of_table = full_content.find("\n[", char_idx)
+    while char_idx < end_of_table:
+        var next_jump = full_content.find("\n", char_idx)
+        # Do Parsing
+        if full_content[char_idx:next_jump].strip() == "":
+            char_idx = next_jump + 1
+            continue
+
+        if kv := try_get_kv_pair(full_content, idx=char_idx):
+            ref k, value = kv.unsafe_take()
+            i_content[k] = value.copy()
+            continue
+
+        os.abort("This should not happen.!")
+
+    return TomlType[o](i_content^)
 
 
 fn try_get_table_list[
     o: ImmutOrigin
-](
-    full_content: StringSlice[o], lines: List[StringSlice[o]], mut line_idx: Int
-) -> Optional[Tuple[StringSlice[o], TomlType[o]]]:
-    ref line = lines[line_idx]
-
-    var i = line.find("[[")
-    var l = line.find("]]")
+](full_content: StringSlice[o], mut char_idx: Int) -> Optional[
+    Tuple[StringSlice[o], TomlType[o]]
+]:
+    var i = full_content.find("[[", char_idx + 1)
+    var l = full_content.find("]]", char_idx + 1)
 
     if i != 0:
         return None
-    if l != len(line) - 1:
+    if l == -1 or full_content.as_bytes()[l + 1] != ord("\n"):
         return None
 
-    var key = line[2:l]
-    line_idx += 1
-    var i_content = TomlType[o].Table()
+    var key = full_content[i + 2 : l]
+    char_idx += l + 2
 
-    # The only possibility to stop is to find another table or table list
-    while (line_i := lines[line_idx]).find("[") != 0:
-        # Do Parsing
-        if line_i.strip() == "":
-            line_idx += 1
-            continue
+    var i_content = parse_table(full_content, char_idx)
 
-        if kv := try_get_kv_pair(full_content, lines, line_idx=line_idx):
-            ref k, value = kv.unsafe_take()
-            i_content[k] = value.copy()
-            line_idx += 1
-            continue
-
-        os.abort("This should not happen.!")
-
-    return key, TomlType[o](i_content^)
+    return key, i_content^
 
 
 fn try_get_table[
     o: ImmutOrigin
-](
-    full_content: StringSlice[o], lines: List[StringSlice[o]], mut line_idx: Int
-) -> Optional[Tuple[StringSlice[o], TomlType[o]]]:
-    ref line = lines[line_idx]
+](full_content: StringSlice[o], mut char_idx: Int) -> Optional[
+    Tuple[StringSlice[o], TomlType[o]]
+]:
+    var i = full_content.find("[", char_idx + 1)
+    var l = full_content.find("]", char_idx + 1)
 
-    var i = line.find("[")
-    var l = line.find("]")
     if i != 0:
         return None
-    if l != len(line) - 1:
+    if l == -1 or full_content.as_bytes()[l + 1] != ord("\n"):
         return None
 
-    var key = line[1:l]
-    line_idx += 1
-    var i_content = TomlType[o].Table()
+    var key = full_content[i + 2 : l]
+    char_idx += l + 2
 
-    # The only possibility to stop is to find another table or table list
-    while (line_i := lines[line_idx]).find("[") != 0:
-        # Do Parsing
-        if line_i.strip() == "":
-            line_idx += 1
-            continue
+    var i_content = parse_table(full_content, char_idx)
 
-        if kv := try_get_kv_pair(full_content, lines, line_idx=line_idx):
-            ref k, value = kv.unsafe_take()
-            i_content[k] = value.copy()
-            line_idx += 1
-            continue
-
-        os.abort("This should not happen.!")
-
-    return key, TomlType[o](i_content^)
+    return key, i_content^
 
 
-fn parse_toml(content: StringSlice) raises -> TomlType[content.origin].Table:
+fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
     # var lines = content.splitlines()
     var idx = 0
-    var content_len = len(content)
+    # var content_len = len(content)
 
     var base = TomlType[content.origin].Table()
     # We will parse the file sequentially, building the type on the way.
-    while nidx := content.find("\n", idx):
+    while (nidx := content.find("\n", idx)) != -1:
         var line = content[idx:nidx]
 
         # if whitespace, skip line
@@ -471,20 +478,20 @@ fn parse_toml(content: StringSlice) raises -> TomlType[content.origin].Table:
             continue
 
         # First, find key,value pairs
-        if kv := try_get_kv_pair(content, lines, idx):
+        if kv := try_get_kv_pair(content, idx):
             ref key, value = kv.value()
             base = update_base_with_kv(key, value.copy(), base^)
             idx += 1
             continue
 
         # if there is no key, value, then try to get a table list.
-        if kv := try_get_table_list(content, lines, idx):
+        if kv := try_get_table_list(content, idx):
             ref key, value = kv.value()
             base = update_base_with_kv[mode="array"](key, value.copy(), base^)
             idx += 1
             continue
 
-        if kv := try_get_table(content, lines, idx):
+        if kv := try_get_table(content, idx):
             ref key, value = kv.value()
             base = update_base_with_kv(key, value.copy(), base^)
             idx += 1
@@ -495,4 +502,8 @@ fn parse_toml(content: StringSlice) raises -> TomlType[content.origin].Table:
             " doesn't catch this"
         )
 
-    return base^
+    return TomlType[content.origin](base^)
+
+
+fn stringify_toml(content: StringSlice) -> String:
+    return String(parse_toml(content))
