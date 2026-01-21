@@ -51,7 +51,7 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
     fn write_to(self, mut w: Some[Writer]):
         ref anytype = self.inner
         if anytype.isa[self.String]():
-            w.write("String(", anytype[self.String], ")")
+            w.write('String("', anytype[self.String], '")')
         elif anytype.isa[self.Integer]():
             w.write("Integer(", anytype[self.Integer], ")")
         elif anytype.isa[self.Float]():
@@ -71,14 +71,20 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
             w.write("[")
             ref v = anytype[self.Array]
             for vi in v:
-                w.write(vi[], ",")
+                w.write(vi.bitcast[TomlType[Self.o]]()[], ",")
             w.write("]")
 
         elif anytype.isa[self.Table]():
             w.write("{")
             ref v = anytype[self.Table]
             for vi in v.items():
-                w.write('"', vi.key, '": ', vi.value[], ", ")
+                w.write(
+                    '"',
+                    vi.key,
+                    '": ',
+                    vi.value.bitcast[TomlType[Self.o]]()[],
+                    ", ",
+                )
             w.write("}")
 
         else:
@@ -149,11 +155,17 @@ fn parse_inline_table[
     var bts = orig_content.as_bytes()
     var objs = TomlType[o].Table()
 
+    print("start parsing at:", ci)
+
+    # print(chr(Int(bts[ci])), end="")
+
     while (b := bts[ci]) != ord(
         "}"
-    ) and list_nested + table_nested + string_nested + multistring_nested == 0:
+    ) or list_nested + table_nested + string_nested + multistring_nested > 0:
+        print(chr(Int(bts[ci])), end="")
         if b == ord('"'):
             if bts[ci + 1] == ord('"') and bts[ci + 2] == ord('"'):
+                # print("\nthe content is a multiline string")
                 if multistring_nested == 1 and bts[ci - 1] != ord("\\"):
                     multistring_nested -= 1
                 else:
@@ -161,6 +173,7 @@ fn parse_inline_table[
                 ci += 3
                 continue
 
+            # print("\nthe content is a string")
             if string_nested == 1 and bts[ci - 1] != ord("\\"):
                 string_nested -= 1
             else:
@@ -188,27 +201,54 @@ fn parse_inline_table[
             and list_nested + table_nested + string_nested + multistring_nested
             == 0
         ):
+            print()
             var obj_str = orig_content[cip:ci].strip()
+            print(
+                "\n\tobject found in the dict: '",
+                obj_str,
+                "' in between ",
+                cip,
+                " and ",
+                ci,
+                sep="",
+            )
             var eq_idx = obj_str.find("=")
             var kk = obj_str[:eq_idx].strip()
             var val = obj_str[eq_idx + 1 :].strip()
+            print(
+                "\n\tfound key: '", kk, "' and found value: '", val, "'", sep=""
+            )
             var _lidx = 0
             var toml_obj = parse_value(val, _lidx)
+            print("\n\tParsed value: '", toml_obj, "'", sep="")
             objs[kk] = UnsafePointer(to=toml_obj).bitcast[NoneType]()
             cip = ci + 1
         ci += 1
 
-        var obj_str = orig_content[cip:ci].strip()
-        var eq_idx = obj_str.find("=")
-        var kk = obj_str[:eq_idx].strip()
-        var val = obj_str[eq_idx + 1 :].strip()
-        var _lidx = 0
-        var toml_obj = parse_value(val, _lidx)
-        objs[kk] = UnsafePointer(to=toml_obj).bitcast[NoneType]()
+    print(chr(Int(bts[ci])))
+    var obj_str = orig_content[cip:ci].strip()
+    print(
+        "\n\tobject found in the dict:'",
+        obj_str,
+        "' in between ",
+        cip,
+        " and ",
+        ci,
+        sep="",
+    )
+    var eq_idx = obj_str.find("=")
+    var kk = obj_str[:eq_idx].strip()
+    var val = obj_str[eq_idx + 1 :].strip()
+    print("\n\tfound key: '", kk, "' and found value: '", val, "'", sep="")
+    var _lidx = 0
+    var toml_obj = parse_value(val, _lidx)
+    print("\n\tParsed value: '", toml_obj, "'", sep="")
+    objs[kk] = UnsafePointer(to=toml_obj).bitcast[NoneType]()
 
+    print("end at:", ci + 1)
     from_char_idx = ci + 1
-    var toml_obj = AnyTomlType[o](objs^)
-    return TomlType[o](toml_obj^)
+    # print("final table:", TomlType[o](objs.copy()))
+    return TomlType[o](objs^)
 
 
 fn parse_inline_list[
@@ -234,11 +274,15 @@ fn parse_inline_list[
     var bts = orig_content.as_bytes()
     var objs = TomlType[o].Array()
 
+    print("start parsing at:", ci)
+
     while (b := bts[ci]) != ord(
         "]"
-    ) and list_nested + table_nested + string_nested + multistring_nested == 0:
+    ) or list_nested + table_nested + string_nested + multistring_nested > 0:
+        print(chr(Int(bts[ci])), end="")
         if b == ord('"'):
             if bts[ci + 1] == ord('"') and bts[ci + 2] == ord('"'):
+                # print("\nthe content is a multiline string")
                 if multistring_nested == 1 and bts[ci - 1] != ord("\\"):
                     multistring_nested -= 1
                 else:
@@ -246,6 +290,7 @@ fn parse_inline_list[
                 ci += 3
                 continue
 
+            # print("\nthe content is a string")
             if string_nested == 1 and bts[ci - 1] != ord("\\"):
                 string_nested -= 1
             else:
@@ -273,23 +318,49 @@ fn parse_inline_list[
             and list_nested + table_nested + string_nested + multistring_nested
             == 0
         ):
+            print()
             var obj_str = orig_content[cip:ci].strip()
+            print(
+                "\n\tobject found in the list: '",
+                obj_str,
+                "' in between ",
+                cip,
+                " and ",
+                ci,
+                sep="",
+            )
             var _lidx = 0
             var toml_obj = parse_value(obj_str, _lidx)
+            print("\n\tparsed_value: '", toml_obj, "'", sep="")
             objs.append(UnsafePointer(to=toml_obj).bitcast[NoneType]())
             cip = ci + 1
         ci += 1
 
+    print(chr(Int(bts[ci])))
     var obj_str = orig_content[cip:ci]
+
+    # Will potentially fail if there is a trailing comma
+    print(
+        "\n\tlast object found in the list: '",
+        obj_str,
+        "' in between ",
+        cip,
+        " and ",
+        ci,
+        sep="",
+    )
     var _lidx = 0
     var toml_obj = parse_value(obj_str, _lidx)
+    print("\n\tparsed_value: '", toml_obj, "'", sep="")
     objs.append(UnsafePointer(to=toml_obj).bitcast[NoneType]())
 
-    from_char_idx = ci
+    print("end at:", ci + 1)
+    from_char_idx = ci + 1
     return TomlType[o](objs^)
 
 
 fn string_to_type[o: ImmutOrigin](str_value: StringSlice[o]) -> TomlType[o]:
+    print("Casting value '", str_value, "' into a type...", sep="")
     s = str_value.strip()
     if len(parts := s.split(".")) == 2:
         if parts[0].is_ascii_digit() and parts[1].is_ascii_digit():
@@ -313,6 +384,17 @@ fn string_to_type[o: ImmutOrigin](str_value: StringSlice[o]) -> TomlType[o]:
     return TomlType[o](TomlType[o].OffsetDateTime(str_value))
 
 
+fn is_before(v: Int, /, *others: Int) -> Bool:
+    if v == -1:
+        return False
+
+    for o in others:
+        if o != -1 and o < v:
+            return False
+
+    return True
+
+
 fn parse_value[
     o: ImmutOrigin
 ](file_content: StringSlice[o], mut idx: Int) -> TomlType[o]:
@@ -322,30 +404,37 @@ fn parse_value[
     var table_start = file_content.find("{", idx)
 
     var content: TomlType[o]
-    if multiline_string_start < min(list_start, table_start):  # Fix
+    if is_before(multiline_string_start, list_start, table_start):
+        print(
+            "Parsing multiline string:", file_content[multiline_string_start:]
+        )
         content = parse_multiline_string(
             file_content, idx=multiline_string_start
         )
         idx = multiline_string_start
 
-    elif string_start < min(list_start, table_start):  # Fix
-        content = parse_string(
-            file_content, from_char_idx=multiline_string_start
-        )
+    elif is_before(string_start, list_start, table_start):
+        print("parsing string:", file_content[string_start:])
+        content = parse_string(file_content, from_char_idx=string_start)
         idx = multiline_string_start
 
-    elif list_start < table_start:  # Fix
+    elif is_before(list_start, table_start):
+        print("parsing linine list:", file_content[list_start:])
         content = parse_inline_list(file_content, from_char_idx=list_start)
         idx = list_start
 
-    elif table_start < list_start:  # Fix
+    elif is_before(table_start, list_start):
+        print("parsing inline table:", file_content[table_start:])
         content = parse_inline_table(file_content, from_char_idx=table_start)
         idx = list_start
 
     else:
+        print("infer type for all: '", file_content, "'", sep="")
         var eol = file_content.find("\n", idx + 1)
-        var line = file_content[idx:eol]
-        content = string_to_type(line)
+        # TODO: Check this...
+        eol = len(file_content) - idx if eol == -1 else eol
+        var cnt = file_content[idx:eol]
+        content = string_to_type(cnt)
         idx = eol + 1
 
     return content^
@@ -398,12 +487,17 @@ fn try_get_kv_pair[
 ](file_content: StringSlice[o], mut idx: Int) -> Optional[
     Tuple[StringSlice[o], TomlType[o]]
 ]:
+    if file_content.as_bytes()[idx] in [Byte(ord("[")), Byte(ord("{"))]:
+        return None
+
     if (eq_idx := file_content.find("=", idx + 1)) == -1:
         return None
 
-    var key = file_content[idx + 1 : eq_idx].strip()
+    var key = file_content[idx:eq_idx].strip()
+    print("key found:", key)
     var content = parse_value(file_content, idx=eq_idx)
-    idx = eq_idx
+    print("content:", content)
+    idx = eq_idx  # eq_idx gets modified by parse_value func
     return key, content^
 
 
@@ -415,7 +509,10 @@ fn parse_table[
 
     # The only possibility to stop is to find another table or table list
     var end_of_table = full_content.find("\n[", char_idx)
+    print("end of table found in idx:", end_of_table)
+
     while char_idx < end_of_table:
+        print("Parsing table content on line:", char_idx)
         var next_jump = full_content.find("\n", char_idx)
         # Do Parsing
         if full_content[char_idx:next_jump].strip() == "":
@@ -437,12 +534,19 @@ fn try_get_table_list[
 ](full_content: StringSlice[o], mut char_idx: Int) -> Optional[
     Tuple[StringSlice[o], TomlType[o]]
 ]:
-    var i = full_content.find("[[", char_idx + 1)
-    var l = full_content.find("]]", char_idx + 1)
+    var i = full_content.find("[[", char_idx)
+    var l = full_content.find("]]", char_idx)
 
-    if i != 0:
+    if i != char_idx:
+        print(
+            "table open bracket should be the first character. expected:",
+            char_idx,
+            ", got:",
+            i,
+        )
         return None
     if l == -1 or full_content.as_bytes()[l + 1] != ord("\n"):
+        print("table close bracket should be the last character in line.")
         return None
 
     var key = full_content[i + 2 : l]
@@ -458,12 +562,19 @@ fn try_get_table[
 ](full_content: StringSlice[o], mut char_idx: Int) -> Optional[
     Tuple[StringSlice[o], TomlType[o]]
 ]:
-    var i = full_content.find("[", char_idx + 1)
-    var l = full_content.find("]", char_idx + 1)
+    var i = full_content.find("[", char_idx)
+    var l = full_content.find("]", char_idx)
 
-    if i != 0:
+    if i != char_idx:
+        print(
+            "table open bracket should be the first character. expected:",
+            char_idx,
+            ", got:",
+            i,
+        )
         return None
     if l == -1 or full_content.as_bytes()[l + 1] != ord("\n"):
+        print("table close bracket should be the last character in line.")
         return None
 
     var key = full_content[i + 2 : l]
@@ -481,33 +592,53 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
 
     var base = TomlType[content.origin].Table()
     # We will parse the file sequentially, building the type on the way.
+
     while (nidx := content.find("\n", idx)) != -1:
-        var line = content[idx:nidx]
+        print(
+            "on line",
+            content[idx:nidx],
+            ", and idx span: (",
+            idx,
+            ",",
+            nidx,
+            ")",
+        )
+
+        # var line = content[idx:nidx]
 
         # if whitespace, skip line
-        if line.strip() == "":
+        if content[idx:nidx].strip() == "":
             idx += nidx + 1
             continue
 
         # First, find key,value pairs
         if kv := try_get_kv_pair(content, idx):
+            print("parsing kv pair")
             var kv = kv.take()
+            print("key is:", kv[0])
+            print("value is:", kv[1])
             base = update_base_with_kv(kv[0], kv[1], base^)
+            print("parsing kv done, moving to ", idx, "...")
             idx += 1
             continue
+        print("No kv pair. continue")
 
         # if there is no key, value, then try to get a table list.
         if kv := try_get_table_list(content, idx):
+            print("parsing table list")
             var kv = kv.take()
             base = update_base_with_kv[mode="array"](kv[0], kv[1], base^)
             idx += 1
             continue
+        print("no table list, continue")
 
         if kv := try_get_table(content, idx):
+            print("parse table")
             var kv = kv.take()
             base = update_base_with_kv(kv[0], kv[1], base^)
             idx += 1
             continue
+        print("no table. Abort")
 
         os.abort(
             "This is wrong! This should not happen!. Nothing to parse or rules"
