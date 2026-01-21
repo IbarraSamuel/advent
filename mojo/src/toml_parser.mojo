@@ -12,20 +12,26 @@ comptime LocalDateTime = String
 comptime Time = String
 
 
+@fieldwise_init("implicit")
 struct TomlError:
-    comptime UnspecifiedKey = 1
-    comptime NeedEOFAfterKey = 2
-    comptime NoKeyBeforeEqual = 3
-    comptime MultilineKeyNotAllowed = 4
-    comptime DuplicatedKey = 5
+    comptime UnsecifiedKey: Self = 1
+    comptime NeedEOFAfterKey: Self = 2
+    comptime NoKeyBeforeEqual: Self = 3
+    comptime MultilineKeyNotAllowed: Self = 4
+    comptime DuplicatedKey: Self = 5
+
+    var value: Int
 
 
+@fieldwise_init("implicit")
 struct TomlWarning:
-    comptime KeyIsEmpty = 1
-    comptime SpaceAfterDot = 2
+    comptime KeyIsEmpty: Self = 1
+    comptime SpaceAfterDot: Self = 2
+
+    var value: Int
 
 
-struct TomlType[o: ImmutOrigin](Copyable, ImplicitlyDestructible, Writable):
+struct TomlType[o: ImmutOrigin](Movable, Writable):
     comptime String = StringSlice[Self.o]
     comptime Integer = Int
     comptime Float = Float64
@@ -34,8 +40,8 @@ struct TomlType[o: ImmutOrigin](Copyable, ImplicitlyDestructible, Writable):
     comptime LocalDateTime = LocalDateTime
     comptime Date = Date
     comptime Time = Time
-    comptime Array = List[TomlType[Self.o]]
-    comptime Table = Dict[StringSlice[Self.o], TomlType[Self.o]]
+    comptime Array = List[MutOpaquePointer[MutAnyOrigin]]
+    comptime Table = Dict[StringSlice[Self.o], MutOpaquePointer[MutAnyOrigin]]
 
     var inner: AnyTomlType[Self.o]
 
@@ -65,14 +71,14 @@ struct TomlType[o: ImmutOrigin](Copyable, ImplicitlyDestructible, Writable):
             w.write("[")
             ref v = anytype[self.Array]
             for vi in v:
-                w.write(vi, ",")
+                w.write(vi[], ",")
             w.write("]")
 
         elif anytype.isa[self.Table]():
             w.write("{")
             ref v = anytype[self.Table]
             for vi in v.items():
-                w.write('"', vi.key, '": ', vi.value, ", ")
+                w.write('"', vi.key, '": ', vi.value[], ", ")
             w.write("}")
 
         else:
@@ -188,7 +194,7 @@ fn parse_inline_table[
             var val = obj_str[eq_idx + 1 :].strip()
             var _lidx = 0
             var toml_obj = parse_value(val, _lidx)
-            objs[kk] = toml_obj^
+            objs[kk] = UnsafePointer(to=toml_obj).bitcast[NoneType]()
             cip = ci + 1
         ci += 1
 
@@ -198,7 +204,7 @@ fn parse_inline_table[
         var val = obj_str[eq_idx + 1 :].strip()
         var _lidx = 0
         var toml_obj = parse_value(val, _lidx)
-        objs[kk] = toml_obj^
+        objs[kk] = UnsafePointer(to=toml_obj).bitcast[NoneType]()
 
     from_char_idx = ci + 1
     var toml_obj = AnyTomlType[o](objs^)
@@ -226,7 +232,7 @@ fn parse_inline_list[
     var cip = close_char
     var ci = close_char
     var bts = orig_content.as_bytes()
-    var objs = List[TomlType[o]]()
+    var objs = TomlType[o].Array()
 
     while (b := bts[ci]) != ord(
         "]"
@@ -270,14 +276,14 @@ fn parse_inline_list[
             var obj_str = orig_content[cip:ci].strip()
             var _lidx = 0
             var toml_obj = parse_value(obj_str, _lidx)
-            objs.append(toml_obj^)
+            objs.append(UnsafePointer(to=toml_obj).bitcast[NoneType]())
             cip = ci + 1
         ci += 1
 
     var obj_str = orig_content[cip:ci]
     var _lidx = 0
     var toml_obj = parse_value(obj_str, _lidx)
-    objs.append(toml_obj^)
+    objs.append(UnsafePointer(to=toml_obj).bitcast[NoneType]())
 
     from_char_idx = ci
     return TomlType[o](objs^)
@@ -348,7 +354,7 @@ fn parse_value[
 fn update_base_with_kv[
     o: ImmutOrigin, mode: String = "table"
 ](
-    key: StringSlice[o], var value: TomlType[o], var base: TomlType[o].Table
+    key: StringSlice[o], mut value: TomlType[o], var base: TomlType[o].Table
 ) -> TomlType[o].Table:
     var keys = key.split(".")
 
@@ -357,10 +363,13 @@ fn update_base_with_kv[
     var most_inner_table = Pointer[origin=MutAnyOrigin](to=toml_base)
 
     for key in keys[: len(keys) - 1]:  # leave the last one to the end.
+        var new_tb = TomlType[o](TomlType[o].Table())
         ref val = most_inner_table[][TomlType[o].Table].setdefault(
-            key, TomlType[o](TomlType[o].Table())
+            key, UnsafePointer(to=new_tb).bitcast[NoneType]()
         )
-        most_inner_table = Pointer(to=val.inner)
+        most_inner_table = Pointer[origin=MutAnyOrigin](
+            to=val.bitcast[TomlType[o]]()[].inner
+        )
 
     # Pass the value into
     ref most_inner = most_inner_table[][TomlType[o].Table]
@@ -368,14 +377,17 @@ fn update_base_with_kv[
 
     @parameter
     if mode == "array":
+        var new_array = TomlType[o](TomlType[o].Array())
         ref toml_array = most_inner.setdefault(
-            last_key, TomlType[o](TomlType[o].Array())
+            last_key, UnsafePointer(to=new_array).bitcast[NoneType]()
         )
-        toml_array.inner[TomlType[o].Array].append(value^)
+        toml_array.bitcast[TomlType[o]]()[].inner[TomlType[o].Array].append(
+            UnsafePointer(to=value).bitcast[NoneType]()
+        )
     else:
         if last_key in most_inner:
             os.abort("Key already defined within the toml file.")
-        most_inner[last_key] = value^
+        most_inner[last_key] = UnsafePointer(to=value).bitcast[NoneType]()
 
     # Return the base with nested results.
     return toml_base.take[TomlType[o].Table]()
@@ -411,8 +423,8 @@ fn parse_table[
             continue
 
         if kv := try_get_kv_pair(full_content, idx=char_idx):
-            ref k, value = kv.unsafe_take()
-            i_content[k] = value.copy()
+            var kv = kv.take()
+            i_content[kv[0]] = UnsafePointer(to=kv[1]).bitcast[NoneType]()
             continue
 
         os.abort("This should not happen.!")
@@ -479,21 +491,21 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
 
         # First, find key,value pairs
         if kv := try_get_kv_pair(content, idx):
-            ref key, value = kv.value()
-            base = update_base_with_kv(key, value.copy(), base^)
+            var kv = kv.take()
+            base = update_base_with_kv(kv[0], kv[1], base^)
             idx += 1
             continue
 
         # if there is no key, value, then try to get a table list.
         if kv := try_get_table_list(content, idx):
-            ref key, value = kv.value()
-            base = update_base_with_kv[mode="array"](key, value.copy(), base^)
+            var kv = kv.take()
+            base = update_base_with_kv[mode="array"](kv[0], kv[1], base^)
             idx += 1
             continue
 
         if kv := try_get_table(content, idx):
-            ref key, value = kv.value()
-            base = update_base_with_kv(key, value.copy(), base^)
+            var kv = kv.take()
+            base = update_base_with_kv(kv[0], kv[1], base^)
             idx += 1
             continue
 
