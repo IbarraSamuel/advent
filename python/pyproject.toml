@@ -28,7 +28,7 @@ extend-ignore = [
 ]
 
 [tool.ty.environment]
-root = ["src/aoc2023", "src/aoc2024"]
+root = ["src/aoc2023", "src/aoc2024", "src/aoc2025"]
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules"
