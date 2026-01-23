@@ -13,17 +13,39 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
     comptime Integer = Int
     comptime Float = Float64
     comptime Boolean = Bool
-    comptime Array = List[UnsafePointer[TomlType[Self.o], MutAnyOrigin]]
-    comptime Table = Dict[
-        StringSlice[Self.o], UnsafePointer[TomlType[Self.o], MutAnyOrigin]
-    ]
+    # comptime Array = List[Self.Ptr]
+    # comptime Table = Dict[StringSlice[Self.o], Self.Ptr]
 
-    comptime OpaqueArray = List[OpaquePointer[MutAnyOrigin]]
-    comptime OpaqueTable = Dict[
-        StringSlice[Self.o], OpaquePointer[MutAnyOrigin]
-    ]
+    # Store a list of addesses.
+    comptime OpaqueArray = List[Self.Opq]
+    comptime OpaqueTable = Dict[StringSlice[Self.o], Self.Opq]
+
+    comptime Opq = Int
 
     var inner: AnyTomlType[Self.o]
+
+    @staticmethod
+    fn from_addr(addr: Self.Opq) -> ref [MutExternalOrigin] Self:
+        return UnsafePointer[Self, MutExternalOrigin](
+            unsafe_from_address=addr
+        )[]
+
+    fn to_addr(mut self) -> Self.Opq:
+        return Int(UnsafePointer(to=self))
+
+    @staticmethod
+    fn new_array(out self: Self):
+        self = Self(Self.OpaqueArray())
+
+    @staticmethod
+    fn new_table(out self: Self):
+        self = Self(Self.OpaqueTable())
+
+    fn as_table(ref self) -> ref [self.inner] Self.OpaqueTable:
+        return self.inner[Self.OpaqueTable]
+
+    fn as_array(ref self) -> ref [self.inner] Self.OpaqueArray:
+        return self.inner[Self.OpaqueArray]
 
     fn __init__(
         out self, var v: AnyTomlType[Self.o], explicitly_constructed: ()
@@ -42,15 +64,11 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
     fn __init__(out self, var v: Bool):
         self.inner = v
 
-    fn __init__(out self, var v: Self.Array):
-        var opaque_array = [i.bitcast[NoneType]() for i in v]
-        self.inner = opaque_array^
+    fn __init__(out self, var v: Self.OpaqueArray):
+        self.inner = v^
 
-    fn __init__(out self, var v: Self.Table):
-        var opaque_table = {
-            kv.key: kv.value.bitcast[NoneType]() for kv in v.items()
-        }
-        self.inner = opaque_table^
+    fn __init__(out self, var v: Self.OpaqueTable):
+        self.inner = v^
 
     fn write_to(self, mut w: Some[Writer]):
         ref inner = self.inner
@@ -65,22 +83,24 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
             w.write("Boolean(", inner[self.Boolean], ")")
         elif inner.isa[self.OpaqueArray]():
             ref array = inner[self.OpaqueArray]
-            w.write("[")
-            for i, v in enumerate(array):
-                if i != 0:
-                    w.write(", ")
-                w.write(v.bitcast[TomlType[Self.o]]()[])
-            w.write("]")
+            w.write(array)
+            # w.write("[")
+            # for i, v in enumerate(array):
+            #     if i != 0:
+            #         w.write(", ")
+            #     ref value = TomlType[Self.o].from_addr(v)
+            #     w.write(value)
+            # w.write("]")
         elif inner.isa[self.OpaqueTable]():
             ref table = inner[self.OpaqueTable]
-            w.write("{")
-            for i, kv in enumerate(table.items()):
-                if i != 0:
-                    w.write(", ")
-                w.write(
-                    '"', kv.key, '": ', kv.value.bitcast[TomlType[Self.o]]()[]
-                )
-            w.write("}")
+            w.write(table)
+            # w.write("{")
+            # for i, kv in enumerate(table.items()):
+            #     if i != 0:
+            #         w.write(", ")
+            #     ref value = TomlType[Self.o].from_addr(kv.value)
+            #     w.write('"', kv.key, '": ', value)
+            # w.write("}")
 
 
 comptime AnyTomlType[o: ImmutOrigin] = Variant[
@@ -128,9 +148,9 @@ fn parse_string[
     return TomlType[o](final_content)
 
 
-fn parse_inline_table[
-    o: ImmutOrigin
-](orig_content: StringSlice[o], mut from_char_idx: Int) -> TomlType[o]:
+fn parse_inline_collection[
+    o: ImmutOrigin, //, collection: CollectionType
+](orig_content: StringSlice[o], mut from_char_idx: Int,) -> TomlType[o]:
     var close_char = from_char_idx + 1
 
     var list_nested = 0
@@ -141,131 +161,19 @@ fn parse_inline_table[
     var cip = close_char
     var ci = close_char
     var bts = orig_content.as_bytes()
-    var objs = TomlType[o].Table()
 
-    print("start parsing at:", ci)
+    print("start parsing", collection.inner, "at:", ci, end="\t -> `")
 
-    while (b := bts[ci]) != ord(
-        "}"
-    ) or list_nested + table_nested + string_nested + multistring_nested > 0:
-        print(chr(Int(bts[ci])), end="")
-        if b == ord('"'):
-            if bts[ci + 1] == ord('"') and bts[ci + 2] == ord('"'):
-                # print("\nthe content is a multiline string")
-                if multistring_nested == 1 and bts[ci - 1] != ord("\\"):
-                    multistring_nested -= 1
-                else:
-                    multistring_nested += 1
-                ci += 3
-                continue
-
-            # print("\nthe content is a string")
-            if string_nested == 1 and bts[ci - 1] != ord("\\"):
-                string_nested -= 1
-            else:
-                string_nested += 1
-            ci += 1
-            continue
-
-        # in case you are in a string, just keep going
-        if string_nested > 0 or multistring_nested > 0:
-            ci += 1
-            continue
-
-        # if out of string...
-        elif b == ord("{"):
-            table_nested += 1
-        elif b == ord("}"):
-            table_nested -= 1
-
-        elif b == ord("["):
-            list_nested += 1
-        elif b == ord("]"):
-            list_nested -= 1
-        elif (
-            b == ord(",")
-            and list_nested + table_nested + string_nested + multistring_nested
-            == 0
-        ):
-            print()
-            var obj_str = orig_content[cip:ci].strip()
-            print(
-                "\n\tobject found in the dict: '",
-                obj_str,
-                "' in between ",
-                cip,
-                " and ",
-                ci,
-                sep="",
-            )
-            var eq_idx = obj_str.find("=")
-            var kk = obj_str[:eq_idx].strip()
-            var val = obj_str[eq_idx + 1 :].strip()
-            print(
-                "\n\tfound key: '", kk, "' and found value: '", val, "'", sep=""
-            )
-            var _lidx = 0
-            var toml_obj = parse_value(val, _lidx)
-            print("\n\tParsed value: '", toml_obj, "'", sep="")
-            objs[kk] = UnsafePointer(to=toml_obj)
-            cip = ci + 1
-        ci += 1
-
-    # NOTE: Will potentially fail if there is a trailing comma
-    print(chr(Int(bts[ci])))
-    var obj_str = orig_content[cip:ci].strip()
-    print(
-        "\n\tobject found in the dict:'",
-        obj_str,
-        "' in between ",
-        cip,
-        " and ",
-        ci,
-        sep="",
+    comptime close_char_byte = ord("]" if collection == "array" else "}")
+    var objs = (
+        TomlType[o].new_array() if collection.inner
+        == "array" else TomlType[o].new_table()
     )
-    var eq_idx = obj_str.find("=")
-    var kk = obj_str[:eq_idx].strip()
-    var val = obj_str[eq_idx + 1 :].strip()
-    print("\n\tfound key: '", kk, "' and found value: '", val, "'", sep="")
-    var _lidx = 0
-    var toml_obj = parse_value(val, _lidx)
-    print("\n\tParsed value: '", toml_obj, "'", sep="")
-    objs[kk] = UnsafePointer(to=toml_obj)
 
-    print("end at:", ci + 1)
-    from_char_idx = ci + 1
-    # print("final table:", TomlType[o](objs.copy()))
-    return TomlType[o](objs^)
-
-
-fn parse_inline_list[
-    o: ImmutOrigin
-](
-    orig_content: StringSlice[o],
-    # lines: List[StringSlice[o]],
-    # mut line_idx: Int,
-    mut from_char_idx: Int,
-) -> TomlType[o]:
-    # ref line = lines[line_idx]
-    # from_char_idx = get_absolute_idx(orig_content, line_idx, from_char_idx)
-
-    var close_char = from_char_idx + 1
-
-    var list_nested = 0
-    var table_nested = 0
-    var string_nested = 0
-    var multistring_nested = 0
-
-    var cip = close_char
-    var ci = close_char
-    var bts = orig_content.as_bytes()
-    var objs = TomlType[o].Array()
-
-    print("start parsing at:", ci)
-
-    while (b := bts[ci]) != ord(
-        "]"
-    ) or list_nested + table_nested + string_nested + multistring_nested > 0:
+    while not (
+        (b := bts[ci]) == close_char_byte
+        and list_nested + table_nested + string_nested + multistring_nested == 0
+    ):
         print(chr(Int(bts[ci])), end="")
         if b == ord('"'):
             if bts[ci + 1] == ord('"') and bts[ci + 2] == ord('"'):
@@ -308,7 +216,9 @@ fn parse_inline_list[
             print()
             var obj_str = orig_content[cip:ci].strip()
             print(
-                "\n\tobject found in the list: '",
+                " ->> object found in the ",
+                collection.inner,
+                " collection: '",
                 obj_str,
                 "' in between ",
                 cip,
@@ -317,18 +227,31 @@ fn parse_inline_list[
                 sep="",
             )
             var _lidx = 0
-            var toml_obj = parse_value(obj_str, _lidx)
-            print("\n\tparsed_value: '", toml_obj, "'", sep="")
-            objs.append(UnsafePointer(to=toml_obj))
+
+            @parameter
+            if collection == "array":
+                var toml_obj = parse_value(obj_str, _lidx)
+                print("\n\tparsed_value: '", toml_obj, "'", sep="")
+                objs.as_array().append(toml_obj.to_addr())
+            elif collection == "table":
+                var eq_idx = obj_str.find("=")
+                var kk = obj_str[:eq_idx].strip()
+                var val = obj_str[eq_idx + 1 :].strip()
+                var toml_obj = parse_value(val, _lidx)
+                objs.as_table()[kk] = toml_obj.to_addr()
+
             cip = ci + 1
         ci += 1
 
     print(chr(Int(bts[ci])))
+
     var obj_str = orig_content[cip:ci]
 
     # Will potentially fail if there is a trailing comma
     print(
-        "\n\tlast object found in the list: '",
+        "\n\nlast object found in the ",
+        collection.inner,
+        " collection: '",
         obj_str,
         "' in between ",
         cip,
@@ -337,13 +260,23 @@ fn parse_inline_list[
         sep="",
     )
     var _lidx = 0
-    var toml_obj = parse_value(obj_str, _lidx)
-    print("\n\tparsed_value: '", toml_obj, "'", sep="")
-    objs.append(UnsafePointer(to=toml_obj))
 
-    print("end at:", ci + 1)
+    @parameter
+    if collection == "array":
+        var toml_obj = parse_value(obj_str, _lidx)
+        print("\n\tparsed_value: '", toml_obj, "'", sep="")
+        objs.as_array().append(toml_obj.to_addr())
+    elif collection == "table":
+        var eq_idx = obj_str.find("=")
+        var kk = obj_str[:eq_idx].strip()
+        var val = obj_str[eq_idx + 1 :].strip()
+        var toml_obj = parse_value(val, _lidx)
+        objs.as_table()[kk] = toml_obj.to_addr()
+
     from_char_idx = ci + 1
-    return TomlType[o](objs^)
+    print("end at:", ci + 1)
+    print("display", collection.inner, "collection parsed:", objs)
+    return objs^
 
 
 fn string_to_type[o: ImmutOrigin](str_value: StringSlice[o]) -> TomlType[o]:
@@ -393,9 +326,9 @@ fn parse_value[
     var content: TomlType[o]
     if is_before(multiline_string_start, list_start, table_start):
         print(
-            "Parsing multiline string: ###\n",
+            "Parsing multiline string: '''\n",
             file_content[multiline_string_start : multiline_string_start + 20],
-            "\n...\n###",
+            "...\n'''",
             sep="",
         )
         content = parse_multiline_string(
@@ -415,20 +348,24 @@ fn parse_value[
 
     elif is_before(list_start, table_start):
         print(
-            "parsing linine list: ###\n",
+            "parsing linine list: '''\n",
             file_content[list_start : list_start + 20],
-            "\n...\n###",
+            "...\n'''",
         )
-        content = parse_inline_list(file_content, from_char_idx=list_start)
+        content = parse_inline_collection["array"](
+            file_content, from_char_idx=list_start
+        )
         idx = list_start
 
     elif is_before(table_start, list_start):
         print(
-            "parsing inline table: ###\n",
+            "parsing inline table: '''\n",
             file_content[table_start : table_start + 20],
-            "\n...\n###",
+            "...\n'''",
         )
-        content = parse_inline_table(file_content, from_char_idx=table_start)
+        content = parse_inline_collection["table"](
+            file_content, from_char_idx=table_start
+        )
         idx = list_start
 
     else:
@@ -443,79 +380,59 @@ fn parse_value[
     return content^
 
 
-fn update_base_with_kv_table[
-    o: ImmutOrigin
-](
-    key: StringSlice[o],
-    mut value: TomlType[o],
-    var base: TomlType[o].OpaqueTable,
-) -> TomlType[o].OpaqueTable:
+@no_inline
+fn opaque_table_repr[o: ImmutOrigin](ref tb: TomlType[o].OpaqueTable) -> String:
+    var s = String("{")
+    for i, kv in enumerate(tb.items()):
+        if i != 0:
+            s.write(", ")
+        ref k = kv.key
+        ref v = TomlType[o].from_addr(kv.value)
+        s.write(k, ": ", v)
+    s.write("}")
+    return s
+
+
+struct CollectionType(Equatable, Writable):
+    var inner: StaticString
+
+    @implicit
+    fn __init__(out self, v: type_of("table")):
+        self.inner = v
+
+    @implicit
+    fn __init__(out self, v: type_of("array")):
+        self.inner = v
+
+
+fn update_base_with_kv[
+    o: ImmutOrigin, //, collection: CollectionType
+](key: StringSlice[o], mut value: TomlType[o], mut base: TomlType[o]):
     var keys = key.split(".")
 
-    print("nested keys found:", keys)
+    if len(keys) == 1:
+        print("Setting unique key:", key)
+        var value_addr = value.to_addr()
 
-    var table: UnsafePointer[TomlType[o].OpaqueTable, origin=MutAnyOrigin]
-    table = UnsafePointer[origin=MutAnyOrigin](to=base)
+        @parameter
+        if collection == "table":
+            _ = base.as_table().setdefault(key, value_addr)
+        elif collection == "array":
+            var default_array = TomlType[o].new_array()
+            var def_array_addr = default_array.to_addr()
+            var addr = base.as_table().setdefault(key, def_array_addr)
+            ref new_base_ptr = TomlType[o].from_addr(addr)
+            new_base_ptr.as_array().append(value_addr)
+        return
 
-    for key in keys[: len(keys) - 1]:  # leave the last one to the end.
-        print("navigating to key:", key)
-        var new_tb = TomlType[o].Table()
-        var new_toml_table = TomlType[o](new_tb^)
-        var opaque_table_ptr = UnsafePointer(to=new_toml_table).bitcast[
-            NoneType
-        ]()
-        var new_tbl_ptr = table[].setdefault(key, opaque_table_ptr)
-        table = UnsafePointer(
-            to=new_tbl_ptr.bitcast[TomlType[o]]()[].inner[
-                TomlType[o].OpaqueTable
-            ]
-        )
+    var first_key = keys[0]
 
-    ref last_key = keys[len(keys) - 1]
-    table[][keys[len(keys) - 1]] = UnsafePointer(to=value).bitcast[NoneType]()
-
-    return base^
-
-
-fn update_base_with_kv_list[
-    o: ImmutOrigin, mode: StaticString = "table"
-](
-    key: StringSlice[o],
-    mut value: TomlType[o],
-    var base: TomlType[o].OpaqueTable,
-) -> TomlType[o].OpaqueTable:
-    var keys = key.split(".")
-
-    print("nested keys found:", keys)
-
-    var table: UnsafePointer[TomlType[o].OpaqueTable, origin=MutAnyOrigin]
-    table = UnsafePointer[origin=MutAnyOrigin](to=base)
-
-    for key in keys[: len(keys) - 1]:  # leave the last one to the end.
-        print("navigating to key:", key)
-        var new_tb = TomlType[o].Table()
-        var new_toml_table = TomlType[o](new_tb^)
-        var opaque_table_ptr = UnsafePointer(to=new_toml_table).bitcast[
-            NoneType
-        ]()
-        var new_tbl_ptr = table[].setdefault(key, opaque_table_ptr)
-        table = UnsafePointer(
-            to=new_tbl_ptr.bitcast[TomlType[o]]()[].inner[
-                TomlType[o].OpaqueTable
-            ]
-        )
-
-    ref last_key = keys[len(keys) - 1]
-    var toml_array = TomlType(TomlType[o].Array())
-    var array_ref = table[].setdefault(
-        last_key, UnsafePointer(to=toml_array).bitcast[NoneType]()
-    )
-    ref inner_array = array_ref.bitcast[TomlType[o]]()[].inner[
-        TomlType[o].OpaqueArray
-    ]
-    inner_array.append(UnsafePointer(to=value).bitcast[NoneType]())
-
-    return base^
+    var rest = key[len(first_key) + 1 :]
+    var default_tb = TomlType[o].new_table()
+    var default_tb_addr = default_tb.to_addr()
+    var new_base_ptr = base.as_table().setdefault(first_key, default_tb_addr)
+    ref new_base = TomlType[o].from_addr(new_base_ptr)
+    update_base_with_kv[collection](rest, value, new_base)
 
 
 fn try_get_kv_pair[
@@ -541,11 +458,17 @@ fn parse_table[
     o: ImmutOrigin
 ](full_content: StringSlice[o], mut char_idx: Int) -> TomlType[o]:
     # Clean start
-    var i_content = TomlType[o].Table()
+    var i_content = TomlType[o].new_table()
 
     # The only possibility to stop is to find another table or table list
     var end_of_table = full_content.find("\n[", char_idx)
     print("end of table found in idx:", end_of_table)
+    print(
+        "possible table span: '''\n",
+        full_content[char_idx:end_of_table],
+        "\n'''",
+        sep="",
+    )
 
     while char_idx < end_of_table:
         print("Parsing table content on line:", char_idx)
@@ -559,13 +482,13 @@ fn parse_table[
         if kv := try_get_kv_pair(full_content, idx=char_idx):
             var kv = kv.take()
             print("store kv pair content", kv[0])
-            i_content[kv[0]] = UnsafePointer(to=kv[1])
+            update_base_with_kv["table"](kv[0], i_content, kv[1])
             continue
 
         os.abort("This should not happen.!")
 
     char_idx = end_of_table + 1
-    return TomlType[o](i_content^)
+    return i_content^
 
 
 fn try_get_table_list[
@@ -643,7 +566,7 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
     var idx = 0
     # var content_len = len(content)
 
-    var base = TomlType[content.origin].OpaqueTable()
+    var base = TomlType[content.origin].new_table()
     # We will parse the file sequentially, building the type on the way.
 
     while (nidx := content.find("\n", idx)) != -1:
@@ -671,7 +594,7 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
             print("store kv pair content", kv[0])
             print("key is:", kv[0])
             print("value is:", kv[1])
-            base = update_base_with_kv_table(kv[0], kv[1], base^)
+            update_base_with_kv["table"](kv[0], kv[1], base)
             print("parsing kv done, moving to ", idx + 1, "...")
             idx += 1
             continue
@@ -682,7 +605,7 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
         if kv := try_get_table_list(content, idx):
             var kv = kv.take()
             print("store table list content", kv[0])
-            base = update_base_with_kv_list(kv[0], kv[1], base^)
+            update_base_with_kv["table"](kv[0], kv[1], base)
             print("parsing table list done, moving to ", idx + 1, "...")
             idx += 1
             continue
@@ -692,7 +615,7 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
         if kv := try_get_table(content, idx):
             var kv = kv.take()
             print("store table content", kv[0])
-            base = update_base_with_kv_table(kv[0], kv[1], base^)
+            update_base_with_kv["table"](kv[0], kv[1], base)
             print("parsing table done, moving to ", idx + 1, "...")
             idx += 1
             continue
@@ -703,7 +626,7 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
             " doesn't catch this"
         )
 
-    return TomlType[content.origin](base^, explicitly_constructed=())
+    return base^
 
 
 fn stringify_toml(content: StringSlice) -> String:
