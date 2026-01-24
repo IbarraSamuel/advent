@@ -44,7 +44,8 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
         return addr.bitcast[Self]()[]
 
     fn to_addr(var self) -> Self.Opq:
-        var ptr = UnsafePointer[Self, MutAnyOrigin]()
+        var ptr = alloc[Self](1)
+        # var ptr = UnsafePointer[Self, MutAnyOrigin].__init__(alloc)
         ptr.init_pointee_move(self^)
         return ptr.bitcast[NoneType]()
 
@@ -85,17 +86,29 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
     fn __init__(out self, var v: Self.OpaqueTable):
         self.inner = v^
 
+    fn __del__(deinit self):
+        ref inner = self.inner
+
+        if inner.isa[self.OpaqueArray]():
+            ref array = inner[self.OpaqueArray]
+            for addr in array:
+                addr.free()
+        elif inner.isa[self.OpaqueTable]():
+            ref table = inner[self.OpaqueTable]
+            for v in table.values():
+                v.free()
+
     fn write_to(self, mut w: Some[Writer]):
         ref inner = self.inner
 
         if inner.isa[self.String]():
-            w.write('String("', inner[self.String], '")')
+            w.write('"', inner[self.String], '"')
         elif inner.isa[self.Integer]():
-            w.write("Integer(", inner[self.Integer], ")")
+            w.write(inner[self.Integer])
         elif inner.isa[self.Float]():
-            w.write("Float(", inner[self.Float], ")")
+            w.write(inner[self.Float])
         elif inner.isa[self.Boolean]():
-            w.write("Boolean(", inner[self.Boolean], ")")
+            w.write("true" if inner[self.Boolean] else "false")
         elif inner.isa[self.OpaqueArray]():
             ref array = inner[self.OpaqueArray]
             # w.write(array)
@@ -264,6 +277,18 @@ fn parse_inline_collection[
     print(chr(Int(bts[ci])))
 
     var obj_str = orig_content[cip:ci]
+
+    if obj_str.strip() == "":
+        print(
+            " ->> no more object found in the ",
+            collection.inner,
+            " collection. finishing...",
+            sep="",
+        )
+        from_char_idx = ci + 1
+        print("end at:", ci + 1)
+        print("display", collection.inner, "collection parsed:", objs)
+        return objs^
 
     # Will potentially fail if there is a trailing comma
     print(
@@ -435,7 +460,7 @@ fn update_base_with_kv[
         elif collection == "array":
             var default_array = TomlType[o].new_array()
             var def_array_addr = default_array^.to_addr()
-            var addr = base.as_table().setdefault(key, def_array_addr)
+            var addr = base.as_table().setdefault(key.strip(), def_array_addr)
             ref new_base_ptr = TomlType[o].from_addr(addr)
             print(
                 "^^ using",
@@ -453,7 +478,9 @@ fn update_base_with_kv[
     var default_tb = TomlType[o].new_table()
 
     var default_tb_addr = default_tb^.to_addr()
-    var new_base_ptr = base.as_table().setdefault(first_key, default_tb_addr)
+    var new_base_ptr = base.as_table().setdefault(
+        first_key.strip(), default_tb_addr
+    )
     ref new_base = TomlType[o].from_addr(new_base_ptr)
     print(
         "^^ using",
