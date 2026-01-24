@@ -43,5 +43,5 @@ fn main() raises:
 
     var path = argv()[1]
     var f = Path(path).read_text()
-    var result = stringify_toml(f)
-    print(result)
+    var t = parse_toml(f)
+    print("parsed toml:", t)
