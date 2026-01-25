@@ -1,10 +1,9 @@
 from testing import assert_equal
 from test_suite import TestSuite
-from advent_utils import AdventSolution, Solutions, Args
+from advent_utils import AdventSolution, Args
+from toml_parser import parse_toml
 from pathlib import _dir_of_current_file, Path
-from python import Python, PythonObject
 from builtin import Variadic
-from sys import argv
 
 comptime Years = Dict[Int, Days]
 comptime Days = Dict[Int, Parts]
@@ -19,50 +18,48 @@ struct Case(Copyable):
 
 
 fn parse_config() raises -> Years:
-    # TODO:NOT USE PYTHON HERE IF POSSIBLE.
-    var toml = Python.import_module("tomllib")
-
     var loc = _dir_of_current_file() / "../.."
     var config_loc = loc / "advent_config.toml"
     var data = config_loc.read_text()
 
-    var py_data = toml.loads(data)
-    var year_data = py_data[PythonObject("tests")][PythonObject("year")]
+    var toml = parse_toml(data)
+    ref year_data = toml["tests"]["year"]
     # print("year data:", year_data)
 
     var years = Years()
-    for yi in year_data.items():
-        var year, day_data = yi[0], yi[1][PythonObject("day")]
+    for yi in year_data.table().items():
+        ref year = yi.key
+        ref day_data = yi.value["day"]
         # print("\tdays data for year:", year, "is:", day_data)
 
         var days = Days()
-        for di in day_data.items():
-            var day, part_data = di[0], di[1][PythonObject("part")]
+        for di in day_data.table().items():
+            ref day = di.key
+            ref part_data = di.value["part"]
             # print("\t\tparts data for day:", day, "is:", part_data)
 
             var parts = Parts()
-            for pi in part_data.items():
-                var part, test_list = pi[0], pi[1]
+            for pi in part_data.table().items():
+                ref part = pi.key
+                ref test_list = pi.value[]
                 # print("\t\t\ttest list for part:", part, "is:", test_list)
 
                 var cases = TestCases()
-                for t in test_list:
-                    file_location, test_expects = (
-                        t[PythonObject("file")],
-                        t[PythonObject("expected")],
+                for t in test_list.array():
+                    var file_location, test_expects = (
+                        t["file"].string(),
+                        t["expected"].integer(),
                     )
 
-                    var floc = (
-                        loc / "tests" / String(year) / String(file_location)
-                    )
-                    var tcase = Case(floc, Int(py=test_expects))
+                    var floc = loc / "tests" / year / file_location
+                    var tcase = Case(floc, test_expects)
                     cases.append(tcase^)
 
-                parts[Int(py=part)] = cases^
+                parts[Int(part)] = cases^
 
-            days[Int(py=day)] = parts^
+            days[Int(day)] = parts^
 
-        years[Int(py=year)] = days^
+        years[Int(year)] = days^
 
     return years^
 

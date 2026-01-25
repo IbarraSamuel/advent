@@ -36,13 +36,26 @@ struct ReprType(Equatable, Writable):
 
 
 struct TomlRef[inner: ImmutOrigin, toml: ImmutOrigin](Copyable):
-    var pointer: Pointer[TomlType[Self.inner], Self.toml]
+    comptime Toml = TomlType[Self.inner]
+    var pointer: Pointer[Self.Toml, Self.toml]
 
-    fn __init__(out self, ref [Self.toml]v: TomlType[Self.inner]):
+    fn __init__(out self, ref [Self.toml]v: Self.Toml):
         self.pointer = Pointer(to=v)
 
-    fn __getitem__(ref self) -> ref [Self.toml] TomlType[Self.inner]:
+    fn __getitem__(ref self) raises -> ref [Self.toml] Self.Toml:
         return self.pointer[]
+
+    fn __getitem__(ref self, idx: Int) raises -> ref [Self.toml] Self.Toml:
+        ref obj = self.pointer[].inner
+        if not obj.isa[Self.Toml.OpaqueArray]():
+            raise Error("Wrong object type for array indexing.")
+
+        return self[][idx]
+
+    fn __getitem__(
+        ref self, key: StringSlice[...]
+    ) raises -> ref [Self.toml] Self.Toml:
+        return self[][key]
 
 
 struct TomlType[o: ImmutOrigin](Movable, Writable):
@@ -115,6 +128,30 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
             kv.key: TomlRef[inner = Self.o, toml=s](Self.from_addr(kv.value))
             for kv in self.inner[Self.OpaqueTable].items()
         }
+
+    # For interop with list
+
+    fn __getitem__(ref self, idx: Int) raises -> ref [self] Self:
+        ref obj = self.inner
+        if not obj.isa[Self.OpaqueArray]():
+            raise Error("Wrong object type for array indexing.")
+
+        return Self.from_addr(obj[Self.OpaqueArray][idx])
+
+    # For interop with dict
+
+    fn __getitem__(ref self, key: StringSlice[...]) raises -> ref [self] Self:
+        ref obj = self.inner
+        if not obj.isa[Self.OpaqueTable]():
+            raise Error("Wrong object type for table indexing.")
+
+        ref table = obj[Self.OpaqueTable]
+
+        for kv in table.items():
+            if kv.key == key:
+                return Self.from_addr(kv.value)
+
+        raise Error("Key not found.")
 
     fn __init__(
         out self, var v: AnyTomlType[Self.o], explicitly_constructed: ()
@@ -243,23 +280,23 @@ fn parse_inline_collection[
     var ci = close_char
     var bts = orig_content.as_bytes()
 
-    print("start parsing", collection.inner, "at:", ci, end="\t -> `")
+    # print("start parsing", collection.inner, "at:", ci, end="\t -> `")
 
     comptime close_char_byte = ord("]" if collection == "array" else "}")
     var objs = (
         TomlType[o].new_array() if collection.inner
         == "array" else TomlType[o].new_table()
     )
-    print("!! new", collection.inner, "with repr:", objs)
+    # print("!! new", collection.inner, "with repr:", objs)
 
     while not (
         (b := bts[ci]) == close_char_byte
         and list_nested + table_nested + string_nested + multistring_nested == 0
     ):
-        print(chr(Int(bts[ci])), end="")
+        # print(chr(Int(bts[ci])), end="")
         if b == ord('"'):
             if bts[ci + 1] == ord('"') and bts[ci + 2] == ord('"'):
-                # print("\nthe content is a multiline string")
+                # # print("\nthe content is a multiline string")
                 if multistring_nested == 1 and bts[ci - 1] != ord("\\"):
                     multistring_nested -= 1
                 else:
@@ -267,7 +304,7 @@ fn parse_inline_collection[
                 ci += 3
                 continue
 
-            # print("\nthe content is a string")
+            # # print("\nthe content is a string")
             if string_nested == 1 and bts[ci - 1] != ord("\\"):
                 string_nested -= 1
             else:
@@ -295,26 +332,26 @@ fn parse_inline_collection[
             and list_nested + table_nested + string_nested + multistring_nested
             == 0
         ):
-            print()
+            # print()
             var obj_str = orig_content[cip:ci].strip()
-            print(
-                " ->> object found in the ",
-                collection.inner,
-                " collection: '",
-                obj_str,
-                "'",
-                # " in between ",
-                # cip,
-                # " and ",
-                # ci,
-                sep="",
-            )
+            # print(
+            #     " ->> object found in the ",
+            #     collection.inner,
+            #     " collection: '",
+            #     obj_str,
+            #     "'",
+            #     # " in between ",
+            #     # cip,
+            #     # " and ",
+            #     # ci,
+            #     sep="",
+            # )
             var _lidx = 0
 
             @parameter
             if collection == "array":
                 var toml_obj = parse_value(obj_str, _lidx)
-                print("\n\tparsed_value: '", toml_obj, "'", sep="")
+                # print("\n\tparsed_value: '", toml_obj, "'", sep="")
                 objs.as_opaque_array().append(toml_obj^.to_addr())
             elif collection == "table":
                 var s = Slicer(0, 0, None)  # gets modified by next fn
@@ -323,45 +360,45 @@ fn parse_inline_collection[
                 var kk = obj_str[s]
                 update_base_with_kv["table"](kk, toml_obj^, objs)
 
-            print("continue with", collection.inner, "parsing...", end=" -> ")
+            # print("continue with", collection.inner, "parsing...", end=" -> ")
             cip = ci + 1
         ci += 1
 
-    print(chr(Int(bts[ci])))
+    # print(chr(Int(bts[ci])))
 
     var obj_str = orig_content[cip:ci]
 
     if obj_str.strip() == "":
-        print(
-            " ->> no more object found in the ",
-            collection.inner,
-            " collection. finishing...",
-            sep="",
-        )
+        # print(
+        #     " ->> no more object found in the ",
+        #     collection.inner,
+        #     " collection. finishing...",
+        #     sep="",
+        # )
         from_char_idx = ci + 1
-        print("end at:", ci + 1)
-        print("display", collection.inner, "collection parsed:", objs)
+        # print("end at:", ci + 1)
+        # print("display", collection.inner, "collection parsed:", objs)
         return objs^
 
     # Will potentially fail if there is a trailing comma
-    print(
-        " ->> last object found in the ",
-        collection.inner,
-        " collection: '",
-        obj_str,
-        "'",
-        # " in between ",
-        # cip,
-        # " and ",
-        # ci,
-        sep="",
-    )
+    # print(
+    #     " ->> last object found in the ",
+    #     collection.inner,
+    #     " collection: '",
+    #     obj_str,
+    #     "'",
+    #     # " in between ",
+    #     # cip,
+    #     # " and ",
+    #     # ci,
+    #     sep="",
+    # )
     var _lidx = 0
 
     @parameter
     if collection == "array":
         var toml_obj = parse_value(obj_str, _lidx)
-        print("\n\tparsed_value: '", toml_obj, "'", sep="")
+        # print("\n\tparsed_value: '", toml_obj, "'", sep="")
         objs.as_opaque_array().append(toml_obj^.to_addr())
     elif collection == "table":
         var s = Slicer(0, 0, None)  # gets modified by next fn
@@ -371,13 +408,13 @@ fn parse_inline_collection[
         update_base_with_kv["table"](kk, toml_obj^, objs)
 
     from_char_idx = ci + 1
-    print("end at:", ci + 1)
-    print("display", collection.inner, "collection parsed:", objs)
+    # print("end at:", ci + 1)
+    # print("display", collection.inner, "collection parsed:", objs)
     return objs^
 
 
 fn string_to_type[o: ImmutOrigin](str_value: StringSlice[o]) -> TomlType[o]:
-    print("Casting value '", str_value, "' into a type...", sep="")
+    # print("Casting value '", str_value, "' into a type...", sep="")
     s = str_value.strip()
     if len(parts := s.split(".")) == 2:
         if parts[0].is_ascii_digit() and parts[1].is_ascii_digit():
@@ -422,44 +459,44 @@ fn parse_value[
 
     var content: TomlType[o]
     if is_before(multiline_string_start, list_start, table_start):
-        print(
-            "Parsing multiline string: '''\n",
-            file_content[multiline_string_start : multiline_string_start + 20],
-            "...\n'''",
-            sep="",
-        )
+        # print(
+        #     "Parsing multiline string: '''\n",
+        #     file_content[multiline_string_start : multiline_string_start + 20],
+        #     "...\n'''",
+        #     sep="",
+        # )
         content = parse_multiline_string(
             file_content, idx=multiline_string_start
         )
         idx = multiline_string_start
 
     elif is_before(string_start, list_start, table_start):
-        print(
-            "parsing string:'",
-            file_content[string_start : string_start + 20],
-            "...'",
-            sep="",
-        )
+        # print(
+        #     "parsing string:'",
+        #     file_content[string_start : string_start + 20],
+        #     "...'",
+        #     sep="",
+        # )
         content = parse_string(file_content, from_char_idx=string_start)
         idx = multiline_string_start
 
     elif is_before(list_start, table_start):
-        print(
-            "parsing linine list: '''\n",
-            file_content[list_start : list_start + 20],
-            "...\n'''",
-        )
+        # print(
+        #     "parsing linine list: '''\n",
+        #     file_content[list_start : list_start + 20],
+        #     "...\n'''",
+        # )
         content = parse_inline_collection["array"](
             file_content, from_char_idx=list_start
         )
         idx = list_start
 
     elif is_before(table_start, list_start):
-        print(
-            "parsing inline table: '''\n",
-            file_content[table_start : table_start + 20],
-            "...\n'''",
-        )
+        # print(
+        #     "parsing inline table: '''\n",
+        #     file_content[table_start : table_start + 20],
+        #     "...\n'''",
+        # )
         content = parse_inline_collection["table"](
             file_content, from_char_idx=table_start
         )
@@ -470,7 +507,7 @@ fn parse_value[
         # TODO: Check this...
         eol = len(file_content) if eol == -1 else eol
         var cnt = file_content[idx:eol]
-        print("infer type for all: '", cnt, "'", sep="")
+        # print("infer type for all: '", cnt, "'", sep="")
         content = string_to_type(cnt)
         idx = eol + 1
 
@@ -496,16 +533,16 @@ fn update_base_with_kv[
     var keys = key.split(".")
 
     if len(keys) == 1:
-        var value_repr = String(value)
+        # var value_repr = String(value)
         var value_addr = value^.to_addr()
-        print(
-            "Setting unique key:",
-            key,
-            "to store obj",
-            value_repr,
-            "with addr",
-            Int(value_addr),
-        )
+        # print(
+        #     "Setting unique key:",
+        #     key,
+        #     "to store obj",
+        #     value_repr,
+        #     "with addr",
+        #     Int(value_addr),
+        # )
 
         @parameter
         if collection == "table":
@@ -517,13 +554,13 @@ fn update_base_with_kv[
                 key.strip(), def_array_addr
             )
             ref new_base_ptr = TomlType[o].from_addr(addr)
-            print(
-                "^^ using",
-                "obj",
-                new_base_ptr,
-                "as container with addr",
-                Int(addr),
-            )
+            # print(
+            #     "^^ using",
+            #     "obj",
+            #     new_base_ptr,
+            #     "as container with addr",
+            #     Int(addr),
+            # )
             new_base_ptr.as_opaque_array().append(value_addr)
         return
 
@@ -537,13 +574,13 @@ fn update_base_with_kv[
         first_key.strip(), default_tb_addr
     )
     ref new_base = TomlType[o].from_addr(new_base_ptr)
-    print(
-        "^^ using",
-        "obj",
-        # new_base,
-        "as container with addr",
-        Int(new_base_ptr),
-    )
+    # print(
+    #     "^^ using",
+    #     "obj",
+    #     # new_base,
+    #     "as container with addr",
+    #     Int(new_base_ptr),
+    # )
     update_base_with_kv[collection](rest, value^, new_base)
 
 
@@ -560,12 +597,12 @@ fn try_get_value_and_update_slicer[
 
     s = ContiguousSlice(idx, eq_idx, None)
     # var key = file_content[idx:eq_idx].strip()
-    print("key found: '", file_content[s].strip(), "'", sep="")
+    # print("key found: '", file_content[s].strip(), "'", sep="")
     eq_idx += 1
-    print("value found: '", file_content[eq_idx : eq_idx + 20], "...'", sep="")
-    print("Parsing value into toml...")
+    # print("value found: '", file_content[eq_idx : eq_idx + 20], "...'", sep="")
+    # print("Parsing value into toml...")
     var content = parse_value(file_content, idx=eq_idx)
-    print("Parsing done! Result:", content)
+    # print("Parsing done! Result:", content)
     idx = eq_idx  # eq_idx gets modified by parse_value func
     return content^
 
@@ -580,25 +617,25 @@ fn parse_table[
     var end_of_table = eot if (
         eot := full_content.find("\n[", char_idx)
     ) != -1 else len(full_content)
-    print("end of table found in idx:", end_of_table)
-    print(
-        "======>> possible table span: from ",
-        char_idx,
-        " to ",
-        end_of_table,
-        ": ->> '''\n",
-        full_content[char_idx:end_of_table],
-        "\n'''",
-        sep="",
-    )
+    # print("end of table found in idx:", end_of_table)
+    # print(
+    #     "======>> possible table span: from ",
+    #     char_idx,
+    #     " to ",
+    #     end_of_table,
+    #     ": ->> '''\n",
+    #     full_content[char_idx:end_of_table],
+    #     "\n'''",
+    #     sep="",
+    # )
 
     var s = Slicer(0, 0, None)
     while char_idx < end_of_table:
-        print("Parsing table content on line:", char_idx)
+        # print("Parsing table content on line:", char_idx)
         var next_jump = full_content.find("\n", char_idx)
         # Do Parsing
         if full_content[char_idx:next_jump].strip() == "":
-            print("empty line. skipping...")
+            # print("empty line. skipping...")
             char_idx = next_jump + 1
             continue
 
@@ -606,7 +643,7 @@ fn parse_table[
             full_content, idx=char_idx, s=s
         ):
             var toml_obj = kv.take()
-            print("store kv pair content", full_content[s])
+            # print("store kv pair content", full_content[s])
             update_base_with_kv["table"](full_content[s], toml_obj^, i_content)
             continue
 
@@ -625,26 +662,26 @@ fn try_get_table_list[
     var l = full_content.find("]]", char_idx)
 
     if i != char_idx:
-        print(
-            (
-                "no table list. table open bracket should be the first"
-                " character. expected:"
-            ),
-            char_idx,
-            ", got:",
-            i,
-        )
+        # print(
+        #     (
+        #         "no table list. table open bracket should be the first"
+        #         " character. expected:"
+        #     ),
+        #     char_idx,
+        #     ", got:",
+        #     i,
+        # )
         return None
     if l == -1 or full_content.as_bytes()[l + 2] != ord("\n"):
-        print(
-            "no table list. table close bracket should be the last character in"
-            " line."
-        )
+        # print(
+        #     "no table list. table close bracket should be the last character in"
+        #     " line."
+        # )
         return None
 
     # var key = full_content[i + 2 : l]
     s = Slicer(i + 2, l, None)
-    print("table list key found:", full_content[s])
+    # print("table list key found:", full_content[s])
     char_idx += l + 2
 
     var i_content = parse_table(full_content, char_idx)
@@ -661,26 +698,26 @@ fn try_get_table[
     var l = full_content.find("]", char_idx)
 
     if i != char_idx:
-        print(
-            (
-                "no table. table open bracket should be the first character."
-                " expected:"
-            ),
-            char_idx,
-            ", got:",
-            i,
-        )
+        # print(
+        #     (
+        #         "no table. table open bracket should be the first character."
+        #         " expected:"
+        #     ),
+        #     char_idx,
+        #     ", got:",
+        #     i,
+        # )
         return None
     if l == -1 or full_content.as_bytes()[l + 1] != ord("\n"):
-        print(
-            "no table. table close bracket should be the last character in"
-            " line."
-        )
+        # print(
+        #     "no table. table close bracket should be the last character in"
+        #     " line."
+        # )
         return None
 
     s = Slicer(i + 1, l, None)
     # var key = full_content[i + 1 : l]
-    print("table key found:", full_content[s])
+    # print("table key found:", full_content[s])
     char_idx = l + 1
 
     var i_content = parse_table(full_content, char_idx)
@@ -697,15 +734,15 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
     # We will parse the file sequentially, building the type on the way.
 
     while (nidx := content.find("\n", idx)) != -1:
-        print(
-            "on line",
-            content[idx:nidx],
-            ", and idx span: (",
-            idx,
-            ",",
-            nidx,
-            ")",
-        )
+        # print(
+        #     "on line",
+        #     content[idx:nidx],
+        #     ", and idx span: (",
+        #     idx,
+        #     ",",
+        #     nidx,
+        #     ")",
+        # )
 
         # var line = content[idx:nidx]
 
@@ -715,39 +752,39 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
             continue
 
         # First, find key,value pairs
-        # print("try to get kv pair")
+        # # print("try to get kv pair")
         var s = Slicer(0, 0, None)
         if val := try_get_value_and_update_slicer(content, idx, s):
             var toml_obj = val.take()
-            print("store kv pair content")
-            print("key is:", content[s])
-            print("value is:", toml_obj)
+            # print("store kv pair content")
+            # print("key is:", content[s])
+            # print("value is:", toml_obj)
             update_base_with_kv["table"](content[s], toml_obj^, base)
-            print("parsing kv done, moving to ", idx + 1, "...")
+            # print("parsing kv done, moving to ", idx + 1, "...")
             # idx += 1
             continue
-        print("No kv pair. continue")
+        # print("No kv pair. continue")
 
         # if there is no key, value, then try to get a table list.
-        # print("try to get table list")
+        # # print("try to get table list")
         if val := try_get_table_list(content, idx, s):
             var toml_obj = val.take()
-            print("store table list content", content[s])
+            # print("store table list content", content[s])
             update_base_with_kv["table"](content[s], toml_obj^, base)
-            print("parsing table list done, moving to ", idx + 1, "...")
+            # print("parsing table list done, moving to ", idx + 1, "...")
             # idx += 1
             continue
-        print("no table list, continue")
+        # print("no table list, continue")
 
-        # print("try to get table")
+        # # print("try to get table")
         if val := try_get_table(content, idx, s):
             var toml_obj = val.take()
-            print("store table content", content[s])
+            # print("store table content", content[s])
             update_base_with_kv["table"](content[s], toml_obj^, base)
-            print("parsing table done, moving to ", idx + 1, "...")
+            # print("parsing table done, moving to ", idx + 1, "...")
             # idx += 1
             continue
-        print("no table. Abort")
+        # print("no table. Abort")
 
         os.abort(
             "This is wrong! This should not happen!. Nothing to parse or rules"
