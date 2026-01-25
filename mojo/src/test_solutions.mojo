@@ -27,28 +27,28 @@ fn parse_config() raises -> Years:
     # print("year data:", year_data)
 
     var years = Years()
-    for yi in year_data.table().items():
+    for yi in year_data.table_ref().items():
         ref year = yi.key
-        ref day_data = yi.value["day"]
+        ref day_data = yi.value[]["day"]
         # print("\tdays data for year:", year, "is:", day_data)
 
         var days = Days()
-        for di in day_data.table().items():
+        for di in day_data.table_ref().items():
             ref day = di.key
-            ref part_data = di.value["part"]
+            ref part_data = di.value[]["part"]
             # print("\t\tparts data for day:", day, "is:", part_data)
 
             var parts = Parts()
-            for pi in part_data.table().items():
+            for pi in part_data.table_ref().items():
                 ref part = pi.key
                 ref test_list = pi.value[]
                 # print("\t\t\ttest list for part:", part, "is:", test_list)
 
                 var cases = TestCases()
-                for t in test_list.array():
+                for t in test_list.array_ref():
                     var file_location, test_expects = (
-                        t["file"].string(),
-                        t["expected"].integer(),
+                        t[]["file"].string(),
+                        t[]["expected"].integer(),
                     )
 
                     var floc = loc / "tests" / year / file_location
