@@ -29,7 +29,7 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
     fn test(
         deinit self, var other: Some[fn () raises unified]
     ) -> UnifiedTestSuite[
-        *Variadic.concat[Self.ts, Variadic.types[type_of(other)]]
+        *Variadic.concat_types[Self.ts, Variadic.types[type_of(other)]]
     ]:
         return {self.tests.concat((other^,)), self.location}
 
