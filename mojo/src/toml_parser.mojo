@@ -23,19 +23,7 @@ struct CollectionType(Equatable, Writable):
         self.inner = v
 
 
-struct ReprType(Equatable, Writable):
-    var inner: StaticString
-
-    @implicit
-    fn __init__(out self, v: type_of("default")):
-        self.inner = v
-
-    @implicit
-    fn __init__(out self, v: type_of("json")):
-        self.inner = v
-
-
-struct TomlRef[inner: ImmutOrigin, toml: ImmutOrigin](Copyable):
+struct TomlRef[inner: ImmutOrigin, toml: ImmutOrigin](TrivialRegisterType):
     comptime Toml = TomlType[Self.inner]
     var pointer: Pointer[Self.Toml, Self.toml]
 
@@ -45,29 +33,30 @@ struct TomlRef[inner: ImmutOrigin, toml: ImmutOrigin](Copyable):
     fn __getitem__(ref self) raises -> ref [Self.toml] Self.Toml:
         return self.pointer[]
 
-    fn __getitem__(ref self, idx: Int) raises -> ref [Self.toml] Self.Toml:
-        ref obj = self.pointer[].inner
-        if not obj.isa[Self.Toml.OpaqueArray]():
-            raise Error("Wrong object type for array indexing.")
+    # fn __getitem__(ref self, idx: Int) raises -> ref [Self.toml] Self.Toml:
+    #     ref obj = self.pointer[].inner
+    #     if not obj.isa[Self.Toml.OpaqueArray]():
+    #         raise Error("Wrong object type for array indexing.")
 
-        return self[][idx]
+    #     return self.pointer[][idx]
 
-    fn __getitem__(
-        ref self, key: StringSlice[...]
-    ) raises -> ref [Self.toml] Self.Toml:
-        return self[][key]
+    # fn __getitem__(
+    #     ref self, key: StringSlice[...]
+    # ) raises -> ref [Self.toml] Self.Toml:
+    #     return self.pointer[][key]
 
 
-struct TomlType[o: ImmutOrigin](Movable, Writable):
+struct TomlType[o: ImmutOrigin](Copyable, Writable):
     comptime String = StringSlice[Self.o]
     comptime Integer = Int
     comptime Float = Float64
     comptime Boolean = Bool
-    comptime Array[o: ImmutOrigin] = List[TomlRef[inner = Self.o, toml=o]]
-    comptime Table[o: ImmutOrigin] = Dict[
+    comptime Array = List[Self]
+    comptime Table = Dict[StringSlice[Self.o], Self]
+    comptime RefArray[o: ImmutOrigin] = List[TomlRef[Self.o, o]]
+    comptime RefTable[o: ImmutOrigin] = Dict[
         StringSlice[Self.o], TomlRef[Self.o, o]
     ]
-
     # Store a list of addesses.
     comptime OpaqueArray = List[Self.Opaque[MutExternalOrigin]]
     comptime OpaqueTable = Dict[
@@ -82,10 +71,17 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
     fn from_addr(addr: Self.Opaque[...]) -> ref [addr.origin] Self:
         return addr.bitcast[Self]()[]
 
-    fn to_addr(var self) -> Self.Opaque[MutExternalOrigin]:
+    @staticmethod
+    fn take_from_addr(var addr: Self.Opaque[MutExternalOrigin]) -> Self:
+        return addr.bitcast[Self]().take_pointee()
+
+    fn move_to_addr(var self) -> Self.Opaque[MutExternalOrigin]:
         var ptr = alloc[Self](1)
         ptr.init_pointee_move(self^)
         return ptr.bitcast[NoneType]()
+
+    fn to_addr(ref self) -> Self.Opaque[origin_of(self)]:
+        return UnsafePointer(to=self).bitcast[NoneType]()
 
     @staticmethod
     fn new_array(out self: Self):
@@ -103,29 +99,56 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
 
     # ==== Access inner values using methods ====
 
-    fn string(ref self) -> StringSlice[Self.o]:
+    fn string(ref self) raises -> StringSlice[Self.o]:
+        if not self.inner.isa[Self.String]():
+            raise Error("Wrong object type for string access.")
         return self.inner[Self.String]
 
-    fn integer(ref self) -> Int:
+    fn integer(ref self) raises -> Int:
+        if not self.inner.isa[Self.Integer]():
+            raise Error("Wrong object type for integer access.")
         return self.inner[Self.Integer]
 
-    fn float(ref self) -> Float64:
+    fn float(ref self) raises -> Float64:
+        if not self.inner.isa[Self.Float]():
+            raise Error("Wrong object type for float access.")
         return self.inner[Self.Float]
 
-    fn boolean(ref self) -> Bool:
+    fn boolean(ref self) raises -> Bool:
+        if not self.inner.isa[Self.Boolean]():
+            raise Error("Wrong object type for boolean access.")
         return self.inner[Self.Boolean]
 
-    fn array[s: ImmutOrigin](ref [s]self) -> Self.Array[s]:
+    fn array(self) raises -> Self.Array:
         """Points to self, because external origin it's managed by self."""
+        if not self.inner.isa[Self.OpaqueArray]():
+            raise Error("Wrong object type for array access.")
+        return [Self.take_from_addr(it) for it in self.inner[Self.OpaqueArray]]
+
+    fn table(self) raises -> Self.Table:
+        """Points to self, because external origin it's managed by self."""
+        if not self.inner.isa[Self.OpaqueTable]():
+            raise Error("Wrong object type for table access.")
+        return {
+            kv.key: Self.take_from_addr(kv.value)
+            for kv in self.inner[Self.OpaqueTable].items()
+        }
+
+    fn array_ref(self) raises -> Self.RefArray[origin_of(self)]:
+        """Points to self, because external origin it's managed by self."""
+        if not self.inner.isa[Self.OpaqueArray]():
+            raise Error("Wrong object type for array access.")
         return [
-            TomlRef[inner = Self.o, toml=s](Self.from_addr(it))
+            TomlRef[Self.o, origin_of(self)](Self.from_addr(it))
             for it in self.inner[Self.OpaqueArray]
         ]
 
-    fn table[s: ImmutOrigin](ref [s]self) -> Self.Table[s]:
+    fn table_ref(self) raises -> Self.RefTable[origin_of(self)]:
         """Points to self, because external origin it's managed by self."""
+        if not self.inner.isa[Self.OpaqueTable]():
+            raise Error("Wrong object type for table access.")
         return {
-            kv.key: TomlRef[inner = Self.o, toml=s](Self.from_addr(kv.value))
+            kv.key: TomlRef[Self.o, origin_of(self)](Self.from_addr(kv.value))
             for kv in self.inner[Self.OpaqueTable].items()
         }
 
@@ -136,7 +159,7 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
         if not obj.isa[Self.OpaqueArray]():
             raise Error("Wrong object type for array indexing.")
 
-        return Self.from_addr(obj[Self.OpaqueArray][idx])
+        return obj[Self.OpaqueArray][idx].bitcast[Self]()[]
 
     # For interop with dict
 
@@ -201,7 +224,6 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
             w.write("true" if inner[self.Boolean] else "false")
         elif inner.isa[self.OpaqueArray]():
             ref array = inner[self.OpaqueArray]
-            # w.write(array)
             w.write("[")
             for i, v in enumerate(array):
                 if i != 0:
@@ -211,7 +233,6 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
             w.write("]")
         elif inner.isa[self.OpaqueTable]():
             ref table = inner[self.OpaqueTable]
-            # w.write(table)
             w.write("{")
             for i, kv in enumerate(table.items()):
                 if i != 0:
@@ -269,6 +290,8 @@ fn parse_string[
 fn parse_inline_collection[
     o: ImmutOrigin, //, collection: CollectionType
 ](orig_content: StringSlice[o], mut from_char_idx: Int,) -> TomlType[o]:
+    comptime close_char_byte = ord("]" if collection == "array" else "}")
+
     var close_char = from_char_idx + 1
 
     var list_nested = 0
@@ -280,23 +303,17 @@ fn parse_inline_collection[
     var ci = close_char
     var bts = orig_content.as_bytes()
 
-    # print("start parsing", collection.inner, "at:", ci, end="\t -> `")
-
-    comptime close_char_byte = ord("]" if collection == "array" else "}")
     var objs = (
         TomlType[o].new_array() if collection.inner
         == "array" else TomlType[o].new_table()
     )
-    # print("!! new", collection.inner, "with repr:", objs)
 
     while not (
         (b := bts[ci]) == close_char_byte
         and list_nested + table_nested + string_nested + multistring_nested == 0
     ):
-        # print(chr(Int(bts[ci])), end="")
         if b == ord('"'):
             if bts[ci + 1] == ord('"') and bts[ci + 2] == ord('"'):
-                # # print("\nthe content is a multiline string")
                 if multistring_nested == 1 and bts[ci - 1] != ord("\\"):
                     multistring_nested -= 1
                 else:
@@ -304,7 +321,6 @@ fn parse_inline_collection[
                 ci += 3
                 continue
 
-            # # print("\nthe content is a string")
             if string_nested == 1 and bts[ci - 1] != ord("\\"):
                 string_nested -= 1
             else:
@@ -332,27 +348,13 @@ fn parse_inline_collection[
             and list_nested + table_nested + string_nested + multistring_nested
             == 0
         ):
-            # print()
             var obj_str = orig_content[cip:ci].strip()
-            # print(
-            #     " ->> object found in the ",
-            #     collection.inner,
-            #     " collection: '",
-            #     obj_str,
-            #     "'",
-            #     # " in between ",
-            #     # cip,
-            #     # " and ",
-            #     # ci,
-            #     sep="",
-            # )
             var _lidx = 0
 
             @parameter
             if collection == "array":
                 var toml_obj = parse_value(obj_str, _lidx)
-                # print("\n\tparsed_value: '", toml_obj, "'", sep="")
-                objs.as_opaque_array().append(toml_obj^.to_addr())
+                objs.as_opaque_array().append(toml_obj^.move_to_addr())
             elif collection == "table":
                 var s = Slicer(0, 0, None)  # gets modified by next fn
                 var value = try_get_value_and_update_slicer(obj_str, _lidx, s)
@@ -360,46 +362,20 @@ fn parse_inline_collection[
                 var kk = obj_str[s]
                 update_base_with_kv["table"](kk, toml_obj^, objs)
 
-            # print("continue with", collection.inner, "parsing...", end=" -> ")
             cip = ci + 1
         ci += 1
-
-    # print(chr(Int(bts[ci])))
 
     var obj_str = orig_content[cip:ci]
 
     if obj_str.strip() == "":
-        # print(
-        #     " ->> no more object found in the ",
-        #     collection.inner,
-        #     " collection. finishing...",
-        #     sep="",
-        # )
         from_char_idx = ci + 1
-        # print("end at:", ci + 1)
-        # print("display", collection.inner, "collection parsed:", objs)
         return objs^
-
-    # Will potentially fail if there is a trailing comma
-    # print(
-    #     " ->> last object found in the ",
-    #     collection.inner,
-    #     " collection: '",
-    #     obj_str,
-    #     "'",
-    #     # " in between ",
-    #     # cip,
-    #     # " and ",
-    #     # ci,
-    #     sep="",
-    # )
     var _lidx = 0
 
     @parameter
     if collection == "array":
         var toml_obj = parse_value(obj_str, _lidx)
-        # print("\n\tparsed_value: '", toml_obj, "'", sep="")
-        objs.as_opaque_array().append(toml_obj^.to_addr())
+        objs.as_opaque_array().append(toml_obj^.move_to_addr())
     elif collection == "table":
         var s = Slicer(0, 0, None)  # gets modified by next fn
         var value = try_get_value_and_update_slicer(obj_str, _lidx, s)
@@ -408,13 +384,10 @@ fn parse_inline_collection[
         update_base_with_kv["table"](kk, toml_obj^, objs)
 
     from_char_idx = ci + 1
-    # print("end at:", ci + 1)
-    # print("display", collection.inner, "collection parsed:", objs)
     return objs^
 
 
 fn string_to_type[o: ImmutOrigin](str_value: StringSlice[o]) -> TomlType[o]:
-    # print("Casting value '", str_value, "' into a type...", sep="")
     s = str_value.strip()
     if len(parts := s.split(".")) == 2:
         if parts[0].is_ascii_digit() and parts[1].is_ascii_digit():
@@ -459,44 +432,22 @@ fn parse_value[
 
     var content: TomlType[o]
     if is_before(multiline_string_start, list_start, table_start):
-        # print(
-        #     "Parsing multiline string: '''\n",
-        #     file_content[multiline_string_start : multiline_string_start + 20],
-        #     "...\n'''",
-        #     sep="",
-        # )
         content = parse_multiline_string(
             file_content, idx=multiline_string_start
         )
         idx = multiline_string_start
 
     elif is_before(string_start, list_start, table_start):
-        # print(
-        #     "parsing string:'",
-        #     file_content[string_start : string_start + 20],
-        #     "...'",
-        #     sep="",
-        # )
         content = parse_string(file_content, from_char_idx=string_start)
         idx = multiline_string_start
 
     elif is_before(list_start, table_start):
-        # print(
-        #     "parsing linine list: '''\n",
-        #     file_content[list_start : list_start + 20],
-        #     "...\n'''",
-        # )
         content = parse_inline_collection["array"](
             file_content, from_char_idx=list_start
         )
         idx = list_start
 
     elif is_before(table_start, list_start):
-        # print(
-        #     "parsing inline table: '''\n",
-        #     file_content[table_start : table_start + 20],
-        #     "...\n'''",
-        # )
         content = parse_inline_collection["table"](
             file_content, from_char_idx=table_start
         )
@@ -514,53 +465,23 @@ fn parse_value[
     return content^
 
 
-# @no_inline
-# fn opaque_table_repr[o: ImmutOrigin](ref tb: TomlType[o].OpaqueTable) -> String:
-#     var s = String("{")
-#     for i, kv in enumerate(tb.items()):
-#         if i != 0:
-#             s.write(", ")
-#         ref k = kv.key
-#         ref v = TomlType[o].from_addr(kv.value)
-#         s.write(k, ": ", v)
-#     s.write("}")
-#     return s
-
-
 fn update_base_with_kv[
     o: ImmutOrigin, //, collection: CollectionType
 ](key: StringSlice[o], var value: TomlType[o], mut base: TomlType[o]):
     var keys = key.split(".")
 
     if len(keys) == 1:
-        # var value_repr = String(value)
-        var value_addr = value^.to_addr()
-        # print(
-        #     "Setting unique key:",
-        #     key,
-        #     "to store obj",
-        #     value_repr,
-        #     "with addr",
-        #     Int(value_addr),
-        # )
+        var value_addr = value^.move_to_addr()
 
         @parameter
         if collection == "table":
             _ = base.as_opaque_table().setdefault(key.strip(), value_addr)
         elif collection == "array":
             var default_array = TomlType[o].new_array()
-            var def_array_addr = default_array^.to_addr()
             var addr = base.as_opaque_table().setdefault(
-                key.strip(), def_array_addr
+                key.strip(), default_array^.move_to_addr()
             )
             ref new_base_ptr = TomlType[o].from_addr(addr)
-            # print(
-            #     "^^ using",
-            #     "obj",
-            #     new_base_ptr,
-            #     "as container with addr",
-            #     Int(addr),
-            # )
             new_base_ptr.as_opaque_array().append(value_addr)
         return
 
@@ -569,18 +490,10 @@ fn update_base_with_kv[
     var rest = key[len(first_key) + 1 :]
     var default_tb = TomlType[o].new_table()
 
-    var default_tb_addr = default_tb^.to_addr()
     var new_base_ptr = base.as_opaque_table().setdefault(
-        first_key.strip(), default_tb_addr
+        first_key.strip(), default_tb^.move_to_addr()
     )
     ref new_base = TomlType[o].from_addr(new_base_ptr)
-    # print(
-    #     "^^ using",
-    #     "obj",
-    #     # new_base,
-    #     "as container with addr",
-    #     Int(new_base_ptr),
-    # )
     update_base_with_kv[collection](rest, value^, new_base)
 
 
