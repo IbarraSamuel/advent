@@ -23,29 +23,54 @@ struct CollectionType(Equatable, Writable):
         self.inner = v
 
 
+struct ReprType(Equatable, Writable):
+    var inner: StaticString
+
+    @implicit
+    fn __init__(out self, v: type_of("default")):
+        self.inner = v
+
+    @implicit
+    fn __init__(out self, v: type_of("json")):
+        self.inner = v
+
+
+struct TomlRef[inner: ImmutOrigin, toml: ImmutOrigin](Copyable):
+    var pointer: Pointer[TomlType[Self.inner], Self.toml]
+
+    fn __init__(out self, ref [Self.toml]v: TomlType[Self.inner]):
+        self.pointer = Pointer(to=v)
+
+    fn __getitem__(ref self) -> ref [Self.toml] TomlType[Self.inner]:
+        return self.pointer[]
+
+
 struct TomlType[o: ImmutOrigin](Movable, Writable):
     comptime String = StringSlice[Self.o]
     comptime Integer = Int
     comptime Float = Float64
     comptime Boolean = Bool
-    # comptime Array = List[Self.Ptr]
-    # comptime Table = Dict[StringSlice[Self.o], Self.Ptr]
+    comptime Array[o: ImmutOrigin] = List[TomlRef[inner = Self.o, toml=o]]
+    comptime Table[o: ImmutOrigin] = Dict[
+        StringSlice[Self.o], TomlRef[Self.o, o]
+    ]
 
     # Store a list of addesses.
-    comptime OpaqueArray = List[Self.Opq]
-    comptime OpaqueTable = Dict[StringSlice[Self.o], Self.Opq]
+    comptime OpaqueArray = List[Self.Opaque[MutExternalOrigin]]
+    comptime OpaqueTable = Dict[
+        StringSlice[Self.o], Self.Opaque[MutExternalOrigin]
+    ]
 
-    comptime Opq = MutOpaquePointer[MutAnyOrigin]
+    comptime Opaque[o: Origin] = OpaquePointer[o]
 
     var inner: AnyTomlType[Self.o]
 
     @staticmethod
-    fn from_addr(addr: Self.Opq) -> ref [MutAnyOrigin] Self:
+    fn from_addr(addr: Self.Opaque[...]) -> ref [addr.origin] Self:
         return addr.bitcast[Self]()[]
 
-    fn to_addr(var self) -> Self.Opq:
+    fn to_addr(var self) -> Self.Opaque[MutExternalOrigin]:
         var ptr = alloc[Self](1)
-        # var ptr = UnsafePointer[Self, MutAnyOrigin].__init__(alloc)
         ptr.init_pointee_move(self^)
         return ptr.bitcast[NoneType]()
 
@@ -57,11 +82,39 @@ struct TomlType[o: ImmutOrigin](Movable, Writable):
     fn new_table(out self: Self):
         self = Self(Self.OpaqueTable())
 
-    fn as_table(ref self) -> ref [self.inner] Self.OpaqueTable:
+    fn as_opaque_table(ref self) -> ref [self.inner] Self.OpaqueTable:
         return self.inner[Self.OpaqueTable]
 
-    fn as_array(ref self) -> ref [self.inner] Self.OpaqueArray:
+    fn as_opaque_array(ref self) -> ref [self.inner] Self.OpaqueArray:
         return self.inner[Self.OpaqueArray]
+
+    # ==== Access inner values using methods ====
+
+    fn string(ref self) -> StringSlice[Self.o]:
+        return self.inner[Self.String]
+
+    fn integer(ref self) -> Int:
+        return self.inner[Self.Integer]
+
+    fn float(ref self) -> Float64:
+        return self.inner[Self.Float]
+
+    fn boolean(ref self) -> Bool:
+        return self.inner[Self.Boolean]
+
+    fn array[s: ImmutOrigin](ref [s]self) -> Self.Array[s]:
+        """Points to self, because external origin it's managed by self."""
+        return [
+            TomlRef[inner = Self.o, toml=s](Self.from_addr(it))
+            for it in self.inner[Self.OpaqueArray]
+        ]
+
+    fn table[s: ImmutOrigin](ref [s]self) -> Self.Table[s]:
+        """Points to self, because external origin it's managed by self."""
+        return {
+            kv.key: TomlRef[inner = Self.o, toml=s](Self.from_addr(kv.value))
+            for kv in self.inner[Self.OpaqueTable].items()
+        }
 
     fn __init__(
         out self, var v: AnyTomlType[Self.o], explicitly_constructed: ()
@@ -262,10 +315,10 @@ fn parse_inline_collection[
             if collection == "array":
                 var toml_obj = parse_value(obj_str, _lidx)
                 print("\n\tparsed_value: '", toml_obj, "'", sep="")
-                objs.as_array().append(toml_obj^.to_addr())
+                objs.as_opaque_array().append(toml_obj^.to_addr())
             elif collection == "table":
                 var s = Slicer(0, 0, None)  # gets modified by next fn
-                var value = try_get_kv_pair(obj_str, _lidx, s)
+                var value = try_get_value_and_update_slicer(obj_str, _lidx, s)
                 var toml_obj = value.take()
                 var kk = obj_str[s]
                 update_base_with_kv["table"](kk, toml_obj^, objs)
@@ -309,10 +362,10 @@ fn parse_inline_collection[
     if collection == "array":
         var toml_obj = parse_value(obj_str, _lidx)
         print("\n\tparsed_value: '", toml_obj, "'", sep="")
-        objs.as_array().append(toml_obj^.to_addr())
+        objs.as_opaque_array().append(toml_obj^.to_addr())
     elif collection == "table":
         var s = Slicer(0, 0, None)  # gets modified by next fn
-        var value = try_get_kv_pair(obj_str, _lidx, s)
+        var value = try_get_value_and_update_slicer(obj_str, _lidx, s)
         var toml_obj = value.take()
         var kk = obj_str[s]
         update_base_with_kv["table"](kk, toml_obj^, objs)
@@ -456,11 +509,13 @@ fn update_base_with_kv[
 
         @parameter
         if collection == "table":
-            _ = base.as_table().setdefault(key, value_addr)
+            _ = base.as_opaque_table().setdefault(key.strip(), value_addr)
         elif collection == "array":
             var default_array = TomlType[o].new_array()
             var def_array_addr = default_array^.to_addr()
-            var addr = base.as_table().setdefault(key.strip(), def_array_addr)
+            var addr = base.as_opaque_table().setdefault(
+                key.strip(), def_array_addr
+            )
             ref new_base_ptr = TomlType[o].from_addr(addr)
             print(
                 "^^ using",
@@ -469,7 +524,7 @@ fn update_base_with_kv[
                 "as container with addr",
                 Int(addr),
             )
-            new_base_ptr.as_array().append(value_addr)
+            new_base_ptr.as_opaque_array().append(value_addr)
         return
 
     var first_key = keys[0]
@@ -478,7 +533,7 @@ fn update_base_with_kv[
     var default_tb = TomlType[o].new_table()
 
     var default_tb_addr = default_tb^.to_addr()
-    var new_base_ptr = base.as_table().setdefault(
+    var new_base_ptr = base.as_opaque_table().setdefault(
         first_key.strip(), default_tb_addr
     )
     ref new_base = TomlType[o].from_addr(new_base_ptr)
@@ -492,7 +547,7 @@ fn update_base_with_kv[
     update_base_with_kv[collection](rest, value^, new_base)
 
 
-fn try_get_kv_pair[
+fn try_get_value_and_update_slicer[
     o: ImmutOrigin
 ](file_content: StringSlice[o], mut idx: Int, mut s: Slicer) -> Optional[
     TomlType[o]
@@ -522,10 +577,16 @@ fn parse_table[
     var i_content = TomlType[o].new_table()
 
     # The only possibility to stop is to find another table or table list
-    var end_of_table = full_content.find("\n[", char_idx)
+    var end_of_table = eot if (
+        eot := full_content.find("\n[", char_idx)
+    ) != -1 else len(full_content)
     print("end of table found in idx:", end_of_table)
     print(
-        "possible table span: '''\n",
+        "======>> possible table span: from ",
+        char_idx,
+        " to ",
+        end_of_table,
+        ": ->> '''\n",
         full_content[char_idx:end_of_table],
         "\n'''",
         sep="",
@@ -541,7 +602,9 @@ fn parse_table[
             char_idx = next_jump + 1
             continue
 
-        if kv := try_get_kv_pair(full_content, idx=char_idx, s=s):
+        if kv := try_get_value_and_update_slicer(
+            full_content, idx=char_idx, s=s
+        ):
             var toml_obj = kv.take()
             print("store kv pair content", full_content[s])
             update_base_with_kv["table"](full_content[s], toml_obj^, i_content)
@@ -572,7 +635,7 @@ fn try_get_table_list[
             i,
         )
         return None
-    if l == -1 or full_content.as_bytes()[l + 1] != ord("\n"):
+    if l == -1 or full_content.as_bytes()[l + 2] != ord("\n"):
         print(
             "no table list. table close bracket should be the last character in"
             " line."
@@ -618,7 +681,7 @@ fn try_get_table[
     s = Slicer(i + 1, l, None)
     # var key = full_content[i + 1 : l]
     print("table key found:", full_content[s])
-    char_idx += l + 2
+    char_idx = l + 1
 
     var i_content = parse_table(full_content, char_idx)
 
@@ -652,37 +715,37 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
             continue
 
         # First, find key,value pairs
-        print("try to get kv pair")
+        # print("try to get kv pair")
         var s = Slicer(0, 0, None)
-        if val := try_get_kv_pair(content, idx, s):
+        if val := try_get_value_and_update_slicer(content, idx, s):
             var toml_obj = val.take()
             print("store kv pair content")
             print("key is:", content[s])
             print("value is:", toml_obj)
             update_base_with_kv["table"](content[s], toml_obj^, base)
             print("parsing kv done, moving to ", idx + 1, "...")
-            idx += 1
+            # idx += 1
             continue
         print("No kv pair. continue")
 
         # if there is no key, value, then try to get a table list.
-        print("try to get table list")
+        # print("try to get table list")
         if val := try_get_table_list(content, idx, s):
             var toml_obj = val.take()
             print("store table list content", content[s])
             update_base_with_kv["table"](content[s], toml_obj^, base)
             print("parsing table list done, moving to ", idx + 1, "...")
-            idx += 1
+            # idx += 1
             continue
         print("no table list, continue")
 
-        print("try to get table")
+        # print("try to get table")
         if val := try_get_table(content, idx, s):
             var toml_obj = val.take()
             print("store table content", content[s])
             update_base_with_kv["table"](content[s], toml_obj^, base)
             print("parsing table done, moving to ", idx + 1, "...")
-            idx += 1
+            # idx += 1
             continue
         print("no table. Abort")
 
