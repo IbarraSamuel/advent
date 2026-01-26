@@ -4,27 +4,43 @@ Dotted keys, can create a dictionary grouping the values.
 """
 
 from utils import Variant
+from sys.intrinsics import _type_is_eq
+from collections.dict import _DictEntryIter
 from builtin.builtin_slice import ContiguousSlice
 from memory import OwnedPointer
 import os
 
-comptime Slicer = ContiguousSlice
 
-
-struct CollectionType(Equatable, Writable):
-    var inner: StaticString
-
-    @implicit
-    fn __init__(out self, v: type_of("table")):
-        self.inner = v
+struct CollectionType[_v: __mlir_type.`!kgen.string`](
+    Equatable, TrivialRegisterType  # , Writable
+):
+    comptime inner = StringLiteral[Self._v]()
 
     @implicit
-    fn __init__(out self, v: type_of("array")):
-        self.inner = v
+    fn __init__(out self: CollectionType[v.value], v: type_of("table")):
+        pass
+
+    @implicit
+    fn __init__(out self: CollectionType[v.value], v: type_of("array")):
+        pass
+
+    fn __eq__(self, other: Self) -> Bool:
+        return True
+
+    fn __eq__(self, other: CollectionType[...]) -> Bool:
+        return self.inner == other.inner
+
+    # fn write_to(self, mut w: Some[Writer]):
+    #     w.write(self.inner)
 
 
-struct TomlRef[inner: ImmutOrigin, toml: ImmutOrigin](TrivialRegisterType):
+struct TomlRef[inner: ImmutOrigin, toml: ImmutOrigin](
+    Iterable, TrivialRegisterType
+):
     comptime Toml = TomlType[Self.inner]
+    comptime IteratorType[origin: Origin]: Iterator = Self.Toml.IteratorType[
+        Self.toml
+    ]
     var pointer: Pointer[Self.Toml, Self.toml]
 
     fn __init__(out self, ref [Self.toml]v: Self.Toml):
@@ -33,39 +49,119 @@ struct TomlRef[inner: ImmutOrigin, toml: ImmutOrigin](TrivialRegisterType):
     fn __getitem__(ref self) raises -> ref [Self.toml] Self.Toml:
         return self.pointer[]
 
-    # fn __getitem__(ref self, idx: Int) raises -> ref [Self.toml] Self.Toml:
-    #     ref obj = self.pointer[].inner
-    #     if not obj.isa[Self.Toml.OpaqueArray]():
-    #         raise Error("Wrong object type for array indexing.")
+    fn __getitem__(ref self, idx: Int) -> ref [Self.toml] Self.Toml:
+        return self.pointer[][idx]
 
-    #     return self.pointer[][idx]
+    fn __getitem__(
+        ref self, key: StringSlice
+    ) raises -> ref [Self.toml] Self.Toml:
+        return self.pointer[][key]
 
-    # fn __getitem__(
-    #     ref self, key: StringSlice[...]
-    # ) raises -> ref [Self.toml] Self.Toml:
-    #     return self.pointer[][key]
+    fn __iter__(ref self) -> Self.IteratorType[Self.toml]:
+        return self.pointer[].__iter__()
 
 
-struct TomlType[o: ImmutOrigin](Copyable, Writable):
+struct TomlListIter[
+    toml_origin: Origin,
+    toml_inner_origin: Origin,
+](Iterator):
+    comptime Element = TomlType[Self.toml_inner_origin]
+    var pointer: Pointer[Self.Element.OpaqueArray, Self.toml_origin]
+    var index: Int
+
+    fn __init__(out self, ref [Self.toml_origin]v: Self.Element.OpaqueArray):
+        self.pointer = Pointer(to=v)
+        self.index = 0
+
+    fn __next__(
+        mut self,
+    ) raises StopIteration -> ref [Self.toml_origin] Self.Element:
+        if self.index >= len(self.pointer[]):
+            raise StopIteration()
+
+        ref elem = self.pointer[][self.index].bitcast[Self.Element]()[]
+        self.index += 1
+        return elem
+
+
+struct TomlTableIter[
+    toml_origin: ImmutOrigin,
+    o: ImmutOrigin,
+](ImplicitlyCopyable, Iterable, Iterator):
+    comptime Element = Tuple[
+        StringSlice[Self.o], TomlRef[Self.o, ImmutExternalOrigin]
+    ]
+    comptime IteratorType[origin: Origin]: Iterator = Self
+    comptime Toml = TomlType[Self.o]
+    var pointer: _DictEntryIter[
+        mut=False,
+        K = Self.Toml.OpaqueTable.K,
+        V = Self.Toml.OpaqueTable.V,
+        H = Self.Toml.OpaqueTable.H,
+        origin = Self.toml_origin,
+    ]
+
+    fn __init__(out self, ref [Self.toml_origin]v: Self.Toml.OpaqueTable):
+        self.pointer = v.items()
+
+    fn __iter__(ref self) -> Self.IteratorType[origin_of(self)]:
+        return self.copy()
+
+    fn __next__(
+        mut self,
+    ) raises StopIteration -> Self.Element:
+        ref kv = next(self.pointer)
+
+        ref toml_value = kv.value.bitcast[Self.Toml]()[]
+        return kv.key, TomlRef(toml_value)
+
+
+struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
     comptime String = StringSlice[Self.o]
     comptime Integer = Int
     comptime Float = Float64
     comptime Boolean = Bool
+
     comptime Array = List[Self]
     comptime Table = Dict[StringSlice[Self.o], Self]
-    comptime RefArray[o: ImmutOrigin] = List[TomlRef[Self.o, o]]
-    comptime RefTable[o: ImmutOrigin] = Dict[
-        StringSlice[Self.o], TomlRef[Self.o, o]
-    ]
+
     # Store a list of addesses.
+    comptime Opaque[o: Origin] = OpaquePointer[o]
     comptime OpaqueArray = List[Self.Opaque[MutExternalOrigin]]
     comptime OpaqueTable = Dict[
         StringSlice[Self.o], Self.Opaque[MutExternalOrigin]
     ]
+    comptime RefArray[o: ImmutOrigin] = List[TomlRef[Self.o, o]]
+    comptime RefTable[o: ImmutOrigin] = Dict[
+        StringSlice[Self.o], TomlRef[Self.o, o]
+    ]
 
-    comptime Opaque[o: Origin] = OpaquePointer[o]
+    # Iterable
+    comptime IteratorType[
+        mut: Bool, //, origin: Origin[mut=mut]
+    ] = TomlListIter[origin, Self.o]
 
+    fn __iter__(ref self) -> Self.IteratorType[origin_of(self)]:
+        # upcast origin to self.
+        ref array = UnsafePointer(
+            to=self.inner[Self.OpaqueArray]
+        ).unsafe_origin_cast[origin_of(self)]()[]
+
+        return TomlListIter[
+            toml_origin = origin_of(self), toml_inner_origin = Self.o
+        ](array)
+
+    # Runtime
     var inner: AnyTomlType[Self.o]
+
+    fn isa[T: AnyType](self) -> Bool:
+        @parameter
+        if _type_is_eq[T, Self.Array]():
+            return self.inner.isa[Self.OpaqueArray]()
+        elif _type_is_eq[T, Self.Table]():
+            return self.inner.isa[Self.OpaqueTable]()
+        else:
+            return self.inner.isa[T]()
 
     @staticmethod
     fn from_addr(addr: Self.Opaque[...]) -> ref [addr.origin] Self:
@@ -99,54 +195,38 @@ struct TomlType[o: ImmutOrigin](Copyable, Writable):
 
     # ==== Access inner values using methods ====
 
-    fn string(ref self) raises -> StringSlice[Self.o]:
-        if not self.inner.isa[Self.String]():
-            raise Error("Wrong object type for string access.")
+    fn string(ref self) -> Self.String:
         return self.inner[Self.String]
 
-    fn integer(ref self) raises -> Int:
-        if not self.inner.isa[Self.Integer]():
-            raise Error("Wrong object type for integer access.")
+    fn integer(ref self) -> Self.Integer:
         return self.inner[Self.Integer]
 
-    fn float(ref self) raises -> Float64:
-        if not self.inner.isa[Self.Float]():
-            raise Error("Wrong object type for float access.")
+    fn float(ref self) -> Self.Float:
         return self.inner[Self.Float]
 
-    fn boolean(ref self) raises -> Bool:
-        if not self.inner.isa[Self.Boolean]():
-            raise Error("Wrong object type for boolean access.")
+    fn boolean(ref self) -> Self.Boolean:
         return self.inner[Self.Boolean]
 
-    fn array(self) raises -> Self.Array:
+    fn to_array(deinit self) -> Self.Array:
         """Points to self, because external origin it's managed by self."""
-        if not self.inner.isa[Self.OpaqueArray]():
-            raise Error("Wrong object type for array access.")
         return [Self.take_from_addr(it) for it in self.inner[Self.OpaqueArray]]
 
-    fn table(self) raises -> Self.Table:
+    fn to_table(deinit self) -> Self.Table:
         """Points to self, because external origin it's managed by self."""
-        if not self.inner.isa[Self.OpaqueTable]():
-            raise Error("Wrong object type for table access.")
         return {
             kv.key: Self.take_from_addr(kv.value)
             for kv in self.inner[Self.OpaqueTable].items()
         }
 
-    fn array_ref(self) raises -> Self.RefArray[origin_of(self)]:
+    fn array(self) -> Self.RefArray[origin_of(self)]:
         """Points to self, because external origin it's managed by self."""
-        if not self.inner.isa[Self.OpaqueArray]():
-            raise Error("Wrong object type for array access.")
         return [
             TomlRef[Self.o, origin_of(self)](Self.from_addr(it))
             for it in self.inner[Self.OpaqueArray]
         ]
 
-    fn table_ref(self) raises -> Self.RefTable[origin_of(self)]:
+    fn table(self) -> Self.RefTable[origin_of(self)]:
         """Points to self, because external origin it's managed by self."""
-        if not self.inner.isa[Self.OpaqueTable]():
-            raise Error("Wrong object type for table access.")
         return {
             kv.key: TomlRef[Self.o, origin_of(self)](Self.from_addr(kv.value))
             for kv in self.inner[Self.OpaqueTable].items()
@@ -154,27 +234,22 @@ struct TomlType[o: ImmutOrigin](Copyable, Writable):
 
     # For interop with list
 
-    fn __getitem__(ref self, idx: Int) raises -> ref [self] Self:
-        ref obj = self.inner
-        if not obj.isa[Self.OpaqueArray]():
-            raise Error("Wrong object type for array indexing.")
-
-        return obj[Self.OpaqueArray][idx].bitcast[Self]()[]
+    fn __getitem__(ref self, idx: Int) -> ref [self] Self:
+        return self.inner[Self.OpaqueArray][idx].bitcast[Self]()[]
 
     # For interop with dict
 
     fn __getitem__(ref self, key: StringSlice[...]) raises -> ref [self] Self:
-        ref obj = self.inner
-        if not obj.isa[Self.OpaqueTable]():
-            raise Error("Wrong object type for table indexing.")
-
-        ref table = obj[Self.OpaqueTable]
+        ref table = self.inner[Self.OpaqueTable]
 
         for kv in table.items():
             if kv.key == key:
                 return Self.from_addr(kv.value)
 
         raise Error("Key not found.")
+
+    fn items(ref self) -> TomlTableIter[origin_of(self.inner), Self.o]:
+        return TomlTableIter(self.inner[Self.OpaqueTable])
 
     fn __init__(
         out self, var v: AnyTomlType[Self.o], explicitly_constructed: ()
@@ -356,7 +431,7 @@ fn parse_inline_collection[
                 var toml_obj = parse_value(obj_str, _lidx)
                 objs.as_opaque_array().append(toml_obj^.move_to_addr())
             elif collection == "table":
-                var s = Slicer(0, 0, None)  # gets modified by next fn
+                var s = ContiguousSlice(0, 0, None)  # gets modified by next fn
                 var value = try_get_value_and_update_slicer(obj_str, _lidx, s)
                 var toml_obj = value.take()
                 var kk = obj_str[s]
@@ -377,7 +452,7 @@ fn parse_inline_collection[
         var toml_obj = parse_value(obj_str, _lidx)
         objs.as_opaque_array().append(toml_obj^.move_to_addr())
     elif collection == "table":
-        var s = Slicer(0, 0, None)  # gets modified by next fn
+        var s = ContiguousSlice(0, 0, None)  # gets modified by next fn
         var value = try_get_value_and_update_slicer(obj_str, _lidx, s)
         var toml_obj = value.take()
         var kk = obj_str[s]
@@ -501,9 +576,9 @@ fn update_base_with_kv[
 
 fn try_get_value_and_update_slicer[
     o: ImmutOrigin
-](file_content: StringSlice[o], mut idx: Int, mut s: Slicer) -> Optional[
-    TomlType[o]
-]:
+](
+    file_content: StringSlice[o], mut idx: Int, mut s: ContiguousSlice
+) -> Optional[TomlType[o]]:
     if file_content.as_bytes()[idx] in [Byte(ord("[")), Byte(ord("{"))]:
         return None
 
@@ -527,7 +602,7 @@ fn parse_table[
         eot := full_content.find("\n[", char_idx)
     ) != -1 else len(full_content)
 
-    var s = Slicer(0, 0, None)
+    var s = ContiguousSlice(0, 0, None)
     while char_idx < end_of_table:
         var next_jump = full_content.find("\n", char_idx)
         # Do Parsing
@@ -550,9 +625,9 @@ fn parse_table[
 
 fn try_get_multiline_table[
     o: ImmutOrigin, //, collection: CollectionType
-](full_content: StringSlice[o], mut char_idx: Int, mut s: Slicer) -> Optional[
-    TomlType[o]
-]:
+](
+    full_content: StringSlice[o], mut char_idx: Int, mut s: ContiguousSlice
+) -> Optional[TomlType[o]]:
     comptime open_char = "[[" if collection == "array" else "["
     comptime close_char = "]]" if collection == "array" else "]"
     comptime offset = 2 if collection == "array" else 1
@@ -567,7 +642,7 @@ fn try_get_multiline_table[
     ):
         return None
 
-    s = Slicer(i + offset, l, None)
+    s = ContiguousSlice(i + offset, l, None)
     char_idx = l + offset
     var i_content = parse_table(full_content, char_idx)
 
@@ -587,7 +662,7 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
             continue
 
         # First, find key,value pairs
-        var s = Slicer(0, 0, None)
+        var s = ContiguousSlice(0, 0, None)
         if val := try_get_value_and_update_slicer(content, idx, s):
             var toml_obj = val.take()
             update_base_with_kv["table"](content[s], toml_obj^, base)
