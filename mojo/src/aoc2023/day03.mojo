@@ -32,7 +32,7 @@ struct Solution(AdventSolution):
             var max_x = len(line) - 1
             x = 0
             while x < max_x:
-                if not line[x : x + 1].is_ascii_digit():
+                if not line[byte=x].is_ascii_digit():
                     x += 1
                     continue
 
@@ -44,43 +44,43 @@ struct Solution(AdventSolution):
 
                 if x - 1 >= min_x:
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][x - 1 : x] != ".":
+                        if input[yi][byte = x - 1] != ".":
                             has_asterisc = True
                             break
 
                 var val: Int
                 try:
-                    val = Int(line[x : x + 1])
+                    val = Int(line[byte=x])
                 except:
                     os.abort("Invalid input for str to int conversion")
 
                 if not has_asterisc and (
-                    (y != min_y and input[min_y][x : x + 1] != ".")
-                    or (y != max_y and input[max_y][x : x + 1] != ".")
+                    (y != min_y and input[min_y][byte=x] != ".")
+                    or (y != max_y and input[max_y][byte=x] != ".")
                 ):
                     has_asterisc = True
 
                 while (
                     x + 1 < len(line)
-                    and input[y][x + 1 : x + 2].is_ascii_digit()
+                    and input[y][byte = x + 1].is_ascii_digit()
                 ):
                     x += 1
                     try:
-                        val = val * 10 + Int(input[y][x : x + 1])
+                        val = val * 10 + Int(input[y][byte=x])
                     except:
                         os.abort(
                             "invalid input for str to int conversion on"
                             " while loop"
                         )
                     if not has_asterisc and (
-                        (y != min_y and input[min_y][x : x + 1] != ".")
-                        or (y != max_y and input[max_y][x : x + 1] != ".")
+                        (y != min_y and input[min_y][byte=x] != ".")
+                        or (y != max_y and input[max_y][byte=x] != ".")
                     ):
                         has_asterisc = True
 
                 if not has_asterisc and x + 1 < len(line):
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][x + 1 : x + 2] != ".":
+                        if input[yi][byte = x + 1] != ".":
                             has_asterisc = True
                             break
 
@@ -101,7 +101,7 @@ struct Solution(AdventSolution):
             var max_x = len(line) - 1
             x = 0
             while x < max_x:
-                if not line[x : x + 1].is_ascii_digit():
+                if not line[byte=x].is_ascii_digit():
                     x += 1
                     continue
 
@@ -113,37 +113,29 @@ struct Solution(AdventSolution):
 
                 if x - 1 >= min_x:
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][x - 1 : x] == "*":
+                        if input[yi][byte = x - 1] == "*":
                             asterisc = AstrInfo(x - 1, yi)
                             break
 
                 var val: Int
                 try:
-                    val = Int(line[x : x + 1])
+                    val = Int(line[byte=x])
                 except:
                     os.abort("Invalid input for str to int conversion")
 
-                if (
-                    not asterisc
-                    and y != min_y
-                    and input[min_y][x : x + 1] == "*"
-                ):
+                if not asterisc and y != min_y and input[min_y][byte=x] == "*":
                     asterisc = AstrInfo(x, min_y)
 
-                if (
-                    not asterisc
-                    and y != max_y
-                    and input[max_y][x : x + 1] == "*"
-                ):
+                if not asterisc and y != max_y and input[max_y][byte=x] == "*":
                     asterisc = AstrInfo(x, max_y)
 
                 while (
                     x + 1 < len(line)
-                    and input[y][x + 1 : x + 2].is_ascii_digit()
+                    and input[y][byte = x + 1].is_ascii_digit()
                 ):
                     x += 1
                     try:
-                        val = val * 10 + Int(input[y][x : x + 1])
+                        val = val * 10 + Int(input[y][byte=x])
                     except:
                         os.abort(
                             "invalid input for str to int conversion on"
@@ -152,20 +144,20 @@ struct Solution(AdventSolution):
                     if (
                         not asterisc
                         and y != min_y
-                        and input[min_y][x : x + 1] == "*"
+                        and input[min_y][byte=x] == "*"
                     ):
                         asterisc = AstrInfo(x, min_y)
 
                     if (
                         not asterisc
                         and y != max_y
-                        and input[max_y][x : x + 1] == "*"
+                        and input[max_y][byte=x] == "*"
                     ):
                         asterisc = AstrInfo(x, max_y)
 
                 if not asterisc and x + 1 < len(line):
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][x + 1 : x + 2] == "*":
+                        if input[yi][byte = x + 1] == "*":
                             asterisc = AstrInfo(x + 1, yi)
                             break
 

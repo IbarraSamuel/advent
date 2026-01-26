@@ -83,8 +83,8 @@ fn run[
         comptime Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
-        var file = input_dir / String("day", day, ".txt")
-        var data = file.read_text().as_string_slice()
+        var file = input_dir / "day{}.txt".format(day)
+        var data = file.read_text()
 
         print("Day", day, "=>")
 
@@ -112,8 +112,8 @@ fn bench[
         comptime Sol = solutions[i]
 
         var day = String("0" if i < 9 else "", i + 1)
-        var file = input_dir / String("day", day, ".txt")
-        var data = file.read_text().as_string_slice()
+        var file = input_dir / "day{}.txt".format(day)
+        var data = file.read_text()
 
         @parameter
         fn part_1():

@@ -7,31 +7,17 @@ from hashlib.hasher import Hasher
 
 
 @fieldwise_init
-struct CacheKey[o: ImmutOrigin](KeyElement, Movable):
+struct CacheKey[o: ImmutOrigin](KeyElement):
     var cfg: String
     var nums: Span[Int, Self.o]
 
     fn __hash__[H: Hasher](self, mut hasher: H):
         hasher.update(self.cfg)
 
-    fn __eq__(self, other: Self) -> Bool:
-        return self.cfg == other.cfg and self.nums == other.nums
-
-    # fn __repr__(self) -> String:
-    #     try:
-    #         return StringSlice("(cfg: {}, nums: {})").format(
-    #             self.cfg, self.nums.__str__()
-    #         )
-    #     except:
-    #         return "repre raises"
-
-    # fn copy(self) -> Self:
-    #     return CacheKey(self.cfg, self.nums.copy())
-
 
 fn count(
     cfg: StringSlice,
-    nums: Span[mut=False, Int],
+    nums: Span[Int],
     mut cache: Dict[CacheKey[nums.origin], Int],
 ) -> Int:
     if (not cfg and not nums) or (not nums and "#" not in cfg):
@@ -53,7 +39,7 @@ fn count(
     if cfg[:1] in "#?" and (
         nums[0] <= len(cfg)
         and "." not in cfg[: nums[0]]
-        and (nums[0] == len(cfg) or cfg[nums[0] : nums[0] + 1] != "#")
+        and (nums[0] == len(cfg) or cfg[byte = nums[0]] != "#")
     ):
         result += count(cfg[nums[0] + 1 :], nums[1:], cache)
 
