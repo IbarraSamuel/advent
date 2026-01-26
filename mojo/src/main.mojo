@@ -7,7 +7,6 @@ from pathlib import _dir_of_current_file
 
 fn main() raises:
     """Use -m test to run tests or -m bench to run benchmarks."""
-
     var config = parse_config()
     try:
         args = Args()

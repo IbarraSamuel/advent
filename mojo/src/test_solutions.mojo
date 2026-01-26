@@ -23,32 +23,26 @@ fn parse_config() raises -> Years:
     var data = config_loc.read_text()
 
     var toml = parse_toml(data)
-    ref year_data = toml["tests"]["year"]
+    ref all_years = toml["tests"]["year"]
     # print("year data:", year_data)
 
     var years = Years()
-    for yi in year_data.table_ref().items():
-        ref year = yi.key
-        ref day_data = yi.value[]["day"]
+    for year, year_data in all_years.items():
+        ref all_days = year_data["day"]
         # print("\tdays data for year:", year, "is:", day_data)
 
         var days = Days()
-        for di in day_data.table_ref().items():
-            ref day = di.key
-            ref part_data = di.value[]["part"]
+        for day, day_data in all_days.items():
+            ref all_parts = day_data["part"]
             # print("\t\tparts data for day:", day, "is:", part_data)
 
             var parts = Parts()
-            for pi in part_data.table_ref().items():
-                ref part = pi.key
-                ref test_list = pi.value[]
-                # print("\t\t\ttest list for part:", part, "is:", test_list)
-
+            for part, part_tests in all_parts.items():
                 var cases = TestCases()
-                for t in test_list.array_ref():
+                for test in part_tests:
                     var file_location, test_expects = (
-                        t[]["file"].string(),
-                        t[]["expected"].integer(),
+                        test["file"].string(),
+                        test["expected"].integer(),
                     )
 
                     var floc = loc / "tests" / year / file_location
