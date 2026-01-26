@@ -14,6 +14,9 @@ struct CacheKey[o: ImmutOrigin](KeyElement):
     fn __hash__[H: Hasher](self, mut hasher: H):
         hasher.update(self.cfg)
 
+    fn __eq__(self, other: Self) -> Bool:
+        return self.cfg == other.cfg and self.nums == other.nums
+
 
 fn count(
     cfg: StringSlice,

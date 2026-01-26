@@ -389,12 +389,15 @@ fn parse_inline_collection[
 
 fn string_to_type[o: ImmutOrigin](str_value: StringSlice[o]) -> TomlType[o]:
     s = str_value.strip()
-    if len(parts := s.split(".")) == 2:
-        if parts[0].is_ascii_digit() and parts[1].is_ascii_digit():
-            try:
-                return TomlType[o](atof(s))
-            except:
-                pass
+    if (
+        len(parts := s.split(".")) == 2
+        and parts[0].is_ascii_digit()
+        and parts[1].is_ascii_digit()
+    ):
+        try:
+            return TomlType[o](atof(s))
+        except:
+            pass
 
     if s.is_ascii_digit():
         try:
@@ -456,11 +459,10 @@ fn parse_value[
     else:
         var eol = file_content.find("\n", idx + 1)
         # TODO: Check this...
-        eol = len(file_content) if eol == -1 else eol
-        var cnt = file_content[idx:eol]
-        # print("infer type for all: '", cnt, "'", sep="")
+        var l = len(file_content) if eol == -1 else eol
+        var cnt = file_content[idx:l]
         content = string_to_type(cnt)
-        idx = eol + 1
+        idx = l + 1
 
     return content^
 
@@ -509,13 +511,8 @@ fn try_get_value_and_update_slicer[
         return None
 
     s = ContiguousSlice(idx, eq_idx, None)
-    # var key = file_content[idx:eq_idx].strip()
-    # print("key found: '", file_content[s].strip(), "'", sep="")
     eq_idx += 1
-    # print("value found: '", file_content[eq_idx : eq_idx + 20], "...'", sep="")
-    # print("Parsing value into toml...")
     var content = parse_value(file_content, idx=eq_idx)
-    # print("Parsing done! Result:", content)
     idx = eq_idx  # eq_idx gets modified by parse_value func
     return content^
 
@@ -523,32 +520,18 @@ fn try_get_value_and_update_slicer[
 fn parse_table[
     o: ImmutOrigin
 ](full_content: StringSlice[o], mut char_idx: Int) -> TomlType[o]:
-    # Clean start
     var i_content = TomlType[o].new_table()
 
     # The only possibility to stop is to find another table or table list
     var end_of_table = eot if (
         eot := full_content.find("\n[", char_idx)
     ) != -1 else len(full_content)
-    # print("end of table found in idx:", end_of_table)
-    # print(
-    #     "======>> possible table span: from ",
-    #     char_idx,
-    #     " to ",
-    #     end_of_table,
-    #     ": ->> '''\n",
-    #     full_content[char_idx:end_of_table],
-    #     "\n'''",
-    #     sep="",
-    # )
 
     var s = Slicer(0, 0, None)
     while char_idx < end_of_table:
-        # print("Parsing table content on line:", char_idx)
         var next_jump = full_content.find("\n", char_idx)
         # Do Parsing
         if full_content[char_idx:next_jump].strip() == "":
-            # print("empty line. skipping...")
             char_idx = next_jump + 1
             continue
 
@@ -556,7 +539,6 @@ fn parse_table[
             full_content, idx=char_idx, s=s
         ):
             var toml_obj = kv.take()
-            # print("store kv pair content", full_content[s])
             update_base_with_kv["table"](full_content[s], toml_obj^, i_content)
             continue
 
@@ -566,138 +548,61 @@ fn parse_table[
     return i_content^
 
 
-fn try_get_table_list[
-    o: ImmutOrigin
+fn try_get_multiline_table[
+    o: ImmutOrigin, //, collection: CollectionType
 ](full_content: StringSlice[o], mut char_idx: Int, mut s: Slicer) -> Optional[
     TomlType[o]
 ]:
-    var i = full_content.find("[[", char_idx)
-    var l = full_content.find("]]", char_idx)
+    comptime open_char = "[[" if collection == "array" else "["
+    comptime close_char = "]]" if collection == "array" else "]"
+    comptime offset = 2 if collection == "array" else 1
 
-    if i != char_idx:
-        # print(
-        #     (
-        #         "no table list. table open bracket should be the first"
-        #         " character. expected:"
-        #     ),
-        #     char_idx,
-        #     ", got:",
-        #     i,
-        # )
-        return None
-    if l == -1 or full_content.as_bytes()[l + 2] != ord("\n"):
-        # print(
-        #     "no table list. table close bracket should be the last character in"
-        #     " line."
-        # )
+    var i = full_content.find(open_char, char_idx)
+    var l = full_content.find(close_char, char_idx)
+
+    if (
+        i != char_idx
+        or l == -1
+        or full_content.as_bytes()[l + offset] != ord("\n")
+    ):
         return None
 
-    # var key = full_content[i + 2 : l]
-    s = Slicer(i + 2, l, None)
-    # print("table list key found:", full_content[s])
-    char_idx += l + 2
-
-    var i_content = parse_table(full_content, char_idx)
-
-    return i_content^
-
-
-fn try_get_table[
-    o: ImmutOrigin
-](full_content: StringSlice[o], mut char_idx: Int, mut s: Slicer) -> Optional[
-    TomlType[o]
-]:
-    var i = full_content.find("[", char_idx)
-    var l = full_content.find("]", char_idx)
-
-    if i != char_idx:
-        # print(
-        #     (
-        #         "no table. table open bracket should be the first character."
-        #         " expected:"
-        #     ),
-        #     char_idx,
-        #     ", got:",
-        #     i,
-        # )
-        return None
-    if l == -1 or full_content.as_bytes()[l + 1] != ord("\n"):
-        # print(
-        #     "no table. table close bracket should be the last character in"
-        #     " line."
-        # )
-        return None
-
-    s = Slicer(i + 1, l, None)
-    # var key = full_content[i + 1 : l]
-    # print("table key found:", full_content[s])
-    char_idx = l + 1
-
+    s = Slicer(i + offset, l, None)
+    char_idx = l + offset
     var i_content = parse_table(full_content, char_idx)
 
     return i_content^
 
 
 fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
-    # var lines = content.splitlines()
     var idx = 0
-    # var content_len = len(content)
 
     var base = TomlType[content.origin].new_table()
     # We will parse the file sequentially, building the type on the way.
 
     while (nidx := content.find("\n", idx)) != -1:
-        # print(
-        #     "on line",
-        #     content[idx:nidx],
-        #     ", and idx span: (",
-        #     idx,
-        #     ",",
-        #     nidx,
-        #     ")",
-        # )
-
-        # var line = content[idx:nidx]
-
         # if whitespace, skip line
         if content[idx:nidx].strip() == "":
             idx += nidx + 1
             continue
 
         # First, find key,value pairs
-        # # print("try to get kv pair")
         var s = Slicer(0, 0, None)
         if val := try_get_value_and_update_slicer(content, idx, s):
             var toml_obj = val.take()
-            # print("store kv pair content")
-            # print("key is:", content[s])
-            # print("value is:", toml_obj)
             update_base_with_kv["table"](content[s], toml_obj^, base)
-            # print("parsing kv done, moving to ", idx + 1, "...")
-            # idx += 1
             continue
-        # print("No kv pair. continue")
 
         # if there is no key, value, then try to get a table list.
-        # # print("try to get table list")
-        if val := try_get_table_list(content, idx, s):
+        if val := try_get_multiline_table["array"](content, idx, s):
             var toml_obj = val.take()
-            # print("store table list content", content[s])
-            update_base_with_kv["table"](content[s], toml_obj^, base)
-            # print("parsing table list done, moving to ", idx + 1, "...")
-            # idx += 1
+            update_base_with_kv["array"](content[s], toml_obj^, base)
             continue
-        # print("no table list, continue")
 
-        # # print("try to get table")
-        if val := try_get_table(content, idx, s):
+        if val := try_get_multiline_table["table"](content, idx, s):
             var toml_obj = val.take()
-            # print("store table content", content[s])
             update_base_with_kv["table"](content[s], toml_obj^, base)
-            # print("parsing table done, moving to ", idx + 1, "...")
-            # idx += 1
             continue
-        # print("no table. Abort")
 
         os.abort(
             "This is wrong! This should not happen!. Nothing to parse or rules"
