@@ -154,13 +154,14 @@ struct TomlTableIter[
 
 
 struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
+    comptime Unknown = Span[Byte, Self.o]
     comptime String = StringSlice[Self.o]
     comptime Integer = Int
     comptime Float = Float64
     comptime Boolean = Bool
 
     comptime Array = List[Self]
-    comptime Table = Dict[StringSlice[Self.o], Self]
+    comptime Table = Dict[Self.String, Self]
 
     # Store a list of addesses.
     comptime Opaque[o: Origin] = OpaquePointer[o]
@@ -169,9 +170,7 @@ struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
         StringSlice[Self.o], Self.Opaque[MutExternalOrigin]
     ]
     comptime RefArray[o: ImmutOrigin] = List[TomlRef[Self.o, o]]
-    comptime RefTable[o: ImmutOrigin] = Dict[
-        StringSlice[Self.o], TomlRef[Self.o, o]
-    ]
+    comptime RefTable[o: ImmutOrigin] = Dict[Self.String, TomlRef[Self.o, o]]
 
     # Iterable
     comptime IteratorType[
@@ -288,21 +287,19 @@ struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
     fn items(ref self) -> TomlTableIter[origin_of(self.inner), Self.o]:
         return TomlTableIter(self.inner[Self.OpaqueTable])
 
-    fn __init__(
-        out self, var v: AnyTomlType[Self.o], explicitly_constructed: ()
-    ):
+    fn __init__(out self, *, unknown: Self.Unknown):
+        self.inner = unknown
+
+    fn __init__(out self, var v: Self.String):
         self.inner = v
 
-    fn __init__(out self, var v: StringSlice[Self.o]):
+    fn __init__(out self, var v: Self.Integer):
         self.inner = v
 
-    fn __init__(out self, var v: Int):
+    fn __init__(out self, var v: Self.Float):
         self.inner = v
 
-    fn __init__(out self, var v: Float64):
-        self.inner = v
-
-    fn __init__(out self, var v: Bool):
+    fn __init__(out self, var v: Self.Boolean):
         self.inner = v
 
     fn __init__(out self, var v: Self.OpaqueArray):
@@ -352,6 +349,8 @@ struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
                 ref value = Self.from_addr(kv.value)
                 w.write('"', kv.key, '": ', value)
             w.write("}")
+        elif inner.isa[self.Unknown]():
+            w.write(StringSlice(unsafe_from_utf8=inner[self.Unknown]))
 
 
 comptime AnyTomlType[o: ImmutOrigin] = Variant[
@@ -361,12 +360,13 @@ comptime AnyTomlType[o: ImmutOrigin] = Variant[
     TomlType[o].Boolean,
     TomlType[o].OpaqueArray,
     TomlType[o].OpaqueTable,
+    TomlType[o].Unknown,
 ]
 
 
 fn parse_multiline_string(
-    data: Span[Byte], var idx: Int
-) -> TomlType[data.origin]:
+    data: Span[Byte], var idx: Int, out value: Span[Byte, data.origin]
+):
     idx += 3
     var value_init = idx
 
@@ -378,210 +378,109 @@ fn parse_multiline_string(
     ):
         idx += 1
 
-    var value = data[value_init:idx]
+    value = data[value_init:idx]
 
     idx += 2  # keep on the end of the quote
-    return TomlType(
-        StringSlice(unsafe_from_utf8=value)
-    )  # keep on the end of the quote
 
 
-fn parse_string(data: Span[Byte], mut idx: Int) -> TomlType[data.origin]:
+fn parse_quoted_string(
+    data: Span[Byte], mut idx: Int, out value: Span[Byte, data.origin]
+):
     idx += 1
     var value_init = idx
 
-    while data[idx] != Quote or data[idx - 1] == Escape:
+    while data[idx] != Quote:
         idx += 1
+        if data[idx] == Quote and data[idx - 1] == Escape:
+            idx += 1
 
-    var value = data[value_init:idx]
-
-    idx += 1  # keep on the end of the quote
-    return TomlType(
-        StringSlice(unsafe_from_utf8=value)
-    )  # keep on the end of the value
+    value = data[value_init:idx]
 
 
 fn parse_inline_collection[
-    o: ImmutOrigin, //, collection: CollectionType
-](orig_content: StringSlice[o], mut from_char_idx: Int,) -> TomlType[o]:
-    comptime close_char_byte = ord("]" if collection == "array" else "}")
-
-    var close_char = from_char_idx + 1
-
-    var list_nested = 0
-    var table_nested = 0
-    var string_nested = 0
-    var multistring_nested = 0
-
-    var cip = close_char
-    var ci = close_char
-    var bts = orig_content.as_bytes()
-
-    var objs = (
-        TomlType[o].new_array() if collection.inner
-        == "array" else TomlType[o].new_table()
-    )
-
-    while not (
-        (b := bts[ci]) == close_char_byte
-        and list_nested + table_nested + string_nested + multistring_nested == 0
-    ):
-        if b == ord('"'):
-            if bts[ci + 1] == ord('"') and bts[ci + 2] == ord('"'):
-                if multistring_nested == 1 and bts[ci - 1] != ord("\\"):
-                    multistring_nested -= 1
-                else:
-                    multistring_nested += 1
-                ci += 3
-                continue
-
-            if string_nested == 1 and bts[ci - 1] != ord("\\"):
-                string_nested -= 1
-            else:
-                string_nested += 1
-            ci += 1
-            continue
-
-        # in case you are in a string, just keep going
-        if string_nested > 0 or multistring_nested > 0:
-            ci += 1
-            continue
-
-        # if out of string...
-        elif b == ord("{"):
-            table_nested += 1
-        elif b == ord("}"):
-            table_nested -= 1
-
-        elif b == ord("["):
-            list_nested += 1
-        elif b == ord("]"):
-            list_nested -= 1
-        elif (
-            b == ord(",")
-            and list_nested + table_nested + string_nested + multistring_nested
-            == 0
-        ):
-            var obj_str = orig_content[cip:ci].strip()
-            var _lidx = 0
-
-            @parameter
-            if collection == "array":
-                var toml_obj = old_parse_value(obj_str, _lidx)
-                objs.as_opaque_array().append(toml_obj^.move_to_addr())
-            elif collection == "table":
-                var s = ContiguousSlice(0, 0, None)  # gets modified by next fn
-                var value = old_try_get_value_and_update_slicer(
-                    obj_str, _lidx, s
-                )
-                var toml_obj = value.take()
-                var kk = obj_str[s]
-                update_base_with_kv["table"](kk, toml_obj^, objs)
-
-            cip = ci + 1
-        ci += 1
-
-    var obj_str = orig_content[cip:ci]
-
-    if obj_str.strip() == "":
-        from_char_idx = ci + 1
-        return objs^
-    var _lidx = 0
+    collection: CollectionType
+](data: Span[Byte], mut idx: Int, out value: TomlType[data.origin]):
+    idx += 1
+    comptime ContainerEnd = ord("]" if collection == "array" else "}")
 
     @parameter
     if collection == "array":
-        var toml_obj = old_parse_value(obj_str, _lidx)
-        objs.as_opaque_array().append(toml_obj^.move_to_addr())
-    elif collection == "table":
-        var s = ContiguousSlice(0, 0, None)  # gets modified by next fn
-        var value = old_try_get_value_and_update_slicer(obj_str, _lidx, s)
-        var toml_obj = value.take()
-        var kk = obj_str[s]
-        update_base_with_kv["table"](kk, toml_obj^, objs)
-
-    from_char_idx = ci + 1
-    return objs^
-
-
-fn string_to_type[o: ImmutOrigin](str_value: StringSlice[o]) -> TomlType[o]:
-    s = str_value.strip()
-    if (
-        len(parts := s.split(".")) == 2
-        and parts[0].is_ascii_digit()
-        and parts[1].is_ascii_digit()
-    ):
-        try:
-            return TomlType[o](atof(s))
-        except:
-            pass
-
-    if s.is_ascii_digit():
-        try:
-            return TomlType[o](Int(s))
-        except:
-            pass
-
-    if s == "true":
-        return TomlType[o](True)
-
-    if s == "false":
-        return TomlType[o](False)
-
-    os.abort(String("Could not cast value '", str_value, "' to a type"))
-
-
-fn is_before(v: Int, /, *others: Int) -> Bool:
-    if v == -1:
-        return False
-
-    for o in others:
-        if o != -1 and o < v:
-            return False
-
-    return True
-
-
-fn old_parse_value[
-    o: ImmutOrigin
-](file_content: StringSlice[o], mut idx: Int) -> TomlType[o]:
-    var multiline_string_start = file_content.find('"""', idx)
-    var string_start = file_content.find('"', idx)
-    var list_start = file_content.find("[", idx)
-    var table_start = file_content.find("{", idx)
-
-    var content: TomlType[o]
-    if is_before(multiline_string_start, list_start, table_start):
-        content = parse_multiline_string(
-            file_content, idx=multiline_string_start
-        )
-        return
-        idx = multiline_string_start
-
-    elif is_before(string_start, list_start, table_start):
-        content = parse_string(file_content, from_char_idx=string_start)
-        idx = multiline_string_start
-
-    elif is_before(list_start, table_start):
-        content = parse_inline_collection["array"](
-            file_content, from_char_idx=list_start
-        )
-        idx = list_start
-
-    elif is_before(table_start, list_start):
-        content = parse_inline_collection["table"](
-            file_content, from_char_idx=table_start
-        )
-        idx = list_start
-
+        value = TomlType[data.origin].new_array()
     else:
-        var eol = file_content.find("\n", idx + 1)
-        # TODO: Check this...
-        var l = len(file_content) if eol == -1 else eol
-        var cnt = file_content[idx:l]
-        content = string_to_type(cnt)
-        idx = l + 1
+        value = TomlType[data.origin].new_table()
 
-    return content^
+    while data[idx] == Space:
+        idx += 1
+
+    # We should be at the start of the inner value.
+    # Could not be triple quoted.
+
+    while data[idx] != ContainerEnd:
+
+        @parameter
+        if collection == "array":  # Within an array, you need to split by comma
+            ref arr = value.as_opaque_array()
+            arr.append(parse_value(data, idx).move_to_addr())
+
+        elif collection == "table":
+            parse_and_update_kv_pairs(data, idx, value)
+
+        # For both table and array, you need to split by comma
+        while data[idx] != Comma:
+            if data[idx] == ContainerEnd:
+                break
+            idx += 1
+
+        while data[idx] in EmptyChars:
+            idx += 1
+
+
+fn string_to_type(
+    data: Span[Byte], mut idx: Int, out value: TomlType[data.origin]
+):
+    "Keeps idx a char after the value."
+    comptime lower, upper = ord("0"), ord("9")
+    var init = idx
+    var all_is_digit = True
+    var has_dot = False
+
+    if data[idx : idx + 4] == StringSlice("true").as_bytes():
+        value = TomlType[data.origin](True)
+        idx += 4
+        return
+
+    if data[idx : idx + 5] == StringSlice("false").as_bytes():
+        idx += 5
+        value = TomlType[data.origin](False)
+        return
+
+    # TODO: Should handle commas?
+    while idx < len(data) and data[idx] not in EmptyChars:
+        if all_is_digit and data[idx] < lower or data[idx] > upper:
+            # if has dot, then keep it as digit for first dot
+            if data[idx] == ord(".") and not has_dot:
+                has_dot = True
+                continue
+            all_is_digit = False
+        idx += 1
+
+    var str_val = StringSlice(unsafe_from_utf8=data[init:idx])
+    # To keep ending at the end of the values
+
+    if all_is_digit and not has_dot:
+        try:
+            value = TomlType[data.origin](Int(str_val))
+            return
+        except:
+            pass
+
+    if all_is_digit:
+        try:
+            value = TomlType[data.origin](atof(str_val))
+        except:
+            pass
+
+    return TomlType(unknown=data[init:idx])
 
 
 fn parse_value(
@@ -589,116 +488,33 @@ fn parse_value(
     mut idx: Int,
     out value: TomlType[data.origin],
 ):
-    var flen = len(data)
+    # Assumes the first char is the first value of the value to parse.
+    if data[idx] == Quote:
+        if data[idx + 1] == Quote and data[idx + 2] == Quote:
+            var s = parse_multiline_string(data, idx)
+            value = TomlType[data.origin](StringSlice(unsafe_from_utf8=s))
+        else:
+            var s = parse_quoted_string(data, idx)
+            value = TomlType[data.origin](StringSlice(unsafe_from_utf8=s))
+        idx += 1
+        return
+    elif data[idx] == SquareBracketOpen:
+        value = parse_inline_collection["array"](data, idx)
+        idx += 1
+        return
+    elif data[idx] == CurlyBracketOpen:
+        value = parse_inline_collection["table"](data, idx)
+        idx += 1
+        return
 
-    while idx < flen:
-        var b = data[idx]
-        if b == Quote:
-            if data[idx + 1] == Quote and data[idx + 2] == Quote:
-                value = parse_multiline_string(data, idx)
-            else:
-                value = parse_string(data, idx)
-            return
-        elif b == SquareBracketOpen:
-            parse_inline_collection["array"](...)
-        elif b == CurlyBracketOpen:
-            parse_inline_collection["table"](...)
+    # Value should be a integer/float/date/time/datetime/datetimetz/bool
 
-    #     if file_content[idx]
-    # var multiline_string_start = file_content.find('"""', idx)
-    # var string_start = file_content.find('"', idx)
-    # var list_start = file_content.find("[", idx)
-    # var table_start = file_content.find("{", idx)
-
-    # var content: TomlType[o]
-    # if is_before(multiline_string_start, list_start, table_start):
-    #     content = parse_multiline_string(
-    #         file_content, idx=multiline_string_start
-    #     )
-    #     idx = multiline_string_start
-
-    # elif is_before(string_start, list_start, table_start):
-    #     content = parse_string(file_content, from_char_idx=string_start)
-    #     idx = multiline_string_start
-
-    # elif is_before(list_start, table_start):
-    #     content = parse_inline_collection["array"](
-    #         file_content, from_char_idx=list_start
-    #     )
-    #     idx = list_start
-
-    # elif is_before(table_start, list_start):
-    #     content = parse_inline_collection["table"](
-    #         file_content, from_char_idx=table_start
-    #     )
-    #     idx = list_start
-
-    # else:
-    #     var eol = file_content.find("\n", idx + 1)
-    #     # TODO: Check this...
-    #     var l = len(file_content) if eol == -1 else eol
-    #     var cnt = file_content[idx:l]
-    #     content = string_to_type(cnt)
-    #     idx = l + 1
-
-    return TomlType[data.origin](
-        StringSlice[mut=False, data.origin](unsafe_from_utf8=data[idx:flen])
-    )
-
-
-# fn update_base_with_kv[
-#     o: ImmutOrigin, //, collection: CollectionType
-# ](key: StringSlice[o], var value: TomlType[o], mut base: TomlType[o]):
-#     var keys = key.split(".")
-
-#     if len(keys) == 1:
-#         var value_addr = value^.move_to_addr()
-
-#         @parameter
-#         if collection == "table":
-#             _ = base.as_opaque_table().setdefault(key.strip(), value_addr)
-#         elif collection == "array":
-#             var default_array = TomlType[o].new_array()
-#             var addr = base.as_opaque_table().setdefault(
-#                 key.strip(), default_array^.move_to_addr()
-#             )
-#             ref new_base_ptr = TomlType[o].from_addr(addr)
-#             new_base_ptr.as_opaque_array().append(value_addr)
-#         return
-
-#     var first_key = keys[0]
-
-#     var rest = key[len(first_key) + 1 :]
-#     var default_tb = TomlType[o].new_table()
-
-#     var new_base_ptr = base.as_opaque_table().setdefault(
-#         first_key.strip(), default_tb^.move_to_addr()
-#     )
-#     ref new_base = TomlType[o].from_addr(new_base_ptr)
-#     update_base_with_kv[collection](rest, value^, new_base)
-
-
-fn old_try_get_value_and_update_slicer[
-    o: ImmutOrigin
-](
-    file_content: StringSlice[o], mut idx: Int, mut s: ContiguousSlice
-) -> Optional[TomlType[o]]:
-    if file_content.as_bytes()[idx] in [Byte(ord("[")), Byte(ord("{"))]:
-        return None
-
-    if (eq_idx := file_content.find("=", idx + 1)) == -1:
-        return None
-
-    s = ContiguousSlice(idx, eq_idx, None)
-    eq_idx += 1
-    var content = old_parse_value(file_content, idx=eq_idx)
-    idx = eq_idx  # eq_idx gets modified by parse_value func
-    return content^
+    value = string_to_type(data, idx)
 
 
 fn get_or_ref_container[
     collection: CollectionType
-](key: Span[Byte], mut base: TomlType[key.origin],) -> ref [base] TomlType[
+](key: Span[Byte], mut base: TomlType[key.origin]) -> ref [base] TomlType[
     key.origin
 ]:
     str_key = StringSlice[mut=False, key.origin](unsafe_from_utf8=key)
@@ -710,13 +526,13 @@ fn get_or_ref_container[
 
 
 fn parse_key_span_and_get_container[
-    collection: CollectionType
+    o: Origin, //, collection: CollectionType, close_char: Byte
 ](
-    data: Span[Byte],
+    data: Span[Byte, o],
     mut idx: Int,
-    mut base: TomlType[data.origin],
-    mut key: Span[Byte, data.origin],
-) -> ref [base] TomlType[data.origin]:
+    mut base: TomlType[o],
+    mut key: Span[Byte, o],
+) -> ref [base] TomlType[o]:
     """Assumes that first character is not a space. Ends on the end of the key.
     """
     var key_init = idx
@@ -730,7 +546,11 @@ fn parse_key_span_and_get_container[
     else:
         while idx < len(data):
             # TODO: Fail on unexpected characters
-            if data[idx] == Equal or data[idx] == Space:
+            if (
+                data[idx] == Equal
+                or data[idx] == Space
+                or data[idx] == close_char
+            ):
                 key = data[key_init:idx]
                 break
 
@@ -739,7 +559,7 @@ fn parse_key_span_and_get_container[
                 key = data[key_init:idx]
                 ref cont = get_or_ref_container["table"](key, base)
                 idx += 1
-                return parse_key_span_and_get_container[collection](
+                return parse_key_span_and_get_container[collection, close_char](
                     data, idx, cont, key
                 )
             idx += 1
@@ -754,7 +574,9 @@ fn find_kv_and_update_base(
 ):
     """Assumes that first character is not a space."""
     var key = data[idx : idx + 1]
-    ref tb = parse_key_span_and_get_container["multiline"](data, idx, base, key)
+    ref tb = parse_key_span_and_get_container["multiline", Equal](
+        data, idx, base, key
+    )
 
     # Could be here because of equal or space
     while data[idx] != Equal:
@@ -793,19 +615,22 @@ fn parse_and_update_kv_pairs(
         idx += 1
 
 
-fn parse_and_store_collection(
+fn parse_and_store_multiline_collection(
     data: Span[Byte], mut idx: Int, mut base: TomlType[data.origin]
 ):
-    var is_array = True if data[idx + 1] == SquareBracketOpen else False
+    if data[idx] != SquareBracketOpen:
+        os.abort("Not an array or table")
+
+    var is_array = data[idx + 1] == SquareBracketOpen
     idx += 1 + Int(is_array)
 
     var tb: Pointer[TomlType[data.origin], origin_of(base)]
     var key = data[idx : idx + 1]
     # Right away parse the key
     if is_array:
-        ref container = parse_key_span_and_get_container["array"](
-            data, idx, base, key
-        )
+        ref container = parse_key_span_and_get_container[
+            "array", SquareBracketClose
+        ](data, idx, base, key)
         ref array = container.as_opaque_array()
         array.append(base.new_table().move_to_addr())
         tb = Pointer[origin = origin_of(base)](
@@ -813,7 +638,9 @@ fn parse_and_store_collection(
         )
     else:
         tb = Pointer(
-            to=parse_key_span_and_get_container["table"](data, idx, base, key)
+            to=parse_key_span_and_get_container["table", SquareBracketClose](
+                data, idx, base, key
+            )
         )
 
     while data[idx] != NewLine:
@@ -828,19 +655,26 @@ fn parse_and_store_collection(
     parse_and_update_kv_pairs(data, idx, tb[])
 
 
-fn parse_toml(
-    content: StringSlice[mut=False],
-) -> TomlType[content.origin]:
+fn parse_toml[
+    logging: Bool = False
+](content: StringSlice) -> TomlType[content.origin]:
     var idx = 0
 
     var base = TomlType[content.origin].new_table()
     var data = content.as_bytes()
 
+    @parameter
+    if logging:
+        print("parse kv pairs at top of fn")
+
     parse_and_update_kv_pairs(data, idx, base)
 
     # Here we are at end of file or start of a table or table list
+    @parameter
+    if logging:
+        print("parse collections (tables and arrays)")
     while idx < len(data):
-        parse_and_store_collection(data, idx, base)
+        parse_and_store_multiline_collection(data, idx, base)
 
         while data[idx] != NewLine:
             idx += 1
