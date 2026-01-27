@@ -14,12 +14,16 @@ comptime SquareBracketOpen = ord("[")
 comptime SquareBracketClose = ord("[")
 comptime CurlyBracketOpen = ord("{")
 comptime CurlyBracketClose = ord("}")
+
 comptime NewLine = ord("\n")
 comptime Space = ord(" ")
-comptime Quote = ord('"')
+
 comptime Comma = ord(",")
 comptime Equal = ord("=")
 comptime Period = ord(".")
+
+comptime Quote = ord('"')
+comptime Escape = ord('\\')
 
 comptime EmptyChars = (Space, NewLine)
 comptime CollectionOpenChars = (SquareBracketOpen, CurlyBracketOpen)
@@ -575,6 +579,66 @@ fn old_parse_value[
     return content^
 
 
+fn parse_value_and_update_base(
+    file_content: Span[Byte],
+    mut idx: Int,
+    key: Span[Byte, file_content.origin],
+    mut base: TomlType[file_content.origin],
+):
+    var flen = len(file_content)
+    while idx < flen:
+        var b = file_content[idx]
+        if b == Quote and file_content[idx + 1] == Quote and file_content[idx + 2] == Quote:
+            parse_multiline_string(...)
+        elif b == Quote:
+            parse_string()
+        elif b == SquareBracketOpen:
+            parse_inline_collection["array"](...)
+        elif b == CurlyBracketOpen:
+            parse_inline_collection["table"](...)
+        else:
+            idx += 1
+
+        if file_content[idx]
+    var multiline_string_start = file_content.find('"""', idx)
+    var string_start = file_content.find('"', idx)
+    var list_start = file_content.find("[", idx)
+    var table_start = file_content.find("{", idx)
+
+    var content: TomlType[o]
+    if is_before(multiline_string_start, list_start, table_start):
+        content = parse_multiline_string(
+            file_content, idx=multiline_string_start
+        )
+        idx = multiline_string_start
+
+    elif is_before(string_start, list_start, table_start):
+        content = parse_string(file_content, from_char_idx=string_start)
+        idx = multiline_string_start
+
+    elif is_before(list_start, table_start):
+        content = parse_inline_collection["array"](
+            file_content, from_char_idx=list_start
+        )
+        idx = list_start
+
+    elif is_before(table_start, list_start):
+        content = parse_inline_collection["table"](
+            file_content, from_char_idx=table_start
+        )
+        idx = list_start
+
+    else:
+        var eol = file_content.find("\n", idx + 1)
+        # TODO: Check this...
+        var l = len(file_content) if eol == -1 else eol
+        var cnt = file_content[idx:l]
+        content = string_to_type(cnt)
+        idx = l + 1
+
+    return content^
+
+
 fn update_base_with_kv[
     o: ImmutOrigin, //, collection: CollectionType
 ](key: StringSlice[o], var value: TomlType[o], mut base: TomlType[o]):
@@ -628,18 +692,60 @@ fn old_try_get_value_and_update_slicer[
 fn find_kv_and_update_base(
     file_bytes: Span[Byte], mut idx: Int, mut base: TomlType[file_bytes.origin]
 ):
-    var init = idx
-    var flen = len(file_bytes)
-    while file_bytes[idx] != Equal:
+    """Assumes that first character is not a space."""
+    var quoted_string = file_bytes[idx] == Quote 
+    if quoted_string:
         idx += 1
-        if unlikely(idx == flen - 1):
-            return
+    var key_init = idx
+    var key_end = key_init
+    var flen = len(file_bytes)
+    var completed_key = False
 
-    var key = file_bytes[init:idx]
+    while file_bytes[idx] != Equal and idx < flen:
+        if file_bytes[idx] == Quote:
+            if quoted_string:
+                if file_bytes[idx - 1] == Escape:
+                    idx += 1
+                    continue
+                key_end = idx
+                completed_key = True
+                idx += 1
+                continue
+
+            os.abort("Unexpected quote!.")
+        
+        if quoted_string:
+            idx += 1
+            continue
+        
+        if file_bytes[idx] == Period:
+            # Store the list of keys.
+            var key = file_bytes[key_init:idx]
+            idx += 1
+
+            ref tb = base.from_addr(base.as_opaque_table().setdefault(StringSlice(unsafe_from_utf8=key), base.new_array().move_to_addr()))
+            return find_kv_and_update_base(file_bytes, idx, tb)
+        
+        if file_bytes[idx] in (SquareBracketOpen, SquareBracketClose, CurlyBracketOpen, CurlyBracketClose, Comma, NewLine, Escape):
+            os.abort("Unexpected character!.")
+
+        if file_bytes[idx] == Space:
+            key_end = idx
+            completed_key = True
+
+        idx += 1    
+
+    if unlikely(idx == flen):
+        return
+
+    if not completed_key:
+        key_end = idx
+
+    var key = file_bytes[key_init:key_end]
     idx += 1
 
     # TODO: End this
-    # parse_value(file_bytes, idx)
+    parse_value_and_update_base(file_bytes, idx, key, base)
 
     # update_base_with_kv["table"](base, key, value)
 
@@ -723,6 +829,7 @@ fn parse_toml(
         if b in (SquareBracketOpen, CurlyBracketOpen):
             break
 
+        # Some open 
         var value = find_kv_and_update_base(file_bytes, idx, base)
 
     # We will parse the file sequentially, building the type on the way.
