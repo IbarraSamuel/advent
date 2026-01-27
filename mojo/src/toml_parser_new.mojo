@@ -591,7 +591,6 @@ fn parse_value(
 ):
     var flen = len(data)
 
-    TODO
     while idx < flen:
         var b = data[idx]
         if b == Quote:
@@ -600,14 +599,10 @@ fn parse_value(
             else:
                 value = parse_string(data, idx)
             return
-        elif b == Quote:
-            var value = parse_string(data, idx)
         elif b == SquareBracketOpen:
             parse_inline_collection["array"](...)
         elif b == CurlyBracketOpen:
             parse_inline_collection["table"](...)
-        else:
-            idx += 1
 
     #     if file_content[idx]
     # var multiline_string_start = file_content.find('"""', idx)

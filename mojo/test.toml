@@ -1,2 +1,5 @@
- hello = 1
+hello = 1
 "ok" = "ka"
+
+["something"]
+foo = 3
