@@ -406,9 +406,9 @@ fn parse_quoted_string(
 fn parse_inline_collection[
     collection: CollectionType
 ](data: Span[Byte], mut idx: Int, out value: TomlType[data.origin]):
-    """Assumes the first char is '[' or '{'."""
-    print("parse inline collection", collection.inner)
-    comptime ContainerEnd = SquareBracketClose if collection == "array" else CurlyBracketClose
+    """Assumes the first char is already within the collection."""
+    # print("parse inline collection", collection.inner)
+    # comptime ContainerEnd = SquareBracketClose if collection == "array" else CurlyBracketClose
 
     @parameter
     if collection == "array":
@@ -416,52 +416,66 @@ fn parse_inline_collection[
     else:
         value = TomlType[data.origin].new_table()
 
-    while data[idx] == Space:
-        idx += 1
+    # NOTE: Useless but we might need to bring it back
+    # while data[idx] == Space:
+    #     idx += 1
 
     # We should be at the start of the inner value.
     # Could not be triple quoted.
     @parameter
     if collection == "table":
-        parse_and_update_kv_pairs[separator=Comma, end_char=ContainerEnd](
+        parse_and_update_kv_pairs[separator=Comma, end_char=CurlyBracketClose](
             data, idx, value
         )
-        print("finished table", value)
+        # print("finished table", value)
     elif collection == "array":
         ref arr = value.as_opaque_array()
-        while data[idx] != ContainerEnd:
-            arr.append(parse_value[ContainerEnd](data, idx).move_to_addr())
+        # ok to not check constraints because we are already in a list.
+        skip[Space, NewLine](data, idx)
 
-            print(
-                "appended to array:",
-                arr[len(arr) - 1].bitcast[TomlType[data.origin]]()[],
+        while data[idx] != SquareBracketClose:
+            arr.append(
+                parse_value[SquareBracketClose](data, idx).move_to_addr()
             )
 
-            # For both table and array, you need to split by comma
-            while data[idx] != Comma:
-                if data[idx] == ContainerEnd:
-                    break
-                idx += 1
+            # print(
+            #     "appended to array:",
+            #     arr[len(arr) - 1].bitcast[TomlType[data.origin]]()[],
+            # )
 
-            if data[idx] == ContainerEnd:
+            # For both table and array, you need to split by comma
+            stop_at[Comma, SquareBracketClose](data, idx)
+            if data[idx] == SquareBracketClose:
                 break
 
+            # we are at a comma
             idx += 1
 
-            while data[idx] == NewLine or data[idx] == Space:
-                idx += 1
+            skip[Space, NewLine](data, idx)
+            # while data[idx] != Comma:
+            #     if data[idx] == ContainerEnd:
+            #         break
+            #     idx += 1
 
-    print(
-        "finished inline collection",
-        collection.inner,
-        "at:",
-        idx,
-        "and codepoint:",
-        Codepoint(data[idx]),
-        "and collection:",
-        value,
-    )
-    # print("end of parse value loop. Value is parsed as:", value)
+            # if data[idx] == ContainerEnd:
+            #     break
+
+            # idx += 1
+
+            # while data[idx] == NewLine or data[idx] == Space:
+            #     idx += 1
+
+    # print(
+    #     "finished inline collection",
+    #     collection.inner,
+    #     "at:",
+    #     idx,
+    #     "and codepoint:",
+    #     Codepoint(data[idx]),
+    #     "and collection:",
+    #     value,
+    # )
+    # # print("end of parse value loop. Value is parsed as:", value)
 
 
 fn string_to_type[
@@ -474,13 +488,13 @@ fn string_to_type[
     var has_period = False
 
     if data[idx : idx + 4] == StringSlice("true").as_bytes():
-        print("-> to bool")
+        # print("-> to bool")
         value = TomlType[data.origin](True)
         idx += 4
         return
 
     if data[idx : idx + 5] == StringSlice("false").as_bytes():
-        print("-> to bool")
+        # print("-> to bool")
         idx += 5
         value = TomlType[data.origin](False)
         return
@@ -499,11 +513,11 @@ fn string_to_type[
         idx += 1
 
     var str_val = StringSlice(unsafe_from_utf8=data[init:idx])
-    print("string to type: `{}`".format(str_val))
+    # print("string to type: `{}`".format(str_val))
     # To keep ending at the end of the values
 
     if all_is_digit and not has_period:
-        print("-> to int")
+        # print("-> to int")
         try:
             value = TomlType[data.origin](Int(str_val))
             return
@@ -511,14 +525,14 @@ fn string_to_type[
             pass
 
     if all_is_digit:
-        print("-> to float")
+        # print("-> to float")
         try:
             value = TomlType[data.origin](atof(str_val))
             return
         except:
             pass
 
-    print("-> to unknown")
+    # print("-> to unknown")
     return TomlType(unknown=data[init:idx])
 
 
@@ -549,7 +563,7 @@ fn get_or_ref_container[
     key.origin
 ]:
     str_key = StringSlice[mut=False, key.origin](unsafe_from_utf8=key)
-    print("Setting up key:", str_key)
+    # print("Setting up key:", str_key)
     var def_addr = (
         base.new_array() if collection == "array" else base.new_table()
     ).move_to_addr()
@@ -621,27 +635,27 @@ fn find_kv_and_update_base[
     skip[Space](data, idx)
 
     # we are on the value part
-    var v = parse_value[end_char](data, idx)
-    print(
-        "setting key: `",
-        StringSlice(unsafe_from_utf8=key),
-        "` with value: `",
-        v,
-        "`",
-        sep="",
-    )
-    tb.as_opaque_table()[StringSlice(unsafe_from_utf8=key)] = v^.move_to_addr()
-    print(" ++ Setting done!")
-    # tb.as_opaque_table()[StringSlice(unsafe_from_utf8=key)] = parse_value[
-    #     CurlyBracketClose
-    # ](data, idx).move_to_addr()
+    # var v = parse_value[end_char](data, idx)
+    # print(
+    #     "setting key: `",
+    #     StringSlice(unsafe_from_utf8=key),
+    #     "` with value: `",
+    #     v,
+    #     "`",
+    #     sep="",
+    # )
+    # tb.as_opaque_table()[StringSlice(unsafe_from_utf8=key)] = v^.move_to_addr()
+    # print(" ++ Setting done!")
+    tb.as_opaque_table()[StringSlice(unsafe_from_utf8=key)] = parse_value[
+        CurlyBracketClose
+    ](data, idx).move_to_addr()
 
 
 fn parse_and_update_kv_pairs[
     separator: Byte, end_char: Byte
 ](data: Span[Byte], mut idx: Int, mut base: TomlType[data.origin]):
     """This function ends at the start of a new collection."""
-    print("parse kv pairs at idx:", idx, "and codepoint:", Codepoint(data[idx]))
+    # print("parse kv pairs at idx:", idx, "and codepoint:", Codepoint(data[idx]))
     while idx < len(data) and data[idx] != end_char:
         # # Skip spaces
         # skip_char[Space](data, idx)
@@ -649,7 +663,7 @@ fn parse_and_update_kv_pairs[
         # we should be at something to parse
         find_kv_and_update_base[end_char=end_char](data, idx, base)
         # ends at idx + 1 of latest value char.
-        print("end kv pair with updated base:", base)
+        # print("end kv pair with updated base:", base)
         skip[Space](data, idx)
         stop_at[separator, end_char](data, idx)
         if data[idx] == end_char or idx == len(data):
@@ -660,12 +674,12 @@ fn parse_and_update_kv_pairs[
 
         # we should be at the start of the next value, or just the end
         # if there is a separator, move to there and goto next loop
-    print(
-        "No more kv pairs. end at:",
-        idx,
-        "and codepoint:",
-        Codepoint(data[idx]),
-    )
+    # print(
+    #     "No more kv pairs. end at:",
+    #     idx,
+    #     "and codepoint:",
+    #     Codepoint(data[idx]),
+    # )
     # Stops at end_char always.
 
 
@@ -693,12 +707,12 @@ fn parse_and_store_multiline_collection(
     # if is array, we were not at the end of the brackets
     idx += Int(is_array)
 
-    print(
-        "========>> multiline root key:",
-        StringSlice(unsafe_from_utf8=key),
-        "with current codepoint:",
-        Codepoint(data[idx]),
-    )
+    # print(
+    #     "========>> multiline root key:",
+    #     StringSlice(unsafe_from_utf8=key),
+    #     "with current codepoint:",
+    #     Codepoint(data[idx]),
+    # )
 
     if is_array:
         ref array = container.as_opaque_array()
@@ -710,15 +724,15 @@ fn parse_and_store_multiline_collection(
     # Use `tb` to store any kv pairs
 
     # If there is a key, there should be a value right?
-    print("move to newline...")
+    # print("move to newline...")
     stop_at[NewLine, SquareBracketOpen](data, idx)
-    print("skip newlines now. We want the next real value...")
+    # print("skip newlines now. We want the next real value...")
     skip[NewLine](data, idx)
 
     if data[idx] == SquareBracketOpen or idx >= len(data):
         return
 
-    print("--- parse multiline kv pairs")
+    # print("--- parse multiline kv pairs")
     # This function should end just in the next SquarBracketOpen or when we hit max idx
     parse_and_update_kv_pairs[separator=NewLine, end_char=SquareBracketOpen](
         data, idx, tb[]
