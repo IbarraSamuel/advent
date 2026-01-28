@@ -8,8 +8,9 @@ import sys
 import os
 
 
-@register_passable("trivial")
-struct Part[value: __mlir_type.`!pop.int_literal`](Equatable):
+struct Part[value: __mlir_type.`!pop.int_literal`](
+    Equatable, TrivialRegisterType
+):
     comptime one = Part(1)
     comptime two = Part(2)
 
@@ -34,8 +35,7 @@ struct Part[value: __mlir_type.`!pop.int_literal`](Equatable):
         return self.number == other.number
 
 
-@register_passable("trivial")
-struct TimeUnit[value: __mlir_type.`!kgen.string`]:
+struct TimeUnit[value: __mlir_type.`!kgen.string`](TrivialRegisterType):
     comptime ms = TimeUnit("ms")
     comptime ns = TimeUnit("ns")
     comptime s = TimeUnit("s")

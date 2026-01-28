@@ -88,8 +88,7 @@ struct MapRange(ImplicitlyCopyable):
 
 
 @fieldwise_init
-@register_passable("trivial")
-struct NumRange:
+struct NumRange(TrivialRegisterType):
     var start: Int
     var end: Int
 

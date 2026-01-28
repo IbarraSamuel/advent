@@ -18,8 +18,7 @@ struct HandMode:
         return self.value == other.value
 
 
-@register_passable("trivial")
-struct Hand[mode: HandMode](Comparable):
+struct Hand[mode: HandMode](Comparable, TrivialRegisterType):
     comptime type = SIMD[CardType, 8]
     var value: Self.type
     var level: UInt8
@@ -108,8 +107,7 @@ struct Hand[mode: HandMode](Comparable):
         return self == other or self < other
 
 
-@register_passable("trivial")
-struct Card[mode: HandMode]:
+struct Card[mode: HandMode](TrivialRegisterType):
     var value: Scalar[CardType]
     comptime A = Self(14)
     comptime K = Self(13)
