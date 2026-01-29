@@ -40,7 +40,7 @@ wheels = [
 
 [[package]]
 name = "mblack"
-version = "26.2.0.dev2026012705"
+version = "26.2.0.dev2026012905"
 source = { registry = "https://whl.modular.com/nightly/simple/" }
 dependencies = [
     { name = "click" },
@@ -49,12 +49,12 @@ dependencies = [
     { name = "platformdirs" },
 ]
 wheels = [
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mblack/mblack-26.2.0.dev2026012705-py3-none-any.whl", hash = "sha256:ff37ddec52a5d7f41c06fc47a9b066eca96fb814857dcb4af05682e5e8c68d0d" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mblack/mblack-26.2.0.dev2026012905-py3-none-any.whl", hash = "sha256:eb124e22a2dea238f76c2693e817b4f0afad312e5922cf039cc752d372e456f8" },
 ]
 
 [[package]]
 name = "mojo"
-version = "0.26.2.0.dev2026012705"
+version = "0.26.2.0.dev2026012905"
 source = { registry = "https://whl.modular.com/nightly/simple/" }
 dependencies = [
     { name = "mblack" },
@@ -62,29 +62,29 @@ dependencies = [
     { name = "mojo-lldb-libs" },
 ]
 wheels = [
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo/mojo-0.26.2.0.dev2026012705-py3-none-macosx_13_0_arm64.whl", hash = "sha256:3cf78bb24f73b392d9c0f6f70ca7709fcad3cca52502be632c117e7ac349e754" },
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo/mojo-0.26.2.0.dev2026012705-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:a69d33d9969b49745b9fcc0044e4225ce98eb4217ef4d73debba1e258ed246a1" },
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo/mojo-0.26.2.0.dev2026012705-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:66b75df45e1569ef5861dcc395f8b992bd82eb6824bd0b894aec1cecf0094ce2" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo/mojo-0.26.2.0.dev2026012905-py3-none-macosx_13_0_arm64.whl", hash = "sha256:cfc877c198dc3b7bd27af6c09714ae96909f3f8fcb1bbd5355bf6077f33a7f0f" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo/mojo-0.26.2.0.dev2026012905-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:2a69102c2e40bddc7e31712b7dece71b23de3a469cc292a97bb18b8c86c0d5f7" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo/mojo-0.26.2.0.dev2026012905-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:c55eb08c8c38b1ca188fac718ffffe71eb1ef3ca36d066a55e53bfa160f4a96b" },
 ]
 
 [[package]]
 name = "mojo-compiler"
-version = "0.26.2.0.dev2026012705"
+version = "0.26.2.0.dev2026012905"
 source = { registry = "https://whl.modular.com/nightly/simple/" }
 wheels = [
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.2.0.dev2026012705-py3-none-macosx_13_0_arm64.whl", hash = "sha256:4c762c2b6a382c589b23d6ea9bd00d024827457a94f8561e1a8f7c706bb577c2" },
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.2.0.dev2026012705-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:208b38789c3d2ee0159de008f5888ce2a531534a17eac20a7a644d6894cba576" },
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.2.0.dev2026012705-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:61ac82bd6945fc00459af1f58bfa7360a05f319d82e0e672f5c9598ce0d434ce" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.2.0.dev2026012905-py3-none-macosx_13_0_arm64.whl", hash = "sha256:f261c6c349d0193c087a6130cc4f6fbfbe0b357450769f4ca18a0d210aac09a7" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.2.0.dev2026012905-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:4c698ca3ffb718992c63b6a2fcfe529b218d848ce1987142a1bb89527ba12992" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-compiler/mojo_compiler-0.26.2.0.dev2026012905-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:b852b3d9d584ba8602450e59e559614b06d95fc16ac26a2728d779607ee12ee8" },
 ]
 
 [[package]]
 name = "mojo-lldb-libs"
-version = "0.26.2.0.dev2026012705"
+version = "0.26.2.0.dev2026012905"
 source = { registry = "https://whl.modular.com/nightly/simple/" }
 wheels = [
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-lldb-libs/mojo_lldb_libs-0.26.2.0.dev2026012705-py3-none-macosx_13_0_arm64.whl", hash = "sha256:1bead55b7ce9292b621fc6b03af7da05baed2fb141dc46ae76f1ac1668ade772" },
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-lldb-libs/mojo_lldb_libs-0.26.2.0.dev2026012705-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:0b4229527f52e9796a659c9e3a6b761a09d656f7c3a9958dd29f47b523bbdb9d" },
-    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-lldb-libs/mojo_lldb_libs-0.26.2.0.dev2026012705-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:801411f7ee3f205b7dfc3d3adccdb8992a989e5eaf1fa74f1acbeb7eaa9804d9" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-lldb-libs/mojo_lldb_libs-0.26.2.0.dev2026012905-py3-none-macosx_13_0_arm64.whl", hash = "sha256:913a0630921fe2f59a93fb70b18bb524af9e648c501dae9e253b1354f2c2d267" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-lldb-libs/mojo_lldb_libs-0.26.2.0.dev2026012905-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:22443b12e02c4f6bbb6d6bd8ac45c3b48998caa2518b2119cc0da0f496c051b8" },
+    { url = "https://us-central1-python.pkg.dev/distribution-prod-0a7c7b3/nightly/mojo-lldb-libs/mojo_lldb_libs-0.26.2.0.dev2026012905-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:f128294e230b25d29ea5509ff88abd1e746394d6a7d2ecfd8ea0fcc0b6123cfb" },
 ]
 
 [[package]]

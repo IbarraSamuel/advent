@@ -3,9 +3,7 @@ import benchmark
 from solutions import Solutions
 from pathlib import _dir_of_current_file
 from testing import assert_equal
-from builtin import Variadic
-import sys
-import os
+from sys import argv
 
 
 struct Part[value: __mlir_type.`!pop.int_literal`](
@@ -149,6 +147,14 @@ Any combination should work.
 
 
 @fieldwise_init
+struct Help(TrivialRegisterType, Writable):
+    comptime HELP = HELP_STRING
+
+    fn write_to(self, mut w: Some[Writer]):
+        w.write(Self.HELP)
+
+
+@fieldwise_init
 struct Args:
     comptime HELP = HELP_STRING
 
@@ -162,7 +168,7 @@ struct Args:
 
     @staticmethod
     fn parse_args() raises -> Args:
-        var args = sys.argv()
+        var args = argv()
 
         var mode: StaticString = "run"
         var year: Optional[Int] = None
@@ -171,7 +177,8 @@ struct Args:
 
         for i, arg in enumerate(args):
             if String(arg) in ("-h", "--help"):
-                raise Self.HELP
+                print(Self.HELP)
+                raise Help()
 
             if len(args) <= i + 1:
                 break
@@ -189,15 +196,3 @@ struct Args:
                 part = Int(args[i + 1])
 
         return Args(mode=mode, year=year, day=day, part=part)
-
-
-fn test[
-    S: AdventSolution,
-    file: StringLiteral,
-    part: Part,
-    expected: IntLiteral,
-]() raises:
-    comptime Solver = S.part_1 if part == 1 else S.part_2
-    var input_path = _dir_of_current_file() / "../.." / file
-    var result = Solver(input_path.read_text())
-    assert_equal(Int(result), expected)
