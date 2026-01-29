@@ -24,50 +24,35 @@ fn parse_config() raises -> Years:
 
     var toml = parse_toml(data)
     ref all_years = toml["tests"]["year"]
-    # print("year data:", year_data)
 
-    var years = Years()
-    for year, year_data in all_years.items():
-        ref all_days = year_data["day"]
-        # print("\tdays data for year:", year, "is:", day_data)
-
-        var days = Days()
-        for day, day_data in all_days.items():
-            ref all_parts = day_data["part"]
-            # print("\t\tparts data for day:", day, "is:", part_data)
-
-            var parts = Parts()
-            for part, part_tests in all_parts.items():
-                var cases = TestCases()
-                for test in part_tests:
-                    var file_location, test_expects = (
-                        test["file"].string(),
+    return {
+        Int(year): {
+            Int(day): {
+                Int(part): [
+                    Case(
+                        loc / "tests" / year / test["file"].string(),
                         test["expected"].integer(),
                     )
-
-                    var floc = loc / "tests" / year / file_location
-                    var tcase = Case(floc, test_expects)
-                    cases.append(tcase^)
-
-                parts[Int(part)] = cases^
-
-            days[Int(day)] = parts^
-
-        years[Int(year)] = days^
-
-    return years^
+                    for test in part_tests
+                ]
+                for part, part_tests in day_data["part"].items()
+            }
+            for day, day_data in year_data["day"].items()
+        }
+        for year, year_data in all_years.items()
+    }
 
 
 fn test_solution[year: Int, day: Int, S: AdventSolution, part: Int]() raises:
-    var args = Args()
     var config = parse_config()
 
     ref test_cases = config[year][day][part]
 
     for test_case in test_cases:
         comptime runner = S.part_1 if part == 1 else S.part_2
-        var res = Int(runner(test_case.file.read_text()))
-        assert_equal(res, test_case.expected)
+        var content = test_case.file.read_text()
+        var res = runner(content)
+        assert_equal(Int(res), test_case.expected)
 
 
 fn run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
