@@ -11,6 +11,10 @@ fn main() raises:
     var args = Args()
     var project_dir = _dir_of_current_file() / "../.."
 
+    print("Using project dir: ", project_dir)
+    print("args:", args)
+    print("config:", config)
+
     @parameter
     for Solution in Solutions:
         comptime Y, S = Solution

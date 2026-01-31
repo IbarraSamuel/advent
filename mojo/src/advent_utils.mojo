@@ -155,7 +155,7 @@ struct Help(TrivialRegisterType, Writable):
 
 
 @fieldwise_init
-struct Args:
+struct Args(Writable):
     comptime HELP = HELP_STRING
 
     var mode: String

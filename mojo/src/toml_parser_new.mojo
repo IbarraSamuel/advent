@@ -82,16 +82,16 @@ struct TomlRef[inner: ImmutOrigin, toml: ImmutOrigin](
     ]
     var pointer: Pointer[Self.Toml, Self.toml]
 
-    fn __init__(out self, ref [Self.toml]v: Self.Toml):
+    fn __init__(out self, ref[Self.toml] v: Self.Toml):
         self.pointer = Pointer(to=v)
 
-    fn __getitem__(ref self) -> ref [Self.toml] Self.Toml:
+    fn __getitem__(ref self) -> ref[Self.toml] Self.Toml:
         return self.pointer[]
 
-    fn __getitem__(ref self, idx: Int) -> ref [Self.toml] Self.Toml:
+    fn __getitem__(ref self, idx: Int) -> ref[Self.toml] Self.Toml:
         return self.pointer[][idx]
 
-    fn __getitem__(ref self, key: StringSlice) -> ref [Self.toml] Self.Toml:
+    fn __getitem__(ref self, key: StringSlice) -> ref[Self.toml] Self.Toml:
         return self.pointer[][key]
 
     fn __iter__(ref self) -> Self.IteratorType[Self.toml]:
@@ -106,13 +106,13 @@ struct TomlListIter[
     var pointer: Pointer[Self.Element.OpaqueArray, Self.toml_origin]
     var index: Int
 
-    fn __init__(out self, ref [Self.toml_origin]v: Self.Element.OpaqueArray):
+    fn __init__(out self, ref[Self.toml_origin] v: Self.Element.OpaqueArray):
         self.pointer = Pointer(to=v)
         self.index = 0
 
     fn __next__(
         mut self,
-    ) raises StopIteration -> ref [Self.toml_origin] Self.Element:
+    ) raises StopIteration -> ref[Self.toml_origin] Self.Element:
         if self.index >= len(self.pointer[]):
             raise StopIteration()
 
@@ -138,7 +138,7 @@ struct TomlTableIter[
         origin = Self.toml_origin,
     ]
 
-    fn __init__(out self, ref [Self.toml_origin]v: Self.Toml.OpaqueTable):
+    fn __init__(out self, ref[Self.toml_origin] v: Self.Toml.OpaqueTable):
         self.pointer = v.items()
 
     fn __iter__(ref self) -> Self.IteratorType[origin_of(self)]:
@@ -153,22 +153,37 @@ struct TomlTableIter[
         return kv.key, TomlRef(toml_value)
 
 
+# TYPES
+comptime Unknown[o: Origin] = Span[Byte, o]
+comptime String[o: Origin] = StringSlice[o]
+comptime Integer = Int
+comptime Float = Float64
+comptime Boolean = Bool
+
+# comptime Array[o: Origin] = List[TomlType[o]]
+# comptime Table[o: Origin] = Dict[String[o], TomlType[o]]
+
+comptime Opaque[o: Origin] = OpaquePointer[o]
+comptime OpaqueArray = List[Opaque[MutExternalOrigin]]
+comptime OpaqueTable[o: Origin] = Dict[String[o], Opaque[MutExternalOrigin]]
+
+# comptime RefArray[o: Origin] = List[TomlRef[o, o]]
+# comptime RefTable[o: Origin] = Dict[String[o], TomlRef[o, o]]
+
+
 struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
-    comptime Unknown = Span[Byte, Self.o]
-    comptime String = StringSlice[Self.o]
-    comptime Integer = Int
-    comptime Float = Float64
-    comptime Boolean = Bool
+    comptime Unknown = Unknown[Self.o]
+    comptime String = String[Self.o]
+    comptime Integer = Integer
+    comptime Float = Float
+    comptime Boolean = Boolean
 
     comptime Array = List[Self]
     comptime Table = Dict[Self.String, Self]
 
     # Store a list of addesses.
-    comptime Opaque[o: Origin] = OpaquePointer[o]
-    comptime OpaqueArray = List[Self.Opaque[MutExternalOrigin]]
-    comptime OpaqueTable = Dict[
-        StringSlice[Self.o], Self.Opaque[MutExternalOrigin]
-    ]
+    comptime OpaqueArray = OpaqueArray
+    comptime OpaqueTable = OpaqueTable[Self.o]
     comptime RefArray[o: ImmutOrigin] = List[TomlRef[Self.o, o]]
     comptime RefTable[o: ImmutOrigin] = Dict[Self.String, TomlRef[Self.o, o]]
 
@@ -196,23 +211,27 @@ struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
             return self.inner.isa[Self.OpaqueArray]()
         elif _type_is_eq[T, Self.Table]():
             return self.inner.isa[Self.OpaqueTable]()
+        elif _type_is_eq[T, Self.OpaqueArray]():
+            return False
+        elif _type_is_eq[T, Self.OpaqueTable]():
+            return False
         else:
             return self.inner.isa[T]()
 
     @staticmethod
-    fn from_addr(addr: Self.Opaque[...]) -> ref [addr.origin] Self:
+    fn from_addr(addr: Opaque) -> ref[addr.origin] Self:
         return addr.bitcast[Self]()[]
 
     @staticmethod
-    fn take_from_addr(var addr: Self.Opaque[MutExternalOrigin]) -> Self:
+    fn take_from_addr(var addr: Opaque[MutExternalOrigin]) -> Self:
         return addr.bitcast[Self]().take_pointee()
 
-    fn move_to_addr(var self) -> Self.Opaque[MutExternalOrigin]:
+    fn move_to_addr(var self) -> Opaque[MutExternalOrigin]:
         var ptr = alloc[Self](1)
         ptr.init_pointee_move(self^)
         return ptr.bitcast[NoneType]()
 
-    fn to_addr(ref self) -> Self.Opaque[origin_of(self)]:
+    fn to_addr(ref self) -> Opaque[origin_of(self)]:
         return UnsafePointer(to=self).bitcast[NoneType]()
 
     @staticmethod
@@ -223,10 +242,10 @@ struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
     fn new_table(out self: Self):
         self = Self(Self.OpaqueTable(power_of_two_initial_capacity=64))
 
-    fn as_opaque_table(ref self) -> ref [self.inner] Self.OpaqueTable:
+    fn as_opaque_table(ref self) -> ref[self.inner] Self.OpaqueTable:
         return self.inner[Self.OpaqueTable]
 
-    fn as_opaque_array(ref self) -> ref [self.inner] Self.OpaqueArray:
+    fn as_opaque_array(ref self) -> ref[self.inner] Self.OpaqueArray:
         return self.inner[Self.OpaqueArray]
 
     # ==== Access inner values using methods ====
@@ -272,19 +291,38 @@ struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
 
     # For interop with list
 
-    fn __getitem__(ref self, idx: Int) -> ref [self] Self:
+    fn __getitem__(ref self, idx: Int) -> ref[self] Self:
         return self.inner[Self.OpaqueArray][idx].bitcast[Self]()[]
+
+    fn __contains__(ref self, v: StringSlice) -> Bool:
+        # Only works for arrays and tables
+        if self.isa[Self.Array]():
+            for ptrs in self.as_opaque_array():
+                if (
+                    ptrs.bitcast[Self]()[].isa[Self.String]()
+                    and ptrs.bitcast[Self]()[].string() == v
+                ):
+                    return True
+            return False
+        elif self.isa[Self.Table]():
+            for i in self.as_opaque_table():
+                if i == v:
+                    return True
+            return False
+        return False
 
     # For interop with dict
 
-    fn __getitem__(ref self, key: StringSlice[...]) -> ref [self] Self:
+    fn __getitem__(ref self, key: StringSlice) -> ref[self] Self:
         ref table = self.inner[Self.OpaqueTable]
 
         for kv in table.items():
             if kv.key == key:
                 return Self.from_addr(kv.value)
 
-        os.abort(String("Key '", key, "' not found in TOML table."))
+        os.abort("key not found in toml")
+        # String(key)
+        # os.abort(String("Key '", key, "' not found in TOML table."))
 
     fn items(ref self) -> TomlTableIter[origin_of(self.inner), Self.o]:
         return TomlTableIter(self.inner[Self.OpaqueTable])
@@ -360,13 +398,13 @@ struct TomlType[o: ImmutOrigin](Copyable, Iterable, Writable):
 
 
 comptime AnyTomlType[o: ImmutOrigin] = Variant[
-    TomlType[o].String,
-    TomlType[o].Integer,
-    TomlType[o].Float,
-    TomlType[o].Boolean,
-    TomlType[o].OpaqueArray,
-    TomlType[o].OpaqueTable,
-    TomlType[o].Unknown,
+    String[o],
+    Integer,
+    Float,
+    Boolean,
+    OpaqueArray,
+    OpaqueTable[o],
+    Unknown[o],
 ]
 
 
@@ -406,7 +444,8 @@ fn parse_quoted_string(
 fn parse_inline_collection[
     collection: CollectionType
 ](data: Span[Byte], mut idx: Int, out value: TomlType[data.origin]):
-    """Assumes the first char is already within the collection."""
+    """Assumes the first char is already within the collection, but could be a space.
+    """
     # print("parse inline collection", collection.inner)
     # comptime ContainerEnd = SquareBracketClose if collection == "array" else CurlyBracketClose
 
@@ -419,6 +458,7 @@ fn parse_inline_collection[
     # NOTE: Useless but we might need to bring it back
     # while data[idx] == Space:
     #     idx += 1
+    skip[Space](data, idx)
 
     # We should be at the start of the inner value.
     # Could not be triple quoted.
@@ -559,7 +599,7 @@ fn parse_value[
 
 fn get_or_ref_container[
     collection: CollectionType
-](key: Span[Byte], mut base: TomlType[key.origin]) -> ref [base] TomlType[
+](key: Span[Byte], mut base: TomlType[key.origin]) -> ref[base] TomlType[
     key.origin
 ]:
     str_key = StringSlice[mut=False, key.origin](unsafe_from_utf8=key)
@@ -578,7 +618,7 @@ fn parse_key_span_and_get_container[
     mut idx: Int,
     mut base: TomlType[o],
     mut key: Span[Byte, o],
-) -> ref [base] TomlType[o]:
+) -> ref[base] TomlType[o]:
     """Assumes that first character is not a space. Ends on close char."""
     var key_init = idx
     if data[idx] == Quote:
@@ -654,7 +694,7 @@ fn find_kv_and_update_base[
 fn parse_and_update_kv_pairs[
     separator: Byte, end_char: Byte
 ](data: Span[Byte], mut idx: Int, mut base: TomlType[data.origin]):
-    """This function ends at the start of a new collection."""
+    """This function ends at end_char always."""
     # print("parse kv pairs at idx:", idx, "and codepoint:", Codepoint(data[idx]))
     while idx < len(data) and data[idx] != end_char:
         # # Skip spaces
@@ -781,5 +821,7 @@ fn parse_toml(content: StringSlice) -> TomlType[content.origin]:
     return base^
 
 
-fn stringify_toml(content: StringSlice) -> String:
+fn stringify_toml(content: StringSlice[...]) -> StringSlice[ImmutAnyOrigin]:
+    from collections.string import String
+
     return String(parse_toml(content))
