@@ -8,25 +8,23 @@ fn main() raises:
     var path = _dir_of_current_file() / "../../advent_config.toml"
     var content = StringSlice(path.read_text())
 
-    @parameter
-    fn parse():
-        _ = parse_toml(content)
+    # @parameter
+    # fn old():
+    #     _ = parse_toml_old(content)
 
-    @parameter
-    fn parse_old():
-        _ = parse_toml_old(content)
+    # var old_rep = benchmark.run[old](max_iters=10, max_runtime_secs=0.5)
+    # print("old report:")
+    # old_rep.print()
 
-    var report = benchmark.run[parse](max_iters=10, max_runtime_secs=0.5)
+    # @parameter
+    # fn parse():
+    #     _ = parse_toml(content)
 
-    var old_report = benchmark.run[parse_old](
-        max_iters=10, max_runtime_secs=0.5
-    )
+    # var report = benchmark.run[parse](max_iters=10, max_runtime_secs=0.5)
+    # print("new report:")
+    # report.print()
 
-    print("old report:")
-    old_report.print()
-    print("new report:")
-    report.print()
-    # var toml = parse_toml(content)
-    # print("toml:", toml)
-    # ref v = toml["tests"]["year"]["2025"]["day"]["1"]["part"]["1"]
-    # print("part 1 value:, ", v)
+    var toml = parse_toml(content)
+    print("toml:", toml)
+    ref v = toml["tests"]["year"]["2025"]["day"]["1"]["part"]["1"][0]
+    print("part 1 file: ", v["file"], ", expected:", v["expected"])
