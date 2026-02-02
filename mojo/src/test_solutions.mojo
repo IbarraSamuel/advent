@@ -1,53 +1,14 @@
 from testing import assert_equal
 from test_suite import TestSuite
 from advent_utils import AdventSolution, Args
-from toml_parser_new import parse_toml
+from motoml.read import parse_toml
 from pathlib import _dir_of_current_file, Path
 from builtin import Variadic
 
-# comptime Years = Dict[Int, Days]
-# comptime Days = Dict[Int, Parts]
-# comptime Parts = Dict[Int, TestCases]
+comptime Years = Dict[Int, Days]
+comptime Days = Dict[Int, Parts]
+comptime Parts = Dict[Int, TestCases]
 comptime TestCases = List[Case]
-
-
-struct Year(Movable, Writable):
-    var `2023`: Days
-    var `2024`: Days
-    var `2025`: Days
-
-
-struct Days(Movable, Writable):
-    var `1`: Parts
-    var `2`: Parts
-    var `3`: Parts
-    var `4`: Parts
-    var `5`: Parts
-    var `6`: Parts
-    var `7`: Parts
-    var `8`: Parts
-    var `9`: Parts
-    var `10`: Parts
-    var `11`: Parts
-    var `12`: Parts
-    var `13`: Parts
-    var `14`: Parts
-    var `15`: Parts
-    var `16`: Parts
-    var `17`: Parts
-    var `18`: Parts
-    var `19`: Parts
-    var `20`: Parts
-    var `21`: Parts
-    var `22`: Parts
-    var `23`: Parts
-    var `24`: Parts
-    var `25`: Parts
-
-
-struct Parts(Movable, Writable):
-    var `1`: TestCases
-    var `2`: TestCases
 
 
 @fieldwise_init
@@ -103,6 +64,7 @@ fn run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
 
     ref day_data = config.find(Y)
     if not day_data:
+        print("No value found for key:", Y, "on config:", config)
         return
 
     var ts = TestSuite()

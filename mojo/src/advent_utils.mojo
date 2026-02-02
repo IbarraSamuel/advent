@@ -184,15 +184,27 @@ struct Args(Writable):
                 break
 
             if String(arg) in ("-m", "--mode"):
-                mode = args[i + 1]
+                var value = args[i + 1]
+                if String(value) not in ("run", "test", "bench"):
+                    raise 'Mode should be one of these values: {"run", "test", "bench"}'
+                mode = value
 
             if String(arg) in ("-y", "--year"):
-                year = Int(args[i + 1])
+                var value = args[i + 1]
+                if not value.is_ascii_digit():
+                    raise "Year should be an ascii digit."
+                year = Int(value)
 
             if String(arg) in ("-d", "--day"):
-                day = Int(args[i + 1])
+                var value = args[i + 1]
+                if not value.is_ascii_digit():
+                    raise "Day should be an ascii digit."
+                day = Int(value)
 
             if String(arg) in ("-p", "--part"):
-                part = Int(args[i + 1])
+                var value = args[i + 1]
+                if not value.is_ascii_digit():
+                    raise "Part should be an ascii digit."
+                part = Int(value)
 
         return Args(mode=mode, year=year, day=day, part=part)

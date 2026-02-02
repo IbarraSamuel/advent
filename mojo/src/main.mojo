@@ -13,7 +13,7 @@ fn main() raises:
 
     print("Using project dir: ", project_dir)
     print("args:", args)
-    print("config:", config)
+    # print("config:", config)
 
     @parameter
     for Solution in Solutions:
