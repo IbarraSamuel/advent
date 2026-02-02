@@ -11,7 +11,7 @@ struct Solution(AdventSolution):
 
         ```mojo
         from aoc2025.day01 import Solution
-        from advent_utils import test
+        from advent_utils import test_solutions
         test[Solution, file="tests/2024/day01.txt", part=1, expected=11]()
         ```
         """

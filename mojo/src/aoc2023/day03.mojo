@@ -44,7 +44,7 @@ struct Solution(AdventSolution):
 
                 if x - 1 >= min_x:
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][byte = x - 1] != ".":
+                        if input[yi][byte = x - 1] != StringSlice("."):
                             has_asterisc = True
                             break
 
@@ -55,8 +55,8 @@ struct Solution(AdventSolution):
                     os.abort("Invalid input for str to int conversion")
 
                 if not has_asterisc and (
-                    (y != min_y and input[min_y][byte=x] != ".")
-                    or (y != max_y and input[max_y][byte=x] != ".")
+                    (y != min_y and input[min_y][byte=x] != StringSlice("."))
+                    or (y != max_y and input[max_y][byte=x] != StringSlice("."))
                 ):
                     has_asterisc = True
 
@@ -73,14 +73,20 @@ struct Solution(AdventSolution):
                             " while loop"
                         )
                     if not has_asterisc and (
-                        (y != min_y and input[min_y][byte=x] != ".")
-                        or (y != max_y and input[max_y][byte=x] != ".")
+                        (
+                            y != min_y
+                            and input[min_y][byte=x] != StringSlice(".")
+                        )
+                        or (
+                            y != max_y
+                            and input[max_y][byte=x] != StringSlice(".")
+                        )
                     ):
                         has_asterisc = True
 
                 if not has_asterisc and x + 1 < len(line):
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][byte = x + 1] != ".":
+                        if input[yi][byte = x + 1] != StringSlice("."):
                             has_asterisc = True
                             break
 

@@ -42,7 +42,7 @@ fn count(
     if cfg[:1] in "#?" and (
         nums[0] <= len(cfg)
         and "." not in cfg[: nums[0]]
-        and (nums[0] == len(cfg) or cfg[byte = nums[0]] != "#")
+        and (nums[0] == len(cfg) or cfg[byte = nums[0]] != StringSlice("#"))
     ):
         result += count(cfg[nums[0] + 1 :], nums[1:], cache)
 
