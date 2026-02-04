@@ -1,4 +1,5 @@
 """Day 1 result."""
+
 from __future__ import annotations
 
 import operator
@@ -62,8 +63,7 @@ class Solution:
         total = 0
         for line in lines:
             first, _ = min(
-                ((a, line.find(a)) for a in IM if a in line),
-                key=operator.itemgetter(1),
+                ((a, line.find(a)) for a in IM if a in line), key=operator.itemgetter(1)
             )
             last, _ = max(
                 ((a, line.rfind(a)) for a in IM if a in line),

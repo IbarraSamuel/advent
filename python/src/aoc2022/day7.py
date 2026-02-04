@@ -45,11 +45,7 @@ def map_input(prompt: str, cwd: Folder | None, parent: Folder | None) -> Prompt:
             val = (
                 MoveOut(to=parent)
                 if parent
-                else Folder(
-                    content=[],
-                    name="Bad Folder",
-                    parent=None,
-                )
+                else Folder(content=[], name="Bad Folder", parent=None)
             )
         case ("$", "cd", dir):
             folder = Folder(name=dir, content=[], parent=cwd)
@@ -77,8 +73,7 @@ def map_input(prompt: str, cwd: Folder | None, parent: Folder | None) -> Prompt:
 
 
 def next_iteration(
-    acc: tuple[list[Prompt], Folder | None, Folder | None],
-    n: str,
+    acc: tuple[list[Prompt], Folder | None, Folder | None], n: str
 ) -> tuple[list[Prompt], Folder | None, Folder | None]:
     lst, cwd, p = acc
     out = map_input(n, cwd, p)
@@ -113,11 +108,7 @@ def calculate_size(prompt: Prompt) -> int:
 
 def calculate_result(_input: list[str]) -> None:
     initial: tuple[list[Prompt], Folder | None, Folder | None] = ([], None, None)
-    mapped = reduce(
-        next_iteration,
-        _input,
-        initial,
-    )
+    mapped = reduce(next_iteration, _input, initial)
     sizes = [calculate_size(f) for f in mapped[0] if isinstance(f, Folder)]
     [s for s in sizes if s <= MAX_SIZE]
 

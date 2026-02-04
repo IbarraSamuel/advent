@@ -81,7 +81,7 @@ class Solution:
         ]
 
         validated = [(lst, _validate(a), _validate(b)) for lst, a, b in variations]
-        rem = [not frst and not scnd for _, frst, scnd in validated]
+        rem = [not first and not second for _, first, second in validated]
 
         return len(lnums) - sum(rem)
 

@@ -1,4 +1,5 @@
 """Utility functions for Advent of Code."""
+
 from __future__ import annotations
 
 from pathlib import Path

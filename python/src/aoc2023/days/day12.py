@@ -1,4 +1,5 @@
 """Day 12 results."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -8,14 +9,14 @@ if TYPE_CHECKING:
 
 
 def count(
-    cfg: str, nums: tuple[int, ...], cache: dict[tuple[str, tuple[int, ...]], int],
+    cfg: str, nums: tuple[int, ...], cache: dict[tuple[str, tuple[int, ...]], int]
 ) -> int:
     """
     Define all possible combos.
 
     Returns
     -------
-    the count for this specifig cfg.
+    the count for this specific cfg.
 
     """
     if (not cfg and not nums) or (not nums and "#" not in cfg):
