@@ -2,6 +2,7 @@ from testing import assert_equal
 from test_suite import TestSuite
 from advent_utils import AdventSolution, Args
 from motoml.read import parse_toml
+from motoml.reflection import toml_to_type
 from pathlib import _dir_of_current_file, Path
 from builtin import Variadic
 
@@ -10,14 +11,46 @@ comptime Days = Dict[Int, Parts]
 comptime Parts = Dict[Int, TestCases]
 comptime TestCases = List[Case]
 
+# struct Years(Movable):
+#     var `2023`: Days
+#     var `2024`: Days
+#     var `2025`: Days
+
+# struct Days(Movable):
+#     var `1`: Optional[Parts]
+#     var `2`: Optional[Parts]
+#     var `3`: Optional[Parts]
+#     var `4`: Optional[Parts]
+#     var `5`: Optional[Parts]
+#     var `6`: Optional[Parts]
+#     var `7`: Optional[Parts]
+#     var `8`: Optional[Parts]
+#     var `9`: Optional[Parts]
+#     var `10`: Optional[Parts]
+#     var `11`: Optional[Parts]
+#     var `12`: Optional[Parts]
+#     var `13`: Optional[Parts]
+#     var `14`: Optional[Parts]
+#     var `15`: Optional[Parts]
+#     var `16`: Optional[Parts]
+#     var `17`: Optional[Parts]
+#     var `18`: Optional[Parts]
+#     var `19`: Optional[Parts]
+#     var `20`: Optional[Parts]
+#     var `21`: Optional[Parts]
+#     var `22`: Optional[Parts]
+#     var `23`: Optional[Parts]
+#     var `24`: Optional[Parts]
+#     var `25`: Optional[Parts]
+
+# struct Parts(Movable):
+#     var `1`: Optional[List[Case]]
+#     var `2`: Optional[List[Case]]
 
 @fieldwise_init
 struct Case(Copyable, Writable):
     var file: Path
     var expected: Int
-
-    fn write_to(self, mut w: Some[Writer]):
-        w.write("Case(file: ", self.file, ", expected: ", self.expected, ")")
 
 
 fn parse_config() raises -> Years:
