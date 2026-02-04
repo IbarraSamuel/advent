@@ -14,5 +14,13 @@ preview = ["pixi-build"]
 mojo = "*"
 motoml = { git = "https://github.com/IbarraSamuel/motoml" }
 
-[tool.pixi.tasks]
-advent = { cmd = "mojo src/main.mojo" }
+[tool.pixi.tasks.advent]
+# args = [
+#   { arg = "mode", default = "run" },
+#   { arg = "year", default = "ALL" },
+#   { arg = "day", default = "ALL" },
+#   { arg = "part", default = "ALL" },
+# ]
+
+# cmd = "mojo src/main.mojo --mode {{ mode }} --year {{ year }} --day {{ day }} --part {{ part }}"
+cmd = "mojo src/main.mojo"
