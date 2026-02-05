@@ -40,7 +40,7 @@ environments:
       - conda: https://prefix.dev/max-nightly/linux-64/mojo-0.26.2.0.dev2026020505-release.conda
       - conda: https://prefix.dev/max-nightly/linux-64/mojo-compiler-0.26.2.0.dev2026020505-release.conda
       - conda: https://prefix.dev/max-nightly/noarch/mojo-python-0.26.2.0.dev2026020505-release.conda
-      - conda: git+https://github.com/ibarrasamuel/motoml#6fb02efc93a1582f8b511789360ede6832ae4d84
+      - conda: git+https://github.com/ibarrasamuel/motoml#990a28b8a12e104f455282806d86d585fb27d27e
         build: hb0f4dca_0
       - conda: https://prefix.dev/conda-forge/noarch/mypy_extensions-1.1.0-pyha770c72_0.conda
       - conda: https://prefix.dev/conda-forge/linux-64/ncurses-6.5-h2d0b736_3.conda
@@ -87,7 +87,7 @@ environments:
       - conda: https://prefix.dev/max-nightly/osx-arm64/mojo-0.26.2.0.dev2026020505-release.conda
       - conda: https://prefix.dev/max-nightly/osx-arm64/mojo-compiler-0.26.2.0.dev2026020505-release.conda
       - conda: https://prefix.dev/max-nightly/noarch/mojo-python-0.26.2.0.dev2026020505-release.conda
-      - conda: git+https://github.com/ibarrasamuel/motoml#6fb02efc93a1582f8b511789360ede6832ae4d84
+      - conda: git+https://github.com/ibarrasamuel/motoml#990a28b8a12e104f455282806d86d585fb27d27e
         build: h60d57d3_0
       - conda: https://prefix.dev/conda-forge/noarch/mypy_extensions-1.1.0-pyha770c72_0.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/ncurses-6.5-h5e97a16_3.conda
@@ -584,7 +584,7 @@ packages:
   license: LicenseRef-Modular-Proprietary
   size: 24223
   timestamp: 1770270054183
-- conda: git+https://github.com/ibarrasamuel/motoml#6fb02efc93a1582f8b511789360ede6832ae4d84
+- conda: git+https://github.com/ibarrasamuel/motoml#990a28b8a12e104f455282806d86d585fb27d27e
   name: motoml
   version: 0.0.2
   build: h60d57d3_0
@@ -594,7 +594,7 @@ packages:
   depends:
   - mojo-compiler <=1.0.0
   channel: null
-- conda: git+https://github.com/ibarrasamuel/motoml#6fb02efc93a1582f8b511789360ede6832ae4d84
+- conda: git+https://github.com/ibarrasamuel/motoml#990a28b8a12e104f455282806d86d585fb27d27e
   name: motoml
   version: 0.0.2
   build: hb0f4dca_0
