@@ -1,7 +1,7 @@
 from testing import assert_equal
 from test_suite import TestSuite
 from advent_utils import AdventSolution, Args
-from motoml.read import parse_toml
+from motoml.parser import parse_toml
 from motoml.reflection import toml_to_type
 from pathlib import _dir_of_current_file, Path
 from builtin import Variadic
@@ -46,6 +46,7 @@ comptime TestCases = List[Case]
 # struct Parts(Movable):
 #     var `1`: Optional[List[Case]]
 #     var `2`: Optional[List[Case]]
+
 
 @fieldwise_init
 struct Case(Copyable, Writable):
