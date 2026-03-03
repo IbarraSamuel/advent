@@ -7,7 +7,7 @@ from sys import argv
 
 
 struct Part[value: __mlir_type.`!pop.int_literal`](
-    Equatable, TrivialRegisterType
+    Equatable, TrivialRegisterPassable
 ):
     comptime one = Part(1)
     comptime two = Part(2)
@@ -33,7 +33,7 @@ struct Part[value: __mlir_type.`!pop.int_literal`](
         return self.number == other.number
 
 
-struct TimeUnit[value: __mlir_type.`!kgen.string`](TrivialRegisterType):
+struct TimeUnit[value: __mlir_type.`!kgen.string`](TrivialRegisterPassable):
     comptime ms = TimeUnit("ms")
     comptime ns = TimeUnit("ns")
     comptime s = TimeUnit("s")
@@ -73,8 +73,7 @@ fn run[
 ](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
     comptime n_sols = Variadic.size(solutions)
 
-    @parameter
-    for i in range(n_sols):
+    comptime for i in range(n_sols):
         if day and day.unsafe_value() != i + 1:
             continue
 
@@ -102,8 +101,7 @@ fn bench[
 ](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
     comptime n_sols = Variadic.size(solutions)
 
-    @parameter
-    for i in range(n_sols):
+    comptime for i in range(n_sols):
         if day and day.unsafe_value() != i + 1:
             continue
 
@@ -124,12 +122,12 @@ fn bench[
         print("Day", day, "=>")
         if not part or part.unsafe_value() == 1:
             var report = benchmark.run[part_1](max_iters=iters)
-            var time = Int(report.mean(time_unit.unit) * 1e6) / 1e6
+            var time = round(report.mean(time_unit.unit) * 1e6) / 1e6
             print("\tPart 1:", time, time_unit.unit)
 
         if not part or part.unsafe_value() == 2:
             var report = benchmark.run[part_2](max_iters=iters)
-            var time = Int(report.mean(time_unit.unit) * 1e6) / 1e6
+            var time = round(report.mean(time_unit.unit) * 1e6) / 1e6
             print("\tPart 2:", time, time_unit.unit)
 
 
@@ -147,7 +145,7 @@ Any combination should work.
 
 
 @fieldwise_init
-struct Help(TrivialRegisterType, Writable):
+struct Help(TrivialRegisterPassable, Writable):
     comptime HELP = HELP_STRING
 
     fn write_to(self, mut w: Some[Writer]):

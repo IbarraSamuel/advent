@@ -9,23 +9,15 @@ from memory.unsafe import pack_bits
 fn build_indexes[dtype: DType, size: Int]() -> SIMD[dtype, size]:
     var res = SIMD[dtype, size](0)
     for i in range(size):
-        res[i] = i
+        res[i] = Scalar[dtype](i)
     return res
 
 
 struct Solution(AdventSolution):
     @staticmethod
     fn part_1(data: StringSlice) -> Int32:
-        """Part 1 solution.
-
-        ```mojo
-        from advent_utils import test
-        from aoc2025.day01 import Solution
-
-        test[Solution, file="tests/2024/day05.txt", part=1, expected=143]()
-        ```
-        """
-        comptime zord = ord("0")
+        comptime zord = Byte(ord("0"))
+        comptime newline = Byte(ord("\n"))
         var tot = SIMD[DType.int32, 1024](0)
         var order_split = data.find("\n\n")
         var rest = data[order_split + 2 :]
@@ -33,10 +25,12 @@ struct Solution(AdventSolution):
 
         # # NEW
         var next_dct = Dict[
-            StringSlice[data.origin].Immutable, List[StringSlice[data.origin]]
+            StringSlice[data.origin].Immutable,
+            List[StringSlice[data.origin].Immutable],
         ]()
         var prev_dct = Dict[
-            StringSlice[data.origin].Immutable, List[StringSlice[data.origin]]
+            StringSlice[data.origin].Immutable,
+            List[StringSlice[data.origin].Immutable],
         ]()
 
         var prev_idx = 0
@@ -61,14 +55,14 @@ struct Solution(AdventSolution):
             var line = lines[idx]
             var readed_idx = 3
             while True:
-                if line.as_bytes()[readed_idx - 1] == ord("\n"):
+                if line.as_bytes()[readed_idx - 1] == newline:
                     # We finalize the line
                     bts = line.as_bytes()[
                         len(line) // 2 - 1 : len(line) // 2 + 1
                     ]
                     tot[idx] = (
                         10 * bts[0].cast[DType.int32]()
-                        - 11 * zord
+                        - 11 * Int32(zord)
                         + bts[1].cast[DType.int32]()
                     )
                     break
@@ -107,15 +101,6 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_2(data: StringSlice) -> Int32:
-        """Part 2 solution.
-
-        ```mojo
-        from advent_utils import test
-        from aoc2025.day01 import Solution
-
-        test[Solution, file="tests/2024/day05.txt", part=2, expected=123]()
-        ```
-        """
         comptime zord = ord("0")
         comptime indexes = build_indexes[DType.uint8, 32]()
 
@@ -123,9 +108,6 @@ struct Solution(AdventSolution):
         var split_idx = data.find("\n\n")
 
         var rules = [(r[:2], r[3:]) for r in data[0:split_idx].splitlines()]
-        # var manuals = [
-        #     page.split(",") for page in data[split_idx + 2 :].splitlines()
-        # ]
         var manuals = data[split_idx + 2 :].splitlines()
 
         @parameter
@@ -147,7 +129,7 @@ struct Solution(AdventSolution):
                     bts = _nbr.as_bytes()
                     tot[idx] = (
                         10 * bts[0].cast[DType.int32]()
-                        - 11 * zord
+                        - 11 * Int32(zord)
                         + bts[1].cast[DType.int32]()
                     )
                     break
@@ -157,13 +139,13 @@ struct Solution(AdventSolution):
 
 
 fn order_manual[
-    o: Origin,
+    o: ImmutOrigin,
     //,
     indexes: SIMD[DType.uint8, 32],
     zeroidx: SIMD[DType.uint8, 32] = SIMD[DType.uint8, 32](0),
 ](
-    page: StringSlice[o],
-    rules: List[Tuple[StringSlice[o], StringSlice[o]]],
+    page: StringSlice[o].Immutable,
+    rules: List[Tuple[StringSlice[o].Immutable, StringSlice[o].Immutable]],
 ) -> SIMD[DType.uint8, 32]:
     var done = False
     var idx = indexes.copy()
@@ -173,16 +155,24 @@ fn order_manual[
         ol = page.find(last)
         if of > -1 and ol > -1:
             used_rules.append((of, ol))
-            fi = Int(idx.eq(of // 3).select(indexes, zeroidx).reduce_max())
-            li = Int(idx.eq(ol // 3).select(indexes, zeroidx).reduce_max())
+            fi = Int(
+                idx.eq(UInt8(of // 3)).select(indexes, zeroidx).reduce_max()
+            )
+            li = Int(
+                idx.eq(UInt8(ol // 3)).select(indexes, zeroidx).reduce_max()
+            )
             if fi > li:
                 idx[fi], idx[li] = idx[li], idx[fi]
 
     while not done:
         done = True
         for of, ol in used_rules:
-            fi = Int(idx.eq(of // 3).select(indexes, zeroidx).reduce_max())
-            li = Int(idx.eq(ol // 3).select(indexes, zeroidx).reduce_max())
+            fi = Int(
+                idx.eq(UInt8(of // 3)).select(indexes, zeroidx).reduce_max()
+            )
+            li = Int(
+                idx.eq(UInt8(ol // 3)).select(indexes, zeroidx).reduce_max()
+            )
             if fi > li:
                 done = False
                 idx[fi], idx[li] = idx[li], idx[fi]

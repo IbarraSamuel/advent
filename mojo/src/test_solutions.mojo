@@ -1,7 +1,7 @@
 from testing import assert_equal
 from test_suite import TestSuite
 from advent_utils import AdventSolution, Args
-from motoml.parser import parse_toml
+from motoml.new_parser import parse_toml_raises
 from motoml.reflection import toml_to_type
 from pathlib import _dir_of_current_file, Path
 from builtin import Variadic
@@ -59,7 +59,7 @@ fn parse_config() raises -> Years:
     var config_loc = loc / "advent_config.toml"
     var data = config_loc.read_text()
 
-    var toml = parse_toml(data)
+    var toml = parse_toml_raises(data)
     ref all_years = toml["tests"]["year"]
 
     return {
@@ -103,8 +103,7 @@ fn run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
 
     var ts = TestSuite()
 
-    @parameter
-    for i in range(Variadic.size(S)):
+    comptime for i in range(Variadic.size(S)):
         comptime day = i + 1
 
         ref parts_data = day_data.unsafe_value().find(day)
@@ -114,8 +113,7 @@ fn run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
         if args.day and args.day.unsafe_value() != day:
             continue
 
-        @parameter
-        for part in range(1, 3):
+        comptime for part in range(1, 3):
             ref part_list = parts_data.unsafe_value().find(part)
             if not part_list:
                 continue

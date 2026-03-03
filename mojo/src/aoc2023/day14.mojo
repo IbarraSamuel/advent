@@ -10,8 +10,8 @@ comptime RIGHT = 4
 comptime HORIZONTAL = [LEFT, RIGHT]
 comptime POSITIVE = [RIGHT, DOWN]
 
-comptime ord_o = ord("O")
-comptime ord_ht = ord("#")
+comptime ord_o = Byte(ord("O"))
+comptime ord_ht = Byte(ord("#"))
 # Possible new design
 # 1. Collect all rocks and rolls into a list of indices for each one.
 # 2. Collect them in a way that we could check quickly from left to right, parallelizing row
@@ -26,8 +26,7 @@ fn calculate[direction: Direction](maze: String) -> Int:
     x_max = maze.find("\n")
     y_max = len // (x_max + 1)
 
-    @parameter
-    if direction == RIGHT:
+    comptime if direction == RIGHT:
         mx = x_max + 1
         c_iter = range(0, x_max, 1)
         r_iter = range(y_max)  # dk
@@ -61,8 +60,7 @@ fn tilt[times: Int = 1](mut maze: String):
     y_max = len(maze) // (x_max + 1)
     var newlines = List[String](length=y_max, fill=String())
 
-    @parameter
-    for _ in range(times):
+    comptime for _ in range(times):
 
         @parameter
         fn calc_line(x: Int):
@@ -93,18 +91,20 @@ fn tilt[times: Int = 1](mut maze: String):
 
 
 struct Solution(AdventSolution):
+    comptime T = Int
+
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    fn part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         maze = "\n".join(lines) + "\n"
         tilt[1](maze)
         return calculate[RIGHT](maze)
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    fn part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         maze = "\n".join(lines) + "\n"
-        mazes = Dict[String, Int](power_of_two_initial_capacity=256)
+        mazes = Dict[String, Int](capacity=256)
 
         idx = 0
         while True:

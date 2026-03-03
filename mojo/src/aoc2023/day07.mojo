@@ -18,7 +18,7 @@ struct HandMode:
         return self.value == other.value
 
 
-struct Hand[mode: HandMode](Comparable, TrivialRegisterType):
+struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
     comptime type = SIMD[CardType, 8]
     var value: Self.type
     var level: UInt8
@@ -26,11 +26,10 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterType):
 
     fn __init__(out self, s: StringSlice):
         space_pos = s.find(" ")
-        self.bid = parse_int(s[space_pos + 1 :])
+        self.bid = UInt32(parse_int(s[space_pos + 1 :]))
         self.value = Self.type()
 
-        @parameter
-        for idx in range(5):
+        comptime for idx in range(5):
             self.value[idx] = Card[Self.mode](s[idx : idx + 1]).value
 
         self.level = 1
@@ -38,20 +37,17 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterType):
 
     @always_inline("nodebug")
     fn _calc_level(mut self, s: StringSlice):
-        chars = Dict[String, Int](power_of_two_initial_capacity=Self.type.size)
+        var chars = Dict[String, UInt8](capacity=Self.type.size)
 
-        @parameter
-        for i in range(5):
+        comptime for i in range(5):
             ref k = String(s[i : i + 1])
             chars[k] = chars.get(k, 0) + 1
 
-        @parameter
-        if Self.mode == HandMode.Second:
+        comptime if Self.mode == HandMode.Second:
             j_val = chars.pop("J", 0)
-            max_v, max_c = 0, String("")
+            max_v, max_c = UInt8(0), String("")
 
-            @parameter
-            for i in range(5):
+            comptime for i in range(5):
                 ref si = String(s[i : i + 1])
                 if si != "J":
                     cv = chars.get(si, 0)
@@ -76,8 +72,7 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterType):
         if self.level < other.level:
             return False
 
-        @parameter
-        for i in range(5):
+        comptime for i in range(5):
             if self.value[i] > other.value[i]:
                 return True
             if self.value[i] < other.value[i]:
@@ -91,8 +86,7 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterType):
         if self.level > other.level:
             return False
 
-        @parameter
-        for i in range(5):
+        comptime for i in range(5):
             if self.value[i] < other.value[i]:
                 return True
             if self.value[i] > other.value[i]:
@@ -107,15 +101,15 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterType):
         return self == other or self < other
 
 
-struct Card[mode: HandMode](TrivialRegisterType):
+struct Card[mode: HandMode](TrivialRegisterPassable):
     var value: Scalar[CardType]
     comptime A = Self(14)
     comptime K = Self(13)
     comptime Q = Self(12)
-    comptime J = Self(11 if Self.mode == HandMode.First else 1)
+    comptime J = Self(UInt8(11) if Self.mode == HandMode.First else 1)
     comptime T = Self(10)
 
-    fn __init__(out self, v: Int):
+    fn __init__(out self, v: UInt8):
         self.value = v
 
     fn __init__(out self, v: StringSlice[mut=False]):
@@ -130,7 +124,7 @@ struct Card[mode: HandMode](TrivialRegisterType):
         elif v == "T":
             self = Self.T
         else:
-            self.value = parse_int(v)
+            self.value = UInt8(parse_int(v))
 
 
 fn parse_int(string: StringSlice) -> Int:
@@ -143,12 +137,12 @@ fn parse_int(string: StringSlice) -> Int:
 
 
 struct Solution(AdventSolution):
-    comptime T = UInt32
+    comptime T = Int
     comptime Hand1 = Hand[HandMode.First]
     comptime Hand2 = Hand[HandMode.Second]
 
     @staticmethod
-    fn part_1(data: StringSlice) -> UInt32:
+    fn part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         cards = List[Self.Hand1](capacity=1000)
         for line in lines:
@@ -163,7 +157,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(data: StringSlice) -> UInt32:
+    fn part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         cards = List[Self.Hand2](capacity=1000)
         for line in lines:

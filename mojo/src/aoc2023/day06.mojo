@@ -12,8 +12,8 @@ fn quadratic_solution(
 
 
 @always_inline
-fn races_winning(duration: Int, record: Int) -> Int:
-    a, b, c = 1, -duration, record
+fn races_winning(duration: Float64, record: Float64) -> Int:
+    a, b, c = 1.0, -duration, record
     lower, upper = quadratic_solution(a, b, c)
     lower, upper = floor(lower + 1), ceil(upper - 1)
     lower_int, upper_int = Int(lower), Int(upper)
@@ -21,18 +21,18 @@ fn races_winning(duration: Int, record: Int) -> Int:
 
 
 struct Solution(AdventSolution):
-    comptime T = UInt32
+    comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> UInt32:
+    fn part_1(data: StringSlice) -> Int:
         var input = data.splitlines()
         total = 1
         for r_idx in range(len(input[0].split()) - 1):
             duration = input[0].split()[r_idx + 1]
             record = input[1].split()[r_idx + 1]
             try:
-                duration_int = Int(duration)
-                record_int = Int(record)
+                duration_int = Float64(duration)
+                record_int = Float64(record)
                 total *= races_winning(duration_int, record_int)
             except:
                 pass
@@ -40,13 +40,13 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(data: StringSlice) -> UInt32:
+    fn part_2(data: StringSlice) -> Int:
         var input = data.splitlines()
         duration = StaticString("").join(input[0].split()[1:])
         record = StaticString("").join(input[1].split()[1:])
         try:
-            duration_int = Int(duration)
-            record_int = Int(record)
+            duration_int = Float64(duration)
+            record_int = Float64(record)
             return races_winning(duration_int, record_int)
         except:
             return 0

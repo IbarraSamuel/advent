@@ -90,7 +90,7 @@ struct Solution(AdventSolution):
 
             place = is_mirror(group)
             if place:
-                total[i] = place.value() * 100
+                total[i] = Int32(place.value()) * 100
                 return
 
             new_len = group[0].byte_length()
@@ -101,7 +101,7 @@ struct Solution(AdventSolution):
                     new_str.write(group[k][j : j + 1])
                 new_group.append(new_str)
 
-            total[i] = is_mirror(new_group).value()
+            total[i] = Int32(is_mirror(new_group).value())
 
         parallelize[calc_line](len(spaces) - 1)
         return total.reduce_add()
@@ -124,7 +124,7 @@ struct Solution(AdventSolution):
             place = almost_a_mirror(group)
             if place:
                 # total += place.value() * 100
-                total[i] = place.value() * 100
+                total[i] = Int32(place.value()) * 100
                 return
 
             new_len = group[0].byte_length()
@@ -136,7 +136,7 @@ struct Solution(AdventSolution):
                 new_group.append(new_str)
 
             # total += almost_a_mirror(new_group).value()
-            total[i] = almost_a_mirror(new_group).value()
+            total[i] = Int32(almost_a_mirror(new_group).value())
 
         parallelize[calc_line](len(spaces) - 1)
 

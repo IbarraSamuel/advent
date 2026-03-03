@@ -11,10 +11,10 @@ fn str_to_int(s: String) -> Optional[Int]:
 
 
 struct Solution(AdventSolution):
-    comptime T = UInt32
+    comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> UInt32:
+    fn part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=len(lines))
@@ -61,7 +61,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(data: StringSlice) -> UInt32:
+    fn part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=len(lines))

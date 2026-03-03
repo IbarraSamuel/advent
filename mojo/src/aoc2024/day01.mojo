@@ -3,7 +3,7 @@ from advent_utils import AdventSolution
 
 
 struct Solution(AdventSolution):
-    comptime T = Int32
+    comptime T = Int
 
     @staticmethod
     fn part_1(data: StringSlice) -> Self.T:
@@ -11,8 +11,8 @@ struct Solution(AdventSolution):
 
         ```mojo
         from aoc2025.day01 import Solution
-        from advent_utils import test_solutions
-        test[Solution, file="tests/2024/day01.txt", part=1, expected=11]()
+        from test_solutions import test_solution
+        test_solution[2024, 1, Solution, 1]()
         ```
         """
         lines = data.splitlines()
@@ -43,17 +43,9 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_2(data: StringSlice) -> Self.T:
-        """Part 2 test.
-
-        ```mojo
-        from aoc2025.day01 import Solution
-        from advent_utils import test
-        test[Solution, file="tests/2024/day01.txt", part=2, expected=31]()
-        ```
-        """
         lines = data.splitlines()
         vals = [line.split(maxsplit=1)[1] for line in lines]
-        dct = Dict[vals.T, Int]()
+        dct = Dict[StringSlice[data.origin].Immutable, Int]()
 
         for val in vals:
             dct[val] = dct.get(val, 0) + 1

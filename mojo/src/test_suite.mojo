@@ -27,7 +27,7 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
         self.location = location.or_else(call_location())
 
     fn test(
-        deinit self, var other: Some[fn () raises unified]
+        deinit self, var other: Some[fn() raises unified]
     ) -> UnifiedTestSuite[
         *Variadic.concat_types[Self.ts, Variadic.types[type_of(other)]]
     ]:
@@ -41,13 +41,12 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
         comptime size = Variadic.size(Self.ts)
         var reports = List[TestReport](capacity=size)
 
-        @parameter
-        for i in range(size):
+        comptime for i in range(size):
             comptime full_nm = get_type_name[Self.ts[i]]()
             var name = full_nm[full_nm.find("().") + 3 : full_nm.find(", {}")]
             var error: Optional[Error] = None
             ref test = self.tests[i]
-            ref test_fn = trait_downcast[fn () raises unified](test)
+            ref test_fn = trait_downcast[fn() raises unified](test)
             var start = perf_counter_ns()
             try:
                 test_fn()
@@ -74,7 +73,7 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
 @fieldwise_init
 @explicit_destroy("run() or abandon() the TestSuite")
 struct TestSuite(Movable):
-    var tests: List[Tuple[StaticString, fn () raises]]
+    var tests: List[Tuple[StaticString, fn() raises]]
     var location: SourceLocation
 
     fn __init__(
@@ -83,7 +82,7 @@ struct TestSuite(Movable):
         self.tests = {}
         self.location = location.or_else(call_location())
 
-    fn test[func: fn () raises](mut self, name: Optional[StaticString] = None):
+    fn test[func: fn() raises](mut self, name: Optional[StaticString] = None):
         self.tests.append((name.or_else(get_function_name[func]()), func))
 
     fn abandon(deinit self):

@@ -11,22 +11,23 @@ comptime Position = IndexList[2]
 comptime EMPTY_POS = Position()
 comptime Movement = StaticTuple[Position, 2]
 
-comptime Vertical: Byte = ord("|")
-comptime Horizontal: Byte = ord("-")
-comptime UpRight: Byte = ord("L")
-comptime UpLeft: Byte = ord("J")
-comptime DownLeft: Byte = ord("7")
-comptime DownRight: Byte = ord("F")
-comptime Ground: Byte = ord(".")
-comptime Start: Byte = ord("S")
-comptime V = Codepoint(ord("|"))
-comptime H = Codepoint(ord("-"))
-comptime UR = Codepoint(ord("L"))
-comptime UL = Codepoint(ord("J"))
-comptime DL = Codepoint(ord("7"))
-comptime DR = Codepoint(ord("F"))
-comptime G = Codepoint(ord("."))
-comptime S = Codepoint(ord("S"))
+comptime Vertical = Byte(ord("|"))
+comptime Horizontal = Byte(ord("-"))
+comptime UpRight = Byte(ord("L"))
+comptime UpLeft = Byte(ord("J"))
+comptime DownLeft = Byte(ord("7"))
+comptime DownRight = Byte(ord("F"))
+comptime Ground = Byte(ord("."))
+comptime Start = Byte(ord("S"))
+
+comptime V = Codepoint(Vertical)
+comptime H = Codepoint(Horizontal)
+comptime UR = Codepoint(UpRight)
+comptime UL = Codepoint(UpLeft)
+comptime DL = Codepoint(DownLeft)
+comptime DR = Codepoint(DownRight)
+comptime G = Codepoint(Ground)
+comptime S = Codepoint(Start)
 
 comptime VALID_PIPES = (
     Vertical,
@@ -57,8 +58,7 @@ comptime PIPE_TO_MOV = [
 
 
 fn get_pipe_and_mov(char: Byte) -> Tuple[Byte, Movement]:
-    @parameter
-    for pp in PIPE_TO_MOV:
+    comptime for pp in PIPE_TO_MOV:
         if char == pp[0]:
             return pp
 
@@ -153,7 +153,7 @@ fn check_line(
         if unlikely(cc == S):
             c = infer_start(x, y, lines)
 
-        if pipes[y].as_bytes()[x] != ord("#"):
+        if pipes[y].as_bytes()[x] != Byte(ord("#")):
             if is_in:
                 in_values += 1
             continue
@@ -224,8 +224,10 @@ fn check_connect_near[
 
 
 struct Solution(AdventSolution):
+    comptime T = Int
+
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    fn part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         prev = EMPTY_POS
         for y, line in enumerate(lines):
@@ -249,7 +251,7 @@ struct Solution(AdventSolution):
         return total // 2
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    fn part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         var pipes_mask = List[String](
             fill="." * len(lines[0]), length=len(lines)
@@ -257,17 +259,17 @@ struct Solution(AdventSolution):
 
         var idx = data.find("S")
         var start = idx % (len(lines[0]) + 1), idx // (len(lines[0]) + 1)
-        pipes_mask[start[1]].as_bytes_mut()[start[0]] = ord("#")
+        pipes_mask[start[1]].as_bytes_mut()[start[0]] = Byte(ord("#"))
 
         var prev = start
         var curr = check_connect_near(
             lines, prev, set_pipe=infer_start(start[0], start[1], lines)
         )
-        pipes_mask[curr[1]].as_bytes_mut()[curr[0]] = ord("#")
+        pipes_mask[curr[1]].as_bytes_mut()[curr[0]] = Byte(ord("#"))
 
         while curr != start:
             next = check_connect_near(lines, curr, ignore=prev)
-            pipes_mask[next[1]].as_bytes_mut()[next[0]] = ord("#")
+            pipes_mask[next[1]].as_bytes_mut()[next[0]] = Byte(ord("#"))
             prev, curr = curr, next
 
         var tot = 0

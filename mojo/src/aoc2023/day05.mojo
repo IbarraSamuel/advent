@@ -2,10 +2,10 @@ from advent_utils import AdventSolution
 
 
 struct Solution(AdventSolution):
-    comptime T = UInt32
+    comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> UInt32:
+    fn part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
@@ -36,7 +36,7 @@ struct Solution(AdventSolution):
         return m
 
     @staticmethod
-    fn part_2(data: StringSlice) -> UInt32:
+    fn part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
@@ -88,7 +88,7 @@ struct MapRange(ImplicitlyCopyable):
 
 
 @fieldwise_init
-struct NumRange(TrivialRegisterType):
+struct NumRange(TrivialRegisterPassable):
     var start: Int
     var end: Int
 

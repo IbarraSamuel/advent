@@ -1,25 +1,15 @@
 from advent_utils import AdventSolution
 
 
-comptime `M` = ord('M')
-comptime `A` = ord('A')
-comptime `S` = ord('S')
+comptime `M` = Byte(ord('M'))
+comptime `A` = Byte(ord('A'))
+comptime `S` = Byte(ord('S'))
 
 struct Solution(AdventSolution):
-    comptime T = Int32
+    comptime T = Int
 
     @staticmethod
     fn part_1(data: StringSlice) -> Self.T:
-        """Part 1 solution.
-
-        ```mojo
-        from advent_utils import test
-        import aoc2024 as days
-
-        test[days.day04.Solution, file="tests/2024/day04.txt", part=1, expected=18]()
-        test[days.day04.Solution, file="tests/2024/day044.txt", part=1, expected=4]()
-        ```
-        """
         var tot = 0
         var bytes = data.as_bytes()
         var xmax = data.find('\n')
@@ -81,15 +71,6 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_2(data: StringSlice) -> Self.T:
-        """Part 2 solution.
-
-        ```mojo
-        from advent_utils import test
-        import aoc2024 as days
-
-        test[days.day04.Solution, file="tests/2024/day032.txt", part=2, expected=9]()
-        ```
-        """
         tot = 0
         xmax = data.find("\n")
         bts = data.as_bytes()

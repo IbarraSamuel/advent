@@ -11,8 +11,7 @@ fn main() raises:
     var args = Args()
     var project_dir = _dir_of_current_file() / "../.."
 
-    @parameter
-    for Solution in Solutions:
+    comptime for Solution in Solutions:
         comptime Y, S = Solution
         if args.year and args.year[] != Y:
             continue

@@ -20,7 +20,7 @@ struct CacheKey[o: ImmutOrigin](KeyElement):
 
 fn count(
     cfg: StringSlice,
-    nums: Span[Int],
+    nums: Span[mut=False, Int],
     mut cache: Dict[CacheKey[nums.origin], Int],
 ) -> Int:
     if (not cfg and not nums) or (not nums and "#" not in cfg):
@@ -72,7 +72,7 @@ struct Solution(AdventSolution):
                 os.abort("This should never happen")
 
             cache = Dict[CacheKey[ImmutOrigin(origin_of(nums))], Int]()
-            total[idx] = count(cfg, nums^, cache)
+            total[idx] = UInt32(count(cfg, nums^, cache))
             # total[idx] = count(cfg, nums)
 
         parallelize[calc_line](len(lines))
@@ -100,7 +100,7 @@ struct Solution(AdventSolution):
             nums *= 5
             # span = nums[:]
             cache = Dict[CacheKey[ImmutOrigin(origin_of(nums))], Int]()
-            total[idx] = count(cfg, nums^, cache)
+            total[idx] = UInt64(count(cfg, nums^, cache))
             # total[idx] = count(cfg, nums)
 
         parallelize[calc_line](len(lines))

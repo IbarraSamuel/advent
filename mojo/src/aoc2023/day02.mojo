@@ -13,8 +13,7 @@ fn create_game(card: StringSlice) -> Game:
     var b = 0
     cards = card.split(", ")
 
-    @parameter
-    for i in range(3):
+    comptime for i in range(3):
         if i >= len(cards):
             break
         var color = cards[i]
@@ -65,7 +64,7 @@ struct Solution(AdventSolution):
                 var gm = create_game(card)
                 if not less_than_max(gm):
                     return
-            total += idx + 1
+            total += Int32(idx + 1)
 
         vectorize[1](len(input), calc_line)
 
@@ -85,7 +84,7 @@ struct Solution(AdventSolution):
                 var gm = create_game(card)
                 max_card = calc_max(max_card, gm)
 
-            simd[idx] = max_card[0] * max_card[1] * max_card[2]
+            simd[idx] = Int32(max_card[0] * max_card[1] * max_card[2])
 
         vectorize[1](len(input), set_result)
         return simd.reduce_add()

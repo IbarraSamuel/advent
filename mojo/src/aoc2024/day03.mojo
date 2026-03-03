@@ -2,19 +2,10 @@ from advent_utils import AdventSolution
 
 
 struct Solution(AdventSolution):
-    comptime T = Int32
+    comptime T = Int
 
     @staticmethod
     fn part_1(data: StringSlice) -> Self.T:
-        """Part 1 solution.
-
-        ```mojo
-        from advent_utils import test
-        from aoc2024.day03 import Solution
-
-        test[Solution, file="tests/2024/day03.txt", part=1, expected=161]()
-        ```
-        """
         pos = 0
         tot = 0
         while pos < len(data):
@@ -47,15 +38,6 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_2(data: StringSlice) -> Self.T:
-        """Part 2 solution.
-
-        ```mojo
-        from advent_utils import test
-        from aoc2024.day03 import Solution
-
-        test[Solution, file="tests/2024/day032.txt", part=2, expected=48]()
-        ```
-        """
         pos = 0
         tot = 0
         n_dont = data.find("don't()")

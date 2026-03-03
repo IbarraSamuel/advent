@@ -3,10 +3,10 @@ from advent_utils import AdventSolution
 
 
 struct Solution(AdventSolution):
-    comptime T = UInt32
+    comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> UInt32:
+    fn part_1(data: StringSlice) -> Int:
         var input = data.splitlines()
         var total = 0
 
@@ -50,7 +50,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(data: StringSlice) -> UInt32:
+    fn part_2(data: StringSlice) -> Int:
         var input = data.splitlines()
         var total = 0
         var amount = List[Int]()

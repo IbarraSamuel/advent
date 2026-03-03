@@ -55,7 +55,7 @@ struct Solution(AdventSolution):
         fn calc_line(idx: Int):
             # for idx in range(lines.size):
             f, l = first_numeric(lines[idx])
-            total[idx] = f * 10 + l
+            total[idx] = Int32(f * 10 + l)
 
         parallelize[calc_line](len(lines))
         return total.reduce_add()
@@ -67,7 +67,7 @@ struct Solution(AdventSolution):
 
         @parameter
         fn calc_line(idx: Int):
-            total[idx] = line_value(lines[idx])
+            total[idx] = Int32(line_value(lines[idx]))
 
         parallelize[calc_line](len(lines))
         return total.reduce_add()

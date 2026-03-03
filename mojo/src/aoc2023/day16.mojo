@@ -119,17 +119,17 @@ fn next_mirror[
     o: Origin, oo: MutOrigin
 ](
     dir: Dir, pos: Pos, map: List[StringSlice[o]], used_map: Span[Byte, oo]
-) -> Tuple[Int, Bool, Pos]:
+) -> Tuple[Int32, Bool, Pos]:
     """Need to validate if it stopped because you are in oob or it's a mirror.
     """
     var bounds = len(map[0]), len(map)
-    var steps = 0
+    var steps = Int32(0)
     var npos = pos + delta(dir)
 
     while not out_of_bounds(npos, bounds):
         var i = pos_to_int(npos, (bounds[0] + 1, bounds[1]))
-        if used_map[i] != ord("#"):
-            used_map[i] = ord("#")
+        if used_map[i] != Byte(ord("#")):
+            used_map[i] = Byte(ord("#"))
             steps += 1
         if ord(index(npos, map)) != DOT:
             break
@@ -146,12 +146,12 @@ fn reflect_and_find[
     pos: Pos,
     map: List[StringSlice[o]],
     used_map: Span[Byte, oo],
-) -> Tuple[Int, Optional[Tuple[Dir, Pos]], Optional[Tuple[Dir, Pos]]]:
+) -> Tuple[Int32, Optional[Tuple[Dir, Pos]], Optional[Tuple[Dir, Pos]]]:
     # var bounds = len(map[0]), len(map)
     var mirror = ord(index(pos, map))
     var dir1, dir2 = reflect(coming_from, mirror)
 
-    var steps = 0
+    var steps = Int32(0)
     var npos1 = Optional[Tuple[Dir, Pos]]()
     var npos2 = Optional[Tuple[Dir, Pos]]()
 
@@ -185,7 +185,7 @@ fn is_readed_or_set_readed[
     *,
     mirror: Mirr = -1,
 ) -> Bool:
-    var checker = ord("R")
+    comptime checker = Byte(ord("R"))
     var idx = pos_to_int(pos, bounds)
     var bounds_size = bounds[0] * bounds[1]
     ref m = bytes_map[bounds_size * dir + idx]
@@ -231,11 +231,11 @@ fn calc_energized[
     p: Pos,
     dir: Dir,
     map_used: Span[Byte, ooo],
-) -> Int:
+) -> Int32:
     # Storing readed indexes as a int
     # set_readed(read_map, pos_to_int(pos, bounds))
-    var steps = 1
-    map_used[pos_to_int(p, (bounds[0] + 1, bounds[1]))] = ord("#")
+    var steps = Int32(1)
+    map_used[pos_to_int(p, (bounds[0] + 1, bounds[1]))] = Byte(ord("#"))
     var queue = List[Tuple[Dir, Pos]](capacity=100)
     var pos = p
 
@@ -344,13 +344,15 @@ struct Solution(AdventSolution):
             var read_map = " " * len(data) * 4
             var used_map = String(data)
 
-            results[idx] = calc_energized(
-                map,
-                read_map.as_bytes_mut(),
-                bounds,
-                pos,
-                dir,
-                used_map.as_bytes_mut(),
+            results[idx] = Int32(
+                calc_energized(
+                    map,
+                    read_map.as_bytes_mut(),
+                    bounds,
+                    pos,
+                    dir,
+                    used_map.as_bytes_mut(),
+                )
             )
 
         parallelize[calc_length](len(indexes))

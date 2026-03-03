@@ -19,9 +19,9 @@ fn lcm[tp: DType, //](first: Scalar[tp], second: Scalar[tp]) -> Scalar[tp]:
     return first * second // mn
 
 
-@always_inline
-fn ceil_2pow(v: Int) -> Int:
-    return 2 ** Int(ceil(log(Float64(v)) / log(Float64(2))))
+# @always_inline
+# fn ceil_2pow(v: Int) -> Int:
+#     return 2 ** Int(ceil(log(Float64(v)) / log(Float64(2))))
 
 
 @always_inline
@@ -34,15 +34,13 @@ fn key_in_list(k: Int, lstp: List[IndexList[2]]) -> Optional[Int]:
 
 
 struct Solution(AdventSolution):
-    comptime T = UInt32
+    comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> UInt32:
+    fn part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         data_len = len(lines) - 2
-        dct = Indexer[data.Immutable.origin](
-            power_of_two_initial_capacity=ceil_2pow(data_len)
-        )
+        dct = Indexer[data.Immutable.origin](capacity=data_len)
         var key: data.Immutable
         for l in lines:
             if l.startswith("AAA"):
@@ -70,13 +68,11 @@ struct Solution(AdventSolution):
         return iterations
 
     @staticmethod
-    fn part_2(data: StringSlice) -> UInt32:
+    fn part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         data_len = len(lines)
         iter_len = lines[0].byte_length()
-        dct = Indexer[data.Immutable.origin](
-            power_of_two_initial_capacity=ceil_2pow(data_len - 2)
-        )
+        dct = Indexer[data.Immutable.origin](capacity=data_len - 2)
         init_nodes = List[Int](capacity=8)
 
         for idx in range(2, len(lines)):
@@ -91,15 +87,13 @@ struct Solution(AdventSolution):
             pos = lines[init_nodes[idx]][:3]
             done = False
             loop_no = 0
-            readed = Dict[data.Immutable, Int](
-                power_of_two_initial_capacity=128
-            )
+            readed = Dict[data.Immutable, Int](capacity=128)
             while not done:
                 for i in range(iter_len):
                     if pos in readed:
-                        results[idx] = (i + iter_len * loop_no) - readed.get(
-                            pos
-                        ).value()
+                        results[idx] = UInt32(
+                            (i + iter_len * loop_no) - readed.get(pos).value()
+                        )
                         break
 
                     readed[pos] = i + iter_len * loop_no
@@ -117,4 +111,4 @@ struct Solution(AdventSolution):
         first = results[0]
         for v in range(len(init_nodes) - 1):
             first = lcm(first, results[v + 1])
-        return first
+        return Int(first)

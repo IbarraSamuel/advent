@@ -1,11 +1,11 @@
 from advent_utils import AdventSolution
 
-comptime R = ord("R")
+comptime R = Byte(ord("R"))
 
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    fn part_1(data: StringSlice) -> Int32:
         var loc = 50
         var pwd = 0
         for line in data.splitlines():
@@ -19,10 +19,10 @@ struct Solution(AdventSolution):
             loc = (loc + sign * n) % 100
             if loc == 0:
                 pwd += 1
-        return pwd
+        return Int32(pwd)
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    fn part_2(data: StringSlice) -> Int32:
         var loc = 50
         var pwd = 0
         for line in data.splitlines():
@@ -40,4 +40,4 @@ struct Solution(AdventSolution):
 
             loc = locp
 
-        return pwd
+        return Int32(pwd)

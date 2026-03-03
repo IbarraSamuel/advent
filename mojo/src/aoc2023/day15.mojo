@@ -3,7 +3,7 @@ from memory import Span
 from advent_utils import AdventSolution
 
 
-comptime COMMA = ord(",")
+comptime COMMA = Byte(ord(","))
 
 
 @always_inline("nodebug")
@@ -15,7 +15,7 @@ fn hash(v: Span[Byte]) -> Int:
 
 
 fn add_elems[
-    o: Origin
+    o: ImmutOrigin
 ](
     mut elems: Dict[Int, List[Tuple[StringSlice[o], Int]]],
     data: StringSlice[o],
@@ -57,10 +57,10 @@ fn add_elems[
 
 
 struct Solution(AdventSolution):
-    comptime T = Int32
+    comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    fn part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         t = 0
         acc = 0
@@ -73,11 +73,11 @@ struct Solution(AdventSolution):
         return t + acc
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    fn part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         var d = lines[0]
-        elems = Dict[Int, List[Tuple[StringSlice[data.Immutable.origin], Int]]](
-            power_of_two_initial_capacity=256
+        elems = Dict[Int, List[Tuple[StringSlice[data.origin].Immutable, Int]]](
+            capacity=256
         )
 
         l = 0

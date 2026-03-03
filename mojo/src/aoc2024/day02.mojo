@@ -20,29 +20,20 @@ fn calc_simd(
 
 
 fn slice_to_num(slice: StringSlice) -> Int:
-    comptime zeroord = ord("0")
+    comptime zeroord = Byte(ord("0"))
     var bts = slice.as_bytes()
     if len(bts) == 1:
         return Int(bts[0] - zeroord)
-    return Int(bts[0]) * 10 + Int(bts[1]) - 11 * zeroord
+    return Int(bts[0]) * 10 + Int(bts[1]) - 11 * Int(zeroord)
 
 
 struct Solution(AdventSolution):
-    comptime T = Int32
+    comptime T = Int
     comptime IdxSIMD = SIMD[DType.int8, 8](0, 1, 2, 3, 4, 5, 6, 7)
     comptime ZeroSIMD = SIMD[DType.int8, 8](0)
 
     @staticmethod
     fn part_1(data: StringSlice) -> Self.T:
-        """Part 1 test.
-
-        ```mojo
-        from advent_utils import test
-        from aoc2024.day02 import Solution
-
-        test[Solution, file="tests/2024/day02.txt", part=1, expected=2]()
-
-        ```"""
         result = 0
         ref lines = data.splitlines()
         for lidx in range(len(lines)):
@@ -66,15 +57,6 @@ struct Solution(AdventSolution):
 
     @staticmethod
     fn part_2(data: StringSlice) -> Self.T:
-        """Part 2 test.
-
-        ```mojo
-        from advent_utils import test
-        from aoc2024.day02 import Solution
-
-        test[Solution, file="tests/2024/day02.txt", part=2, expected=4]()
-        test[Solution, file="tests/2024/day022.txt", part=2, expected=28]()
-        ```"""
         lines = data.splitlines()
         results = SIMD[DType.int32, 1024](0)
 
@@ -83,7 +65,7 @@ struct Solution(AdventSolution):
             f = SIMD[DType.int8, 8](0)
             try:
                 for i in range(len(nums)):
-                    f[i] = Int(nums[i])
+                    f[i] = Int8(Int(nums[i]))
             except:
                 pass
             pos, neg = calc_simd(f)
@@ -130,4 +112,4 @@ struct Solution(AdventSolution):
                 results[idx] = 1
                 continue
 
-        return results.reduce_add()
+        return Int(results.reduce_add())

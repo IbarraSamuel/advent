@@ -27,12 +27,10 @@ fn create_line(v: StringSlice) -> Tuple[Line, Int]:
     line = Line(0)
 
     try:
-
-        @parameter
-        for i in range(21):
+        comptime for i in range(21):
             if i >= len(values):
                 break
-            line[i] = Int(values[i])
+            line[i] = Int64(Int(values[i]))
     except:
         os.abort("bad bad on create line")
         pass
