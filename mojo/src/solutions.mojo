@@ -1,6 +1,6 @@
 import aoc2023, aoc2024, aoc2025
 from advent_utils import AdventSolution
-from builtin import Variadic
+from std.builtin import Variadic
 
 comptime Solutions2023 = Variadic.types[
     T=AdventSolution,

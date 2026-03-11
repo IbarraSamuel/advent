@@ -1,10 +1,12 @@
-from testing import assert_equal
+from std.testing import assert_equal
+from std.pathlib import _dir_of_current_file, Path
+from std.builtin import Variadic
+
+from motoml.parser import parse_toml_raises
+from motoml.reflection import toml_to_type
+
 from test_suite import TestSuite
 from advent_utils import AdventSolution, Args
-from motoml.new_parser import parse_toml_raises
-from motoml.reflection import toml_to_type
-from pathlib import _dir_of_current_file, Path
-from builtin import Variadic
 
 comptime Years = Dict[Int, Days]
 comptime Days = Dict[Int, Parts]

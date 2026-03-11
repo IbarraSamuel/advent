@@ -1,8 +1,9 @@
+from std.pathlib import _dir_of_current_file
+from std.sys.intrinsics import _type_is_eq
+
 from advent_utils import run, bench, Args, HELP_STRING, Help
 from test_solutions import run_tests, parse_config
 from solutions import Solutions
-from pathlib import _dir_of_current_file
-from sys.intrinsics import _type_is_eq
 
 
 fn main() raises:

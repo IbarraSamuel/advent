@@ -1,17 +1,17 @@
-from builtin.variadics import Variadic
-from reflection import (
+from std.builtin.variadics import Variadic
+from std.reflection import (
     get_function_name,
     get_type_name,
     call_location,
     SourceLocation,
 )
-from builtin.rebind import trait_downcast
-from testing.suite import (
+from std.builtin.rebind import trait_downcast
+from std.testing.suite import (
     TestReport,
     TestResult,
     TestSuiteReport,
 )
-from time import perf_counter_ns
+from std.time import perf_counter_ns
 
 
 @fieldwise_init
@@ -31,7 +31,7 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
     ) -> UnifiedTestSuite[
         *Variadic.concat_types[Self.ts, Variadic.types[type_of(other)]]
     ]:
-        return {self.tests.concat((other^,)), self.location}
+        return {self.tests^.concat((other^,)), self.location}
 
     @always_inline("nodebug")
     fn abandon(deinit self):
@@ -58,7 +58,7 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
                 name=name,
                 duration_ns=duration,
                 result=result,
-                error=error.or_else({}),
+                error=error^.or_else({}),
             )
             reports.append(report^)
 
@@ -105,7 +105,7 @@ struct TestSuite(Movable):
                 name=name,
                 duration_ns=duration,
                 result=result,
-                error=error.or_else({}),
+                error=error^.or_else({}),
             )
             reports.append(report^)
 

@@ -1,9 +1,10 @@
-from pathlib import Path
-import benchmark
+from std.pathlib import Path
+import std.benchmark as benchmark
+from std.pathlib import _dir_of_current_file
+from std.testing import assert_equal
+from std.sys import argv
+
 from solutions import Solutions
-from pathlib import _dir_of_current_file
-from testing import assert_equal
-from sys import argv
 
 
 struct Part[value: __mlir_type.`!pop.int_literal`](
