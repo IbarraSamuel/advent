@@ -1,7 +1,7 @@
 from advent_utils import AdventSolution
-from collections import Dict, Optional
-from algorithm.functional import parallelize
-from builtin.globals import global_constant
+from std.collections import Dict, Optional
+from std.algorithm.functional import parallelize
+from std.builtin.globals import global_constant
 
 comptime MapList = {
     "one": 1,

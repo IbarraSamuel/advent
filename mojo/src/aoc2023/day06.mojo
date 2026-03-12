@@ -1,4 +1,4 @@
-from math import sqrt, floor, ceil
+from std.math import sqrt, floor, ceil
 from advent_utils import AdventSolution
 
 

@@ -1,11 +1,12 @@
-from utils import IndexList, StaticTuple
-from collections import Dict, OptionalReg, OptionalReg
-import os
-from algorithm import parallelize
-from testing import assert_equal, assert_true, assert_false
+from std.utils import IndexList, StaticTuple
+from std.collections import Dict, OptionalReg, OptionalReg
+from std.algorithm import parallelize
+from std.testing import assert_equal, assert_true, assert_false
+from std.builtin.globals import global_constant
+from std.sys.intrinsics import unlikely
+import std.os as os
+
 from advent_utils import AdventSolution
-from builtin.globals import global_constant
-from sys.intrinsics import unlikely
 
 comptime Position = IndexList[2]
 comptime EMPTY_POS = Position()

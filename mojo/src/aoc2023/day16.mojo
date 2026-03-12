@@ -1,10 +1,11 @@
+from std.utils import IndexList, Index
+from std.hashlib.hasher import Hasher
+from std.collections.set import Set
+from std.algorithm import parallelize
+from std.time import sleep
+import std.os as os
+
 from advent_utils import AdventSolution
-from utils import IndexList, Index
-from hashlib.hasher import Hasher
-from collections.set import Set
-from algorithm import parallelize
-import os
-from time import sleep
 
 comptime Pos = IndexList[2]
 

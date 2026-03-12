@@ -1,6 +1,7 @@
-from algorithm import parallelize
-import os
-from collections import Optional
+from std.algorithm import parallelize
+import std.os as os
+from std.collections import Optional
+
 from advent_utils import AdventSolution
 
 comptime Size = 32

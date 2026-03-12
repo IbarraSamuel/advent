@@ -1,5 +1,5 @@
-from collections import Dict
-from algorithm.functional import parallelize
+from std.collections import Dict
+from std.algorithm.functional import parallelize
 from advent_utils import AdventSolution
 
 comptime Direction = Int

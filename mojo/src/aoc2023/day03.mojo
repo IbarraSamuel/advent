@@ -1,9 +1,9 @@
-from algorithm.functional import vectorize
-from collections import Set
-from utils import IndexList
-from hashlib.hasher import Hasher
+from std.algorithm.functional import vectorize
+from std.collections import Set
+from std.utils import IndexList
+from std.hashlib.hasher import Hasher
 from advent_utils import AdventSolution
-import os
+import std.os as os
 
 
 struct AstrInfo(Copyable, Equatable):
@@ -44,7 +44,7 @@ struct Solution(AdventSolution):
 
                 if x - 1 >= min_x:
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][byte = x - 1] != StringSlice("."):
+                        if input[yi][byte=x - 1] != StringSlice("."):
                             has_asterisc = True
                             break
 
@@ -61,8 +61,7 @@ struct Solution(AdventSolution):
                     has_asterisc = True
 
                 while (
-                    x + 1 < len(line)
-                    and input[y][byte = x + 1].is_ascii_digit()
+                    x + 1 < len(line) and input[y][byte=x + 1].is_ascii_digit()
                 ):
                     x += 1
                     try:
@@ -86,7 +85,7 @@ struct Solution(AdventSolution):
 
                 if not has_asterisc and x + 1 < len(line):
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][byte = x + 1] != StringSlice("."):
+                        if input[yi][byte=x + 1] != StringSlice("."):
                             has_asterisc = True
                             break
 
@@ -119,7 +118,7 @@ struct Solution(AdventSolution):
 
                 if x - 1 >= min_x:
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][byte = x - 1] == "*":
+                        if input[yi][byte=x - 1] == "*":
                             asterisc = AstrInfo(x - 1, yi)
                             break
 
@@ -136,8 +135,7 @@ struct Solution(AdventSolution):
                     asterisc = AstrInfo(x, max_y)
 
                 while (
-                    x + 1 < len(line)
-                    and input[y][byte = x + 1].is_ascii_digit()
+                    x + 1 < len(line) and input[y][byte=x + 1].is_ascii_digit()
                 ):
                     x += 1
                     try:
@@ -163,7 +161,7 @@ struct Solution(AdventSolution):
 
                 if not asterisc and x + 1 < len(line):
                     for yi in range(min_y, max_y + 1):
-                        if input[yi][byte = x + 1] == "*":
+                        if input[yi][byte=x + 1] == "*":
                             asterisc = AstrInfo(x + 1, yi)
                             break
 

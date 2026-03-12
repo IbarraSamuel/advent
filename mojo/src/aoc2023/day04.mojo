@@ -1,4 +1,4 @@
-from algorithm.functional import parallelize
+from std.algorithm.functional import parallelize
 from advent_utils import AdventSolution
 
 

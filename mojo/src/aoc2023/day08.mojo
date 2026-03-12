@@ -1,8 +1,8 @@
-import sys
-from collections import Dict, Optional
-from utils import IndexList
-from math import log, ceil
-from algorithm import parallelize
+import std.sys
+from std.collections import Dict, Optional
+from std.utils import IndexList
+from std.math import log, ceil
+from std.algorithm import parallelize
 from advent_utils import AdventSolution
 
 comptime LEFT = "L"

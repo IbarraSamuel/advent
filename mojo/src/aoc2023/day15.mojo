@@ -1,5 +1,6 @@
-from collections import Dict
-from memory import Span
+from std.collections import Dict
+from std.memory import Span
+
 from advent_utils import AdventSolution
 
 
@@ -7,7 +8,7 @@ comptime COMMA = Byte(ord(","))
 
 
 @always_inline("nodebug")
-fn hash(v: Span[Byte]) -> Int:
+fn hash(v: Span[Byte, _]) -> Int:
     acc = 0
     for i in v:
         acc = ((acc + Int(i)) * 17) % 256

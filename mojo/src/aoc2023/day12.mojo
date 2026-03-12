@@ -1,9 +1,9 @@
-from advent_utils import AdventSolution
-from algorithm import parallelize
-from collections import Dict
-import os
+from std.algorithm import parallelize
+from std.collections import Dict
+import std.os as os
+from std.hashlib.hasher import Hasher
 
-from hashlib.hasher import Hasher
+from advent_utils import AdventSolution
 
 
 @fieldwise_init
@@ -20,7 +20,7 @@ struct CacheKey[o: ImmutOrigin](KeyElement):
 
 fn count(
     cfg: StringSlice,
-    nums: Span[mut=False, Int],
+    nums: Span[mut=False, Int, _],
     mut cache: Dict[CacheKey[nums.origin], Int],
 ) -> Int:
     if (not cfg and not nums) or (not nums and "#" not in cfg):
@@ -42,7 +42,7 @@ fn count(
     if cfg[:1] in "#?" and (
         nums[0] <= len(cfg)
         and "." not in cfg[: nums[0]]
-        and (nums[0] == len(cfg) or cfg[byte = nums[0]] != StringSlice("#"))
+        and (nums[0] == len(cfg) or cfg[byte=nums[0]] != StringSlice("#"))
     ):
         result += count(cfg[nums[0] + 1 :], nums[1:], cache)
 

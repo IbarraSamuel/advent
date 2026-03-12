@@ -1,6 +1,6 @@
-from collections import Dict
-from memory import Span
-import sys
+from std.collections import Dict
+from std.memory import Span
+import std.sys as sys
 from advent_utils import AdventSolution
 
 comptime CardType = DType.uint8
@@ -112,7 +112,7 @@ struct Card[mode: HandMode](TrivialRegisterPassable):
     fn __init__(out self, v: UInt8):
         self.value = v
 
-    fn __init__(out self, v: StringSlice[mut=False]):
+    fn __init__(out self, v: StringSlice[mut=False, _]):
         if v == "A":
             self = Self.A
         elif v == "K":

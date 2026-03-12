@@ -1,5 +1,5 @@
-from collections import Optional
-from utils import IndexList
+from std.collections import Optional
+from std.utils import IndexList
 from advent_utils import AdventSolution
 
 

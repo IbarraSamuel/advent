@@ -1,9 +1,10 @@
+from std.algorithm import parallelize
+from std.collections import Set
+from std.os import abort
+from std.math import log2
+from std.memory.unsafe import pack_bits
+
 from advent_utils import AdventSolution
-from algorithm import parallelize
-from collections import Set
-from os import abort
-from math import log2
-from memory.unsafe import pack_bits
 
 
 fn build_indexes[dtype: DType, size: Int]() -> SIMD[dtype, size]:

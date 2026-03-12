@@ -1,7 +1,7 @@
-from algorithm import parallelize
-from memory import pack_bits, bitcast
-from bit import prev_power_of_two
-from math import log2
+from std.algorithm import parallelize
+from std.memory import pack_bits, bitcast
+from std.bit import prev_power_of_two
+from std.math import log2
 
 from advent_utils import AdventSolution
 

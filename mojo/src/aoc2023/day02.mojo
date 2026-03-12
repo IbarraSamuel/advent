@@ -1,5 +1,5 @@
-from algorithm.functional import vectorize
-from algorithm.reduction import sum, _simd_sum
+from std.algorithm.functional import vectorize
+from std.algorithm.reduction import sum, _simd_sum
 from advent_utils import AdventSolution
 
 comptime Game = Tuple[Int, Int, Int]

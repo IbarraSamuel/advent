@@ -20,6 +20,7 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
     var tests: Tuple[*Self.ts]
     var location: SourceLocation
 
+    @always_inline
     fn __init__(
         out self: UnifiedTestSuite[], location: Optional[SourceLocation] = None
     ):
@@ -76,6 +77,7 @@ struct TestSuite(Movable):
     var tests: List[Tuple[StaticString, fn() raises]]
     var location: SourceLocation
 
+    @always_inline
     fn __init__(
         out self: TestSuite[], location: Optional[SourceLocation] = None
     ):

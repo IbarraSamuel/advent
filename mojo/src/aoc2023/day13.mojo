@@ -1,10 +1,10 @@
-from collections.string import StringSlice
-from collections.optional import OptionalReg
-from algorithm import parallelize
+from std.collections.string import StringSlice
+from std.collections.optional import OptionalReg
+from std.algorithm import parallelize
 from advent_utils import AdventSolution
 
 
-fn is_mirror[o: Origin](values: Span[StringSlice[o]]) -> OptionalReg[Int]:
+fn is_mirror[o: Origin](values: Span[StringSlice[o], _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         # the span of the comparisson
         var sp = min(i, len(values) - i)
@@ -21,7 +21,7 @@ fn is_mirror[o: Origin](values: Span[StringSlice[o]]) -> OptionalReg[Int]:
     return None
 
 
-fn is_mirror(values: Span[String]) -> OptionalReg[Int]:
+fn is_mirror(values: Span[String, _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         # the span of the comparisson
         var sp = min(i, len(values) - i)
@@ -38,7 +38,9 @@ fn is_mirror(values: Span[String]) -> OptionalReg[Int]:
     return None
 
 
-fn almost_a_mirror[o: Origin](values: Span[StringSlice[o]]) -> OptionalReg[Int]:
+fn almost_a_mirror[
+    o: Origin
+](values: Span[StringSlice[o], _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         mn = min(i, len(values) - i)
         p1 = values[i - mn : i]
@@ -54,7 +56,7 @@ fn almost_a_mirror[o: Origin](values: Span[StringSlice[o]]) -> OptionalReg[Int]:
     return None
 
 
-fn almost_a_mirror(values: Span[String]) -> OptionalReg[Int]:
+fn almost_a_mirror(values: Span[String, _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         mn = min(i, len(values) - i)
         p1 = values[i - mn : i]
