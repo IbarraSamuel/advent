@@ -23,14 +23,14 @@ fn add_elems[
     mut init: Int,
     end: Int,
 ):
-    elem, init = data[init:end], end + 1
+    elem, init = data[byte=init:end], end + 1
     is_add = "=" in elem
     sep = "=" if is_add else "-"
     idx = elem.find(sep)
-    chr = elem[:idx]
+    chr = elem[byte=:idx]
     h = hash(chr.as_bytes())
     try:
-        n = Int(elem[idx + 1 :]) if is_add else -1
+        n = Int(elem[byte = idx + 1 :]) if is_add else -1
         for ref it in elems.items():
             if it.key == h:
                 for idx in range(len(it.value)):

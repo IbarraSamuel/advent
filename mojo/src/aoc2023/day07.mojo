@@ -26,11 +26,11 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
 
     fn __init__(out self, s: StringSlice):
         space_pos = s.find(" ")
-        self.bid = UInt32(parse_int(s[space_pos + 1 :]))
+        self.bid = UInt32(parse_int(s[byte = space_pos + 1 :]))
         self.value = Self.type()
 
         comptime for idx in range(5):
-            self.value[idx] = Card[Self.mode](s[idx : idx + 1]).value
+            self.value[idx] = Card[Self.mode](s[byte = idx : idx + 1]).value
 
         self.level = 1
         self._calc_level(s)
@@ -40,7 +40,7 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
         var chars = Dict[String, UInt8](capacity=Self.type.size)
 
         comptime for i in range(5):
-            ref k = String(s[i : i + 1])
+            ref k = String(s[byte = i : i + 1])
             chars[k] = chars.get(k, 0) + 1
 
         comptime if Self.mode == HandMode.Second:
@@ -48,7 +48,7 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
             max_v, max_c = UInt8(0), String("")
 
             comptime for i in range(5):
-                ref si = String(s[i : i + 1])
+                ref si = String(s[byte = i : i + 1])
                 if si != "J":
                     cv = chars.get(si, 0)
                     if cv > max_v:

@@ -113,7 +113,7 @@ fn out_of_bounds(pos: Pos, shape: Tuple[Int, Int]) -> Bool:
 
 @always_inline("nodebug")
 fn index[o: Origin](pos: Pos, map: List[StringSlice[o]]) -> StringSlice[o]:
-    return map[pos[1]][pos[0] : pos[0] + 1]
+    return map[pos[1]][byte = pos[0] : pos[0] + 1]
 
 
 fn next_mirror[

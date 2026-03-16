@@ -44,14 +44,14 @@ struct Solution(AdventSolution):
         var key: data.Immutable
         for l in lines:
             if l.startswith("AAA"):
-                key = l[0:3]
+                key = l[byte=0:3]
                 break
         else:
             key = data.Immutable()
         iterations = 0
 
         for idx in range(2, len(lines)):
-            dct[lines[idx][:3]] = idx
+            dct[lines[idx][byte=:3]] = idx
 
         loop_on = True
         while loop_on:
@@ -59,7 +59,7 @@ struct Solution(AdventSolution):
                 iterations += 1
                 low, up = (7, 10) if chr == LEFT else (12, 15)
                 line = lines[dct.get(key, 0)]
-                key = line[low:up]
+                key = line[byte=low:up]
 
                 if key == "ZZZ":
                     loop_on = False
@@ -76,15 +76,15 @@ struct Solution(AdventSolution):
         init_nodes = List[Int](capacity=8)
 
         for idx in range(2, len(lines)):
-            dct[lines[idx][:3]] = idx
-            if lines[idx][2:3] == "A":
+            dct[lines[idx][byte=:3]] = idx
+            if lines[idx][byte=2:3] == "A":
                 init_nodes.append(idx)
 
         results = SIMD[DType.uint32, 8](0)
 
         @parameter
         fn calc_cycles(idx: Int):
-            pos = lines[init_nodes[idx]][:3]
+            pos = lines[init_nodes[idx]][byte=:3]
             done = False
             loop_no = 0
             readed = Dict[data.Immutable, Int](capacity=128)
@@ -99,8 +99,10 @@ struct Solution(AdventSolution):
                     readed[pos] = i + iter_len * loop_no
 
                     pos = (
-                        lines[dct.get(pos).value()][7:10] if lines[0][i : i + 1]
-                        == LEFT else lines[dct.get(pos).value()][12:15]
+                        lines[dct.get(pos).value()][byte=7:10] if lines[0][
+                            byte = i : i + 1
+                        ]
+                        == LEFT else lines[dct.get(pos).value()][byte=12:15]
                     )
                 if results[idx] != 0:
                     break

@@ -88,7 +88,7 @@ struct Solution(AdventSolution):
 
         @parameter
         fn calc_line(i: Int):
-            group = data[spaces[i] + 1 : spaces[i + 1]].splitlines()
+            group = data[byte = spaces[i] + 1 : spaces[i + 1]].splitlines()
 
             place = is_mirror(group)
             if place:
@@ -100,7 +100,7 @@ struct Solution(AdventSolution):
             for j in range(new_len):
                 new_str = String(capacity=len(group))
                 for k in range(len(group)):
-                    new_str.write(group[k][j : j + 1])
+                    new_str.write(group[k][byte = j : j + 1])
                 new_group.append(new_str)
 
             total[i] = Int32(is_mirror(new_group).value())
@@ -134,7 +134,7 @@ struct Solution(AdventSolution):
             for j in range(new_len):
                 new_str = String(capacity=len(group))
                 for k in range(len(group)):
-                    new_str.write(group[k][j : j + 1])
+                    new_str.write(group[k][byte = j : j + 1])
                 new_group.append(new_str)
 
             # total += almost_a_mirror(new_group).value()

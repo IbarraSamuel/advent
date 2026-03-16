@@ -36,15 +36,15 @@ fn count(
 
     result = 0
 
-    if cfg[:1] in ".?":
-        result += count(cfg[1:], nums, cache)
+    if cfg[byte=:1] in ".?":
+        result += count(cfg[byte=1:], nums, cache)
 
-    if cfg[:1] in "#?" and (
+    if cfg[byte=:1] in "#?" and (
         nums[0] <= len(cfg)
-        and "." not in cfg[: nums[0]]
+        and "." not in cfg[byte = : nums[0]]
         and (nums[0] == len(cfg) or cfg[byte=nums[0]] != StringSlice("#"))
     ):
-        result += count(cfg[nums[0] + 1 :], nums[1:], cache)
+        result += count(cfg[byte = nums[0] + 1 :], nums[1:], cache)
 
     cache[k^] = result
     return result
@@ -96,7 +96,7 @@ struct Solution(AdventSolution):
             except:
                 os.abort("This should never happen")
 
-            cfg = String((("?" + cfg) * 5)[1:])
+            cfg = String((("?" + cfg) * 5)[byte=1:])
             nums *= 5
             # span = nums[:]
             cache = Dict[CacheKey[ImmutOrigin(origin_of(nums))], Int]()
