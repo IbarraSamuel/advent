@@ -9,7 +9,7 @@ struct Solution(AdventSolution):
         var lines = data.splitlines()
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
-        var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
+        var seeds_list = seeds_str[byte = seeds_str.find(": ") + 2 :].split()
 
         var seeds_nums = atol_uint(seeds_list^)
 
@@ -40,7 +40,7 @@ struct Solution(AdventSolution):
         var lines = data.splitlines()
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
-        var seeds_list = seeds_str[seeds_str.find(": ") + 2 :].split()
+        var seeds_list = seeds_str[byte = seeds_str.find(": ") + 2 :].split()
 
         var seeds_nums = calc_num_ranges(atol_uint(seeds_list^))
 

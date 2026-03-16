@@ -10,7 +10,7 @@ struct Solution(AdventSolution):
         var pwd = 0
         for line in data.splitlines():
             var sign = 1 if line.as_bytes()[0] == R else -1
-            var num = line[1:]
+            var num = line[byte=1:]
             var n: Int
             try:
                 n = Int(num)
@@ -27,7 +27,7 @@ struct Solution(AdventSolution):
         var pwd = 0
         for line in data.splitlines():
             var sign = 1 if line.as_bytes()[0] == R else -1
-            var num = line[1:]
+            var num = line[byte=1:]
             var n: Int
             try:
                 n = Int(num)

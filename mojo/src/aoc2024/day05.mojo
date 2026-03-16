@@ -21,8 +21,8 @@ struct Solution(AdventSolution):
         comptime newline = Byte(ord("\n"))
         var tot = SIMD[DType.int32, 1024](0)
         var order_split = data.find("\n\n")
-        var rest = data[order_split + 2 :]
-        var order = data[0:order_split]
+        var rest = data[byte = order_split + 2 :]
+        var order = data[byte=0:order_split]
 
         # # NEW
         var next_dct = Dict[
@@ -41,11 +41,11 @@ struct Solution(AdventSolution):
             if lnr == -1:
                 break
             var mid = order.find("|", prev_idx)
-            next_dct.setdefault(order[prev_idx:mid], []).append(
-                order[mid + 1 : lnr]
+            next_dct.setdefault(order[byte=prev_idx:mid], []).append(
+                order[byte = mid + 1 : lnr]
             )
-            prev_dct.setdefault(order[mid + 1 : lnr], []).append(
-                order[prev_idx:mid]
+            prev_dct.setdefault(order[byte = mid + 1 : lnr], []).append(
+                order[byte=prev_idx:mid]
             )
             prev_idx = lnr + 1
 
@@ -68,8 +68,8 @@ struct Solution(AdventSolution):
                     )
                     break
 
-                val = line[readed_idx : readed_idx + 2]
-                prev_values = line[:readed_idx]
+                val = line[byte = readed_idx : readed_idx + 2]
+                prev_values = line[byte=:readed_idx]
 
                 # if val in prev_dct:
                 res = prev_dct.get(val)
@@ -108,8 +108,11 @@ struct Solution(AdventSolution):
         var tot = SIMD[DType.int32, 1024](0)
         var split_idx = data.find("\n\n")
 
-        var rules = [(r[:2], r[3:]) for r in data[0:split_idx].splitlines()]
-        var manuals = data[split_idx + 2 :].splitlines()
+        var rules = [
+            (r[byte=:2], r[byte=3:])
+            for r in data[byte=0:split_idx].splitlines()
+        ]
+        var manuals = data[byte = split_idx + 2 :].splitlines()
 
         @parameter
         fn calc_line(idx: Int):
@@ -125,7 +128,7 @@ struct Solution(AdventSolution):
                     var middle = len(page) // 2
                     var _mididx = _idxs[(middle - 1) // 3]
                     var _middle = Int(_mididx * 3) + 1
-                    var _nbr = page[_middle - 1 : _middle + 1]
+                    var _nbr = page[byte = _middle - 1 : _middle + 1]
 
                     bts = _nbr.as_bytes()
                     tot[idx] = (

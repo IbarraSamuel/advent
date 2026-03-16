@@ -17,8 +17,8 @@ struct Solution(AdventSolution):
             var inp = line.find(": ") + 2
             var pipe = line.find("|")
 
-            var win_str = line[inp : pipe - 1]
-            var num_str = line[pipe + 2 :]
+            var win_str = line[byte = inp : pipe - 1]
+            var num_str = line[byte = pipe + 2 :]
             var winner_amnt = 0
 
             var accm: String = ""
@@ -62,8 +62,8 @@ struct Solution(AdventSolution):
             var inp = line.find(": ") + 2
             var pipe = line.find("|")
 
-            var win_str = line[inp : pipe - 1]
-            var num_str = line[pipe + 2 :]
+            var win_str = line[byte = inp : pipe - 1]
+            var num_str = line[byte = pipe + 2 :]
             var winner_amnt = 0
 
             var accm: String = ""

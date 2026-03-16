@@ -17,7 +17,7 @@ struct Solution(AdventSolution):
             if pc == -1:
                 break
             try:
-                n1 = Int(data[pi:pc])
+                n1 = Int(data[byte=pi:pc])
             except:
                 pos = pi + 1
                 continue
@@ -27,7 +27,7 @@ struct Solution(AdventSolution):
                 break
 
             try:
-                n2 = Int(data[pc + 1 : pf])
+                n2 = Int(data[byte = pc + 1 : pf])
             except:
                 pos = pc + 1
                 continue
@@ -60,7 +60,7 @@ struct Solution(AdventSolution):
             if pc == -1:
                 break
             try:
-                n1 = Int(data[pi:pc])
+                n1 = Int(data[byte=pi:pc])
             except:
                 pos = pi + 1
                 continue
@@ -70,7 +70,7 @@ struct Solution(AdventSolution):
                 break
 
             try:
-                n2 = Int(data[pc + 1 : pf])
+                n2 = Int(data[byte = pc + 1 : pf])
             except:
                 pos = pc + 1
                 continue

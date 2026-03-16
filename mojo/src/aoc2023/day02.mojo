@@ -20,7 +20,7 @@ fn create_game(card: StringSlice) -> Game:
         var space = color.find(" ")
         var val: Int
         try:
-            val = atol(color[:space])
+            val = atol(color[byte=:space])
         except:
             return (0, 0, 0)
         if color.endswith("d"):
@@ -58,7 +58,7 @@ struct Solution(AdventSolution):
         var total = Int32(0)
 
         fn calc_line[v: Int](idx: Int) unified {read input, mut total}:
-            cards = input[idx][input[idx].find(": ") + 2 :].split("; ")
+            cards = input[idx][byte = input[idx].find(": ") + 2 :].split("; ")
 
             for card in cards:
                 var gm = create_game(card)
@@ -78,7 +78,7 @@ struct Solution(AdventSolution):
         fn set_result[v: Int](idx: Int) unified {mut simd, read input}:
             var max_card = 0, 0, 0
             var first_space = input[idx].find(": ") + 2
-            cards = input[idx][first_space:].split("; ")
+            cards = input[idx][byte=first_space:].split("; ")
 
             for card in cards:
                 var gm = create_game(card)

@@ -26,7 +26,7 @@ struct Solution(AdventSolution):
             no1 = line.find(" ")
             no2 = line.rfind(" ") + 1
             try:
-                v1, v2 = Int(line[:no1]), Int(line[no2:])
+                v1, v2 = Int(line[byte=:no1]), Int(line[byte=no2:])
             except:
                 pass
 
