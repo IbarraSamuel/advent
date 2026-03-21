@@ -61,3 +61,51 @@ pub fn read_toml(file: std::path::PathBuf) -> Result<toml::Table, toml::de::Erro
     let file_data = std::fs::read_to_string(file).unwrap();
     file_data.parse::<toml::Table>()
 }
+
+fn run_test(
+    year: u32,
+    day: u8,
+    part: u8,
+    solution: fn(&str) -> u32,
+    toml_content: toml::Table,
+) -> Result<(), dyn std::error::Error> {
+    let file = file!();
+    let current_file = std::path::PathBuf::from(file);
+    let Some(config_path) = current_file
+        .parent()
+        .and_then(|p| p.parent())
+        .and_then(|p| p.parent())
+        .and_then(|p| p.parent())
+        .map(|p| p.join("advent_config.toml"))
+    else {
+        return "Not Valid config path!".into();
+    };
+    let Some(test_cases) = toml_content
+        .get("tests")
+        .and_then(|t| t.get("year"))
+        .and_then(|t| t.get(String::from(year)))
+        .and_then(|t| t.get("day"))
+        .and_then(|t| t.get(String::from(day)))
+        .and_then(|t| t.get("part"))
+        .and_then(|t| t.get(String::from(part)))
+    else {
+        return "Failed to get testcases for given year/day/part.".into();
+    };
+
+    let Some(cases) = test_cases.as_array() else {
+        return "test cases are not lists.".into();
+    };
+
+    let cases = cases.iter().filter_map(|v| {
+        let file = v.get("file")?.as_str()?;
+        let expected = v.get("expected")?.as_integer()? as u32;
+
+        Some((file, expected))
+    });
+
+    for (file, expected) in cases {
+        let content = std::fs::read_to_string(file)?;
+        assert_eq!(solution(&content), expected);
+    }
+    Ok(())
+}
