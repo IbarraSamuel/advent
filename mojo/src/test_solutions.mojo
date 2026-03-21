@@ -56,7 +56,7 @@ struct Case(Copyable, Writable):
     var expected: Int
 
 
-fn parse_config() raises -> Years:
+def parse_config() raises -> Years:
     var loc = _dir_of_current_file() / "../.."
     var config_loc = loc / "advent_config.toml"
     var data = config_loc.read_text()
@@ -82,7 +82,7 @@ fn parse_config() raises -> Years:
     }
 
 
-fn test_solution[year: Int, day: Int, S: AdventSolution, part: Int]() raises:
+def test_solution[year: Int, day: Int, S: AdventSolution, part: Int]() raises:
     var config = parse_config()
 
     ref test_cases = config[year][day][part]
@@ -94,7 +94,7 @@ fn test_solution[year: Int, day: Int, S: AdventSolution, part: Int]() raises:
         assert_equal(Int(res), test_case.expected)
 
 
-fn run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
+def run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
     if not (Y in config and (not args.year or args.year.unsafe_value() == Y)):
         return
 

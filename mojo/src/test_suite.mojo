@@ -21,33 +21,35 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
     var location: SourceLocation
 
     @always_inline
-    fn __init__(
+    def __init__(
         out self: UnifiedTestSuite[], location: Optional[SourceLocation] = None
     ):
         self.tests = {}
         self.location = location.or_else(call_location())
 
-    fn test(
-        deinit self, var other: Some[fn() raises unified]
+    def test(
+        deinit self, var other: Some[def() raises unified]
     ) -> UnifiedTestSuite[
         *Variadic.concat_types[Self.ts, Variadic.types[type_of(other)]]
     ]:
         return {self.tests^.concat((other^,)), self.location}
 
     @always_inline("nodebug")
-    fn abandon(deinit self):
+    def abandon(deinit self):
         pass
 
-    fn run(deinit self) raises:
+    def run(deinit self) raises:
         comptime size = Variadic.size(Self.ts)
         var reports = List[TestReport](capacity=size)
 
         comptime for i in range(size):
             comptime full_nm = get_type_name[Self.ts[i]]()
-            var name = full_nm[full_nm.find("().") + 3 : full_nm.find(", {}")]
+            var name = full_nm[
+                byte = full_nm.find("().") + 3 : full_nm.find(", {}")
+            ]
             var error: Optional[Error] = None
             ref test = self.tests[i]
-            ref test_fn = trait_downcast[fn() raises unified](test)
+            ref test_fn = trait_downcast[def() raises unified](test)
             var start = perf_counter_ns()
             try:
                 test_fn()
@@ -74,23 +76,23 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
 @fieldwise_init
 @explicit_destroy("run() or abandon() the TestSuite")
 struct TestSuite(Movable):
-    var tests: List[Tuple[StaticString, fn() raises]]
+    var tests: List[Tuple[StaticString, def() raises]]
     var location: SourceLocation
 
     @always_inline
-    fn __init__(
+    def __init__(
         out self: TestSuite[], location: Optional[SourceLocation] = None
     ):
         self.tests = {}
         self.location = location.or_else(call_location())
 
-    fn test[func: fn() raises](mut self, name: Optional[StaticString] = None):
+    def test[func: def() raises](mut self, name: Optional[StaticString] = None):
         self.tests.append((name.or_else(get_function_name[func]()), func))
 
-    fn abandon(deinit self):
+    def abandon(deinit self):
         pass
 
-    fn run(deinit self) raises:
+    def run(deinit self) raises:
         var size = len(self.tests)
         var reports = List[TestReport](capacity=size)
 

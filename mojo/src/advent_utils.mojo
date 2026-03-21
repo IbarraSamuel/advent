@@ -17,20 +17,20 @@ struct Part[value: __mlir_type.`!pop.int_literal`](
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: Part[v.value], v: type_of(1)):
+    def __init__(out self: Part[v.value], v: type_of(1)):
         pass
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: Part[v.value], v: type_of(2)):
+    def __init__(out self: Part[v.value], v: type_of(2)):
         pass
 
     @always_inline("builtin")
-    fn __eq__(self, other: Self) -> Bool:
+    def __eq__(self, other: Self) -> Bool:
         return True
 
     @always_inline("builtin")
-    fn __eq__(self, other: Part) -> Bool:
+    def __eq__(self, other: Part) -> Bool:
         return self.number == other.number
 
 
@@ -43,17 +43,17 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`](TrivialRegisterPassable):
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: TimeUnit[v.value], v: type_of("ms")):
+    def __init__(out self: TimeUnit[v.value], v: type_of("ms")):
         pass
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: TimeUnit[v.value], v: type_of("ns")):
+    def __init__(out self: TimeUnit[v.value], v: type_of("ns")):
         pass
 
     @implicit
     @always_inline("builtin")
-    fn __init__(out self: TimeUnit[v.value], v: type_of("s")):
+    def __init__(out self: TimeUnit[v.value], v: type_of("s")):
         pass
 
 
@@ -61,15 +61,15 @@ trait AdventSolution:
     comptime T: Intable = Int32
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Self.T:
+    def part_1(data: StringSlice) -> Self.T:
         ...
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Self.T:
+    def part_2(data: StringSlice) -> Self.T:
         ...
 
 
-fn run[
+def run[
     *solutions: AdventSolution
 ](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
     comptime n_sols = Variadic.size(solutions)
@@ -95,7 +95,7 @@ fn run[
             print("\tPart 2:", Int(p2), end="\n\n")
 
 
-fn bench[
+def bench[
     iters: Int,
     time_unit: TimeUnit,
     *solutions: AdventSolution,
@@ -113,11 +113,11 @@ fn bench[
         var data = file.read_text()
 
         @parameter
-        fn part_1():
+        def part_1():
             _ = Sol.part_1(data)
 
         @parameter
-        fn part_2():
+        def part_2():
             _ = Sol.part_2(data)
 
         print("Day", day, "=>")
@@ -149,7 +149,7 @@ Any combination should work.
 struct Help(TrivialRegisterPassable, Writable):
     comptime HELP = HELP_STRING
 
-    fn write_to(self, mut w: Some[Writer]):
+    def write_to(self, mut w: Some[Writer]):
         w.write(Self.HELP)
 
 
@@ -162,11 +162,11 @@ struct Args(Writable):
     var day: Optional[Int]
     var part: Optional[Int]
 
-    fn __init__(out self) raises:
+    def __init__(out self) raises:
         self = Self.parse_args()
 
     @staticmethod
-    fn parse_args() raises -> Args:
+    def parse_args() raises -> Args:
         var args = argv()
 
         var mode: StaticString = "run"

@@ -6,7 +6,7 @@ from test_solutions import run_tests, parse_config
 from solutions import Solutions
 
 
-fn main() raises:
+def main() raises:
     """Use -m test to run tests or -m bench to run benchmarks."""
     var config = parse_config()
     var args = Args()
