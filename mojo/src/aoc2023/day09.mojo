@@ -8,7 +8,7 @@ comptime Size = 32
 comptime Line = SIMD[DType.int64, Size]
 
 
-fn calc_prev_and_next(var value: Line, last: Int) -> Tuple[Int64, Int64]:
+def calc_prev_and_next(var value: Line, last: Int) -> Tuple[Int64, Int64]:
     idx, frst, lst = 0, Int64(0), Int64(0)
     while not (value == 0):
         frst = value[0] - frst
@@ -23,7 +23,7 @@ fn calc_prev_and_next(var value: Line, last: Int) -> Tuple[Int64, Int64]:
     return frst, lst
 
 
-fn create_line(v: StringSlice) -> Tuple[Line, Int]:
+def create_line(v: StringSlice) -> Tuple[Line, Int]:
     values = v.split()
     line = Line(0)
 
@@ -43,12 +43,12 @@ struct Solution(AdventSolution):
     comptime T = Int64
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int64:
+    def part_1(data: StringSlice) -> Int64:
         var lines = data.splitlines()
         tot = SIMD[DType.int64, 256](0)
 
         @parameter
-        fn calc(idx: Int):
+        def calc(idx: Int):
             line, last = create_line(lines[idx])
             _, l = calc_prev_and_next(line, last)
             tot[idx] = l
@@ -57,12 +57,12 @@ struct Solution(AdventSolution):
         return tot.reduce_add()
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int64:
+    def part_2(data: StringSlice) -> Int64:
         var lines = data.splitlines()
         tot = SIMD[DType.int64, 256](0)
 
         @parameter
-        fn calc(idx: Int):
+        def calc(idx: Int):
             line, last = create_line(lines[idx])
             f, _ = calc_prev_and_next(line, last)
             tot[idx] = f

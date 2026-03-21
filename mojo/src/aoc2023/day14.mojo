@@ -19,7 +19,7 @@ comptime ord_ht = Byte(ord("#"))
 # 4. When calculating the next, we should give back a list of
 
 
-fn calculate[direction: Direction](maze: String) -> Int:
+def calculate[direction: Direction](maze: String) -> Int:
     comptime positive = direction in POSITIVE
     comptime horizontal = direction in HORIZONTAL
     len = len(maze)
@@ -55,7 +55,7 @@ fn calculate[direction: Direction](maze: String) -> Int:
     return tot
 
 
-fn tilt[times: Int = 1](mut maze: String):
+def tilt[times: Int = 1](mut maze: String):
     x_max = maze.find("\n")
     y_max = len(maze) // (x_max + 1)
     var newlines = List[String](length=y_max, fill=String())
@@ -63,7 +63,7 @@ fn tilt[times: Int = 1](mut maze: String):
     comptime for _ in range(times):
 
         @parameter
-        fn calc_line(x: Int):
+        def calc_line(x: Int):
             line = String(capacity=y_max + 1)
             count = 0
             ly = y_max
@@ -94,14 +94,14 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         maze = "\n".join(lines) + "\n"
         tilt[1](maze)
         return calculate[RIGHT](maze)
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         maze = "\n".join(lines) + "\n"
         mazes = Dict[String, Int](capacity=256)

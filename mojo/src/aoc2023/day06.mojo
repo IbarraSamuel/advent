@@ -3,7 +3,7 @@ from advent_utils import AdventSolution
 
 
 @always_inline
-fn quadratic_solution(
+def quadratic_solution(
     a: Float64, b: Float64, c: Float64
 ) -> Tuple[Float64, Float64]:
     cns = -b / (2 * a)
@@ -12,7 +12,7 @@ fn quadratic_solution(
 
 
 @always_inline
-fn races_winning(duration: Float64, record: Float64) -> Int:
+def races_winning(duration: Float64, record: Float64) -> Int:
     a, b, c = 1.0, -duration, record
     lower, upper = quadratic_solution(a, b, c)
     lower, upper = floor(lower + 1), ceil(upper - 1)
@@ -24,7 +24,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var input = data.splitlines()
         total = 1
         for r_idx in range(len(input[0].split()) - 1):
@@ -40,7 +40,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var input = data.splitlines()
         duration = StaticString("").join(input[0].split()[1:])
         record = StaticString("").join(input[1].split()[1:])

@@ -5,7 +5,7 @@ comptime R = Byte(ord("R"))
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    def part_1(data: StringSlice) -> Int32:
         var loc = 50
         var pwd = 0
         for line in data.splitlines():
@@ -22,7 +22,7 @@ struct Solution(AdventSolution):
         return Int32(pwd)
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    def part_2(data: StringSlice) -> Int32:
         var loc = 50
         var pwd = 0
         for line in data.splitlines():

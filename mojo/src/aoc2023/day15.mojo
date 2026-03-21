@@ -8,14 +8,14 @@ comptime COMMA = Byte(ord(","))
 
 
 @always_inline("nodebug")
-fn hash(v: Span[Byte, _]) -> Int:
+def hash(v: Span[Byte, _]) -> Int:
     acc = 0
     for i in v:
         acc = ((acc + Int(i)) * 17) % 256
     return acc
 
 
-fn add_elems[
+def add_elems[
     o: ImmutOrigin
 ](
     mut elems: Dict[Int, List[Tuple[StringSlice[o], Int]]],
@@ -61,7 +61,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         t = 0
         acc = 0
@@ -74,7 +74,7 @@ struct Solution(AdventSolution):
         return t + acc
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         var d = lines[0]
         elems = Dict[Int, List[Tuple[StringSlice[data.origin].Immutable, Int]]](

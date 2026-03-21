@@ -6,7 +6,7 @@ from std.math import log2
 from advent_utils import AdventSolution
 
 
-fn calc_simd(
+def calc_simd(
     f: SIMD[DType.int8, 8]
 ) -> Tuple[SIMD[DType.bool, 8], SIMD[DType.bool, 8]]:
     """This could be improved to precisely show the place where the problem is.
@@ -19,7 +19,7 @@ fn calc_simd(
     return is_positive_in_bounds, is_negative_in_bounds
 
 
-fn slice_to_num(slice: StringSlice) -> Int:
+def slice_to_num(slice: StringSlice) -> Int:
     comptime zeroord = Byte(ord("0"))
     var bts = slice.as_bytes()
     if len(bts) == 1:
@@ -33,7 +33,7 @@ struct Solution(AdventSolution):
     comptime ZeroSIMD = SIMD[DType.int8, 8](0)
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Self.T:
+    def part_1(data: StringSlice) -> Self.T:
         result = 0
         ref lines = data.splitlines()
         for lidx in range(len(lines)):
@@ -56,7 +56,7 @@ struct Solution(AdventSolution):
         return result
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Self.T:
+    def part_2(data: StringSlice) -> Self.T:
         lines = data.splitlines()
         results = SIMD[DType.int32, 1024](0)
 

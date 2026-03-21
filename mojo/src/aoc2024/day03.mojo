@@ -5,7 +5,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Self.T:
+    def part_1(data: StringSlice) -> Self.T:
         pos = 0
         tot = 0
         while pos < len(data):
@@ -37,7 +37,7 @@ struct Solution(AdventSolution):
         return tot
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Self.T:
+    def part_2(data: StringSlice) -> Self.T:
         pos = 0
         tot = 0
         n_dont = data.find("don't()")

@@ -6,12 +6,12 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var input = data.splitlines()
         var total = 0
 
         @parameter
-        fn calc_line(idx: Int):
+        def calc_line(idx: Int):
             var winners = List[String]()
             var line = input[idx]
             var inp = line.find(": ") + 2
@@ -50,14 +50,14 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var input = data.splitlines()
         var total = 0
         var amount = List[Int]()
         for _ in range(len(input)):
             amount.append(1)
 
-        fn calc_line(line: StringSlice) -> Int:
+        def calc_line(line: StringSlice) -> Int:
             var winners = List[String]()
             var inp = line.find(": ") + 2
             var pipe = line.find("|")

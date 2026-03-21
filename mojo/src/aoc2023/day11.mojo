@@ -3,7 +3,7 @@ from std.utils import IndexList
 from advent_utils import AdventSolution
 
 
-fn str_to_int(s: String) -> Optional[Int]:
+def str_to_int(s: String) -> Optional[Int]:
     try:
         return atol(s)
     except:
@@ -14,7 +14,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=len(lines))
@@ -61,7 +61,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         nums = List[IndexList[2]]()
         empty_l = List[Int](capacity=len(lines))

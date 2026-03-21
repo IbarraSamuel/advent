@@ -11,14 +11,14 @@ struct CacheKey[o: ImmutOrigin](KeyElement):
     var cfg: String
     var nums: Span[Int, Self.o]
 
-    fn __hash__[H: Hasher](self, mut hasher: H):
+    def __hash__[H: Hasher](self, mut hasher: H):
         hasher.update(self.cfg)
 
-    fn __eq__(self, other: Self) -> Bool:
+    def __eq__(self, other: Self) -> Bool:
         return self.cfg == other.cfg and self.nums == other.nums
 
 
-fn count(
+def count(
     cfg: StringSlice,
     nums: Span[mut=False, Int, _],
     mut cache: Dict[CacheKey[nums.origin], Int],
@@ -54,12 +54,12 @@ struct Solution(AdventSolution):
     """Solution for day 12."""
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    def part_1(data: StringSlice) -> Int32:
         var lines = data.splitlines()
         total = SIMD[DType.uint32, 1024](0)
 
         @parameter
-        fn calc_line(idx: Int):
+        def calc_line(idx: Int):
             # for idx in range(len(lines)):
             splitted = lines[idx].split()
             cfg, nums_chr = splitted[0], splitted[1]
@@ -79,12 +79,12 @@ struct Solution(AdventSolution):
         return total.reduce_add().cast[DType.int32]()
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    def part_2(data: StringSlice) -> Int32:
         var lines = data.splitlines()
         total = SIMD[DType.uint64, 1024](0)
 
         @parameter
-        fn calc_line(idx: Int):
+        def calc_line(idx: Int):
             splitted = lines[idx].split()
             cfg = String(splitted[0])
             nums_chr = splitted[1]

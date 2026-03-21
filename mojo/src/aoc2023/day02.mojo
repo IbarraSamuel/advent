@@ -7,7 +7,7 @@ comptime max_game: Game = (12, 13, 14)
 
 
 @always_inline
-fn create_game(card: StringSlice) -> Game:
+def create_game(card: StringSlice) -> Game:
     var r = 0
     var g = 0
     var b = 0
@@ -34,7 +34,7 @@ fn create_game(card: StringSlice) -> Game:
 
 
 @always_inline
-fn less_than_max(game: Game) -> Bool:
+def less_than_max(game: Game) -> Bool:
     return (
         game[0] <= max_game[0]
         and game[1] <= max_game[1]
@@ -43,7 +43,7 @@ fn less_than_max(game: Game) -> Bool:
 
 
 @always_inline
-fn calc_max(game: Game, other: Game) -> Game:
+def calc_max(game: Game, other: Game) -> Game:
     return (
         max(game[0], other[0]),
         max(game[1], other[1]),
@@ -53,11 +53,11 @@ fn calc_max(game: Game, other: Game) -> Game:
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    def part_1(data: StringSlice) -> Int32:
         var input = data.splitlines()
         var total = Int32(0)
 
-        fn calc_line[v: Int](idx: Int) unified {read input, mut total}:
+        def calc_line[v: Int](idx: Int) unified {read input, mut total}:
             cards = input[idx][byte = input[idx].find(": ") + 2 :].split("; ")
 
             for card in cards:
@@ -71,11 +71,11 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    def part_2(data: StringSlice) -> Int32:
         var input = data.splitlines()
         var simd = SIMD[DType.int32, 128]()
 
-        fn set_result[v: Int](idx: Int) unified {mut simd, read input}:
+        def set_result[v: Int](idx: Int) unified {mut simd, read input}:
             var max_card = 0, 0, 0
             var first_space = input[idx].find(": ") + 2
             cards = input[idx][byte=first_space:].split("; ")

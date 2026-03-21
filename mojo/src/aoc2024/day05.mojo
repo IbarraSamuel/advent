@@ -7,7 +7,7 @@ from std.memory.unsafe import pack_bits
 from advent_utils import AdventSolution
 
 
-fn build_indexes[dtype: DType, size: Int]() -> SIMD[dtype, size]:
+def build_indexes[dtype: DType, size: Int]() -> SIMD[dtype, size]:
     var res = SIMD[dtype, size](0)
     for i in range(size):
         res[i] = Scalar[dtype](i)
@@ -16,7 +16,7 @@ fn build_indexes[dtype: DType, size: Int]() -> SIMD[dtype, size]:
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    def part_1(data: StringSlice) -> Int32:
         comptime zord = Byte(ord("0"))
         comptime newline = Byte(ord("\n"))
         var tot = SIMD[DType.int32, 1024](0)
@@ -52,7 +52,7 @@ struct Solution(AdventSolution):
         lines = rest.splitlines()
 
         @parameter
-        fn calc(idx: Int):
+        def calc(idx: Int):
             var line = lines[idx]
             var readed_idx = 3
             while True:
@@ -101,7 +101,7 @@ struct Solution(AdventSolution):
         return tot.reduce_add()
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    def part_2(data: StringSlice) -> Int32:
         comptime zord = ord("0")
         comptime indexes = build_indexes[DType.uint8, 32]()
 
@@ -115,7 +115,7 @@ struct Solution(AdventSolution):
         var manuals = data[byte = split_idx + 2 :].splitlines()
 
         @parameter
-        fn calc_line(idx: Int):
+        def calc_line(idx: Int):
             ref page = manuals[idx]
             for f, l in rules:
                 var fi = page.find(f)
@@ -142,7 +142,7 @@ struct Solution(AdventSolution):
         return tot.reduce_add()
 
 
-fn order_manual[
+def order_manual[
     o: ImmutOrigin,
     //,
     indexes: SIMD[DType.uint8, 32],

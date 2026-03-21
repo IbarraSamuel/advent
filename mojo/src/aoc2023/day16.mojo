@@ -27,7 +27,7 @@ comptime DOT = ord(".")
 
 
 @always_inline("nodebug")
-fn opposite(v: Dir) -> Dir:
+def opposite(v: Dir) -> Dir:
     if v == DOWN:
         return UP
     elif v == UP:
@@ -41,7 +41,7 @@ fn opposite(v: Dir) -> Dir:
 
 
 @always_inline("nodebug")
-fn delta(d: Dir) -> IndexList[2]:
+def delta(d: Dir) -> IndexList[2]:
     if d == DOWN:
         return Index(0, 1)
     elif d == UP:
@@ -55,7 +55,7 @@ fn delta(d: Dir) -> IndexList[2]:
 
 
 # # @always_inline
-fn reflect(dir: Dir, mirror: Mirr) -> Tuple[Dir, Dir]:
+def reflect(dir: Dir, mirror: Mirr) -> Tuple[Dir, Dir]:
     """Self is the position relative to the mirror.
 
     Returns
@@ -102,7 +102,7 @@ fn reflect(dir: Dir, mirror: Mirr) -> Tuple[Dir, Dir]:
 
 
 @always_inline("nodebug")
-fn out_of_bounds(pos: Pos, shape: Tuple[Int, Int]) -> Bool:
+def out_of_bounds(pos: Pos, shape: Tuple[Int, Int]) -> Bool:
     return (
         pos[0] > shape[0] - 1
         or pos[0] < 0
@@ -112,11 +112,11 @@ fn out_of_bounds(pos: Pos, shape: Tuple[Int, Int]) -> Bool:
 
 
 @always_inline("nodebug")
-fn index[o: Origin](pos: Pos, map: List[StringSlice[o]]) -> StringSlice[o]:
+def index[o: Origin](pos: Pos, map: List[StringSlice[o]]) -> StringSlice[o]:
     return map[pos[1]][byte = pos[0] : pos[0] + 1]
 
 
-fn next_mirror[
+def next_mirror[
     o: Origin, oo: MutOrigin
 ](
     dir: Dir, pos: Pos, map: List[StringSlice[o]], used_map: Span[Byte, oo]
@@ -140,7 +140,7 @@ fn next_mirror[
     return steps, is_mirr, npos
 
 
-fn reflect_and_find[
+def reflect_and_find[
     o: Origin, oo: MutOrigin
 ](
     coming_from: Dir,
@@ -171,12 +171,12 @@ fn reflect_and_find[
 
 
 @always_inline("nodebug")
-fn pos_to_int(pos: Pos, bounds: Tuple[Int, Int]) -> Int:
+def pos_to_int(pos: Pos, bounds: Tuple[Int, Int]) -> Int:
     return pos[1] * bounds[0] + pos[0]
 
 
 @always_inline("nodebug")
-fn is_readed_or_set_readed[
+def is_readed_or_set_readed[
     o: MutOrigin, set_mirror: Mirr = -1
 ](
     bytes_map: Span[Byte, o],
@@ -207,7 +207,7 @@ fn is_readed_or_set_readed[
     return False
 
 
-fn dir_to_str(dir: Dir) -> StaticString:
+def dir_to_str(dir: Dir) -> StaticString:
     if dir == UP:
         return "UP"
     if dir == DOWN:
@@ -221,7 +221,7 @@ fn dir_to_str(dir: Dir) -> StaticString:
     os.abort("is not a dir!")
 
 
-fn calc_energized[
+def calc_energized[
     o: Origin,
     oo: MutOrigin,
     ooo: MutOrigin,
@@ -268,7 +268,7 @@ fn calc_energized[
             queue.append(n2.take())
 
     # @parameter
-    # fn reflect_and_f[
+    # def reflect_and_f[
     #     o: Origin
     # ](dir: Dir, pos: Pos, map: List[StringSlice[o]]) -> Int:
     #     if is_readed_or_set_readed(read_map, dir, pos, bounds):
@@ -283,7 +283,7 @@ fn calc_energized[
     #     var results = SIMD[DType.uint32, 2](0, 0)
 
     #     @parameter
-    #     fn r1(i: Int):
+    #     def r1(i: Int):
     #         var steps = 0
     #         var n = n1 if i == 0 else n2
     #         if n:
@@ -302,7 +302,7 @@ fn calc_energized[
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    def part_1(data: StringSlice) -> Int32:
         # Mask for each mirror, but shifted by the direction received
         var read_map = " " * len(data) * 4
         var used_map = String(data)
@@ -322,7 +322,7 @@ struct Solution(AdventSolution):
         )
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    def part_2(data: StringSlice) -> Int32:
         # 51 .. 7438
         var map = data.splitlines()
         var bounds = len(map[0]), len(map)
@@ -340,7 +340,7 @@ struct Solution(AdventSolution):
         results = SIMD[DType.int32, 512](0)
 
         @parameter
-        fn calc_length(idx: Int):
+        def calc_length(idx: Int):
             var pos, dir = indexes[idx]
             var read_map = " " * len(data) * 4
             var used_map = String(data)

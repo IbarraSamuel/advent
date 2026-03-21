@@ -9,7 +9,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Self.T:
+    def part_1(data: StringSlice) -> Self.T:
         var tot = 0
         var bytes = data.as_bytes()
         var xmax = data.find('\n')
@@ -17,7 +17,7 @@ struct Solution(AdventSolution):
 
         @parameter
         @always_inline
-        fn idx(x: Int, y: Int) -> Int:
+        def idx(x: Int, y: Int) -> Int:
             return x + y * (xmax + 1)
         
         var last = 0
@@ -70,7 +70,7 @@ struct Solution(AdventSolution):
 
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Self.T:
+    def part_2(data: StringSlice) -> Self.T:
         tot = 0
         xmax = data.find("\n")
         bts = data.as_bytes()
@@ -78,7 +78,7 @@ struct Solution(AdventSolution):
 
         @always_inline
         @parameter
-        fn idx(x: Int, y: Int) -> Int:
+        def idx(x: Int, y: Int) -> Int:
             return x + y * (xmax + 1)
 
         last = xmax + 3

@@ -12,7 +12,7 @@ comptime Indexer[o: Origin] = Dict[StringSlice[o], Int]
 comptime default_lpv = List[IndexList[2]]()
 
 
-fn lcm[tp: DType, //](first: Scalar[tp], second: Scalar[tp]) -> Scalar[tp]:
+def lcm[tp: DType, //](first: Scalar[tp], second: Scalar[tp]) -> Scalar[tp]:
     mn, mx = (first, second) if first < second else (second, first)
     while mx % mn != 0:
         mn, mx = mx % mn, mn
@@ -20,12 +20,12 @@ fn lcm[tp: DType, //](first: Scalar[tp], second: Scalar[tp]) -> Scalar[tp]:
 
 
 # @always_inline
-# fn ceil_2pow(v: Int) -> Int:
+# def ceil_2pow(v: Int) -> Int:
 #     return 2 ** Int(ceil(log(Float64(v)) / log(Float64(2))))
 
 
 @always_inline
-fn key_in_list(k: Int, lstp: List[IndexList[2]]) -> Optional[Int]:
+def key_in_list(k: Int, lstp: List[IndexList[2]]) -> Optional[Int]:
     for tp in lstp:
         if tp[0] == k:
             return Optional(tp[1])
@@ -37,7 +37,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         data_len = len(lines) - 2
         dct = Indexer[data.Immutable.origin](capacity=data_len)
@@ -68,7 +68,7 @@ struct Solution(AdventSolution):
         return iterations
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         data_len = len(lines)
         iter_len = lines[0].byte_length()
@@ -83,7 +83,7 @@ struct Solution(AdventSolution):
         results = SIMD[DType.uint32, 8](0)
 
         @parameter
-        fn calc_cycles(idx: Int):
+        def calc_cycles(idx: Int):
             pos = lines[init_nodes[idx]][byte=:3]
             done = False
             loop_no = 0

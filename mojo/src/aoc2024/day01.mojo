@@ -6,7 +6,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Self.T:
+    def part_1(data: StringSlice) -> Self.T:
         """Part 1 test.
 
         ```mojo
@@ -42,7 +42,7 @@ struct Solution(AdventSolution):
         return t
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Self.T:
+    def part_2(data: StringSlice) -> Self.T:
         lines = data.splitlines()
         vals = [line.split(maxsplit=1)[1] for line in lines]
         dct = Dict[StringSlice[data.origin].Immutable, Int]()

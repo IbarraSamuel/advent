@@ -4,7 +4,7 @@ from std.algorithm import parallelize
 from advent_utils import AdventSolution
 
 
-fn is_mirror[o: Origin](values: Span[StringSlice[o], _]) -> OptionalReg[Int]:
+def is_mirror[o: Origin](values: Span[StringSlice[o], _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         # the span of the comparisson
         var sp = min(i, len(values) - i)
@@ -21,7 +21,7 @@ fn is_mirror[o: Origin](values: Span[StringSlice[o], _]) -> OptionalReg[Int]:
     return None
 
 
-fn is_mirror(values: Span[String, _]) -> OptionalReg[Int]:
+def is_mirror(values: Span[String, _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         # the span of the comparisson
         var sp = min(i, len(values) - i)
@@ -38,7 +38,7 @@ fn is_mirror(values: Span[String, _]) -> OptionalReg[Int]:
     return None
 
 
-fn almost_a_mirror[
+def almost_a_mirror[
     o: Origin
 ](values: Span[StringSlice[o], _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
@@ -56,7 +56,7 @@ fn almost_a_mirror[
     return None
 
 
-fn almost_a_mirror(values: Span[String, _]) -> OptionalReg[Int]:
+def almost_a_mirror(values: Span[String, _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         mn = min(i, len(values) - i)
         p1 = values[i - mn : i]
@@ -74,7 +74,7 @@ fn almost_a_mirror(values: Span[String, _]) -> OptionalReg[Int]:
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    def part_1(data: StringSlice) -> Int32:
         total = SIMD[DType.int32, 128]()
         spaces = [-1]
         var i = 0
@@ -87,7 +87,7 @@ struct Solution(AdventSolution):
             spaces.append(idx + 1)
 
         @parameter
-        fn calc_line(i: Int):
+        def calc_line(i: Int):
             group = data[byte = spaces[i] + 1 : spaces[i + 1]].splitlines()
 
             place = is_mirror(group)
@@ -109,7 +109,7 @@ struct Solution(AdventSolution):
         return total.reduce_add()
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    def part_2(data: StringSlice) -> Int32:
         var lines = data.splitlines()
         total = SIMD[DType.int32, 128]()
         # total = Int32()
@@ -121,7 +121,7 @@ struct Solution(AdventSolution):
 
         # for i in range(spaces.size - 1):
         @parameter
-        fn calc_line(i: Int):
+        def calc_line(i: Int):
             group = lines[spaces[i] + 1 : spaces[i + 1]]
             place = almost_a_mirror(group)
             if place:

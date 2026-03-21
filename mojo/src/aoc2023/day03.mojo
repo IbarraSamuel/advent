@@ -11,12 +11,12 @@ struct AstrInfo(Copyable, Equatable):
     var value: Int
     var count: Int
 
-    fn __init__(out self, x: Int, y: Int):
+    def __init__(out self, x: Int, y: Int):
         self.pos = (x, y)
         self.value = 0
         self.count = 1
 
-    fn __eq__(self, other: Self) -> Bool:
+    def __eq__(self, other: Self) -> Bool:
         return self.pos == other.pos
 
 
@@ -24,7 +24,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var input = data.splitlines()
         var tot = 0
 
@@ -97,7 +97,7 @@ struct Solution(AdventSolution):
         return tot
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var input = data.splitlines()
         var astr = List[AstrInfo](capacity=1000)
         var tot = 0

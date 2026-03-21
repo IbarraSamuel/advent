@@ -3,7 +3,7 @@ from advent_utils import AdventSolution
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    def part_1(data: StringSlice) -> Int32:
         """Part 1 solution.
 
         ```mojo
@@ -17,7 +17,7 @@ struct Solution(AdventSolution):
         return tot
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    def part_2(data: StringSlice) -> Int32:
         """Part 2 solution.
 
         ```mojo

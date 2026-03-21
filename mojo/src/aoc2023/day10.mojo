@@ -58,7 +58,7 @@ comptime PIPE_TO_MOV = [
 ]
 
 
-fn get_pipe_and_mov(char: Byte) -> Tuple[Byte, Movement]:
+def get_pipe_and_mov(char: Byte) -> Tuple[Byte, Movement]:
     comptime for pp in PIPE_TO_MOV:
         if char == pp[0]:
             return pp
@@ -67,7 +67,7 @@ fn get_pipe_and_mov(char: Byte) -> Tuple[Byte, Movement]:
 
 
 @always_inline
-fn next_position(
+def next_position(
     previous: Position, curr_pos: Position, movement: Movement
 ) -> Position:
     dpos = previous - curr_pos
@@ -76,7 +76,7 @@ fn next_position(
     return curr_pos + next
 
 
-fn find_connected_pipe[
+def find_connected_pipe[
     o: Origin
 ](pos: Position, map: List[StringSlice[o]]) -> Position:
     xr, yr = len(map[0]), len(map)
@@ -95,7 +95,7 @@ fn find_connected_pipe[
     os.abort("Error here. Cannot find connected pipe")
 
 
-fn infer_start[
+def infer_start[
     o: Origin
 ](x: Int, y: Int, map: List[StringSlice[o]]) -> Codepoint:
     ref line = map[y]
@@ -140,7 +140,7 @@ fn infer_start[
     return new_c.take()
 
 
-fn check_line(
+def check_line(
     line: StringSlice,
     pipes: List[String],
     y: Int,
@@ -174,7 +174,7 @@ fn check_line(
     return in_values
 
 
-fn check_connect_near[
+def check_connect_near[
     o: Origin
 ](
     map: List[StringSlice[o]],
@@ -228,7 +228,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         prev = EMPTY_POS
         for y, line in enumerate(lines):
@@ -252,7 +252,7 @@ struct Solution(AdventSolution):
         return total // 2
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         var pipes_mask = List[String](
             fill="." * len(lines[0]), length=len(lines)

@@ -11,10 +11,10 @@ struct HandMode:
     comptime Second = HandMode(2)
     var value: UInt8
 
-    fn __init__(out self, value: UInt8):
+    def __init__(out self, value: UInt8):
         self.value = value
 
-    fn __eq__(self, other: HandMode) -> Bool:
+    def __eq__(self, other: HandMode) -> Bool:
         return self.value == other.value
 
 
@@ -24,7 +24,7 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
     var level: UInt8
     var bid: UInt32
 
-    fn __init__(out self, s: StringSlice):
+    def __init__(out self, s: StringSlice):
         space_pos = s.find(" ")
         self.bid = UInt32(parse_int(s[byte = space_pos + 1 :]))
         self.value = Self.type()
@@ -36,7 +36,7 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
         self._calc_level(s)
 
     @always_inline("nodebug")
-    fn _calc_level(mut self, s: StringSlice):
+    def _calc_level(mut self, s: StringSlice):
         var chars = Dict[String, UInt8](capacity=Self.type.size)
 
         comptime for i in range(5):
@@ -63,10 +63,10 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
         for k in chars.values():
             self.level += k**3
 
-    fn __eq__(self, other: Self) -> Bool:
+    def __eq__(self, other: Self) -> Bool:
         return self.value == other.value
 
-    fn __gt__(self, other: Self) -> Bool:
+    def __gt__(self, other: Self) -> Bool:
         if self.level > other.level:
             return True
         if self.level < other.level:
@@ -80,7 +80,7 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
 
         return False
 
-    fn __lt__(self, other: Self) -> Bool:
+    def __lt__(self, other: Self) -> Bool:
         if self.level < other.level:
             return True
         if self.level > other.level:
@@ -94,10 +94,10 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
 
         return False
 
-    fn __ge__(self, other: Self) -> Bool:
+    def __ge__(self, other: Self) -> Bool:
         return self == other or self > other
 
-    fn __le__(self, other: Self) -> Bool:
+    def __le__(self, other: Self) -> Bool:
         return self == other or self < other
 
 
@@ -109,10 +109,10 @@ struct Card[mode: HandMode](TrivialRegisterPassable):
     comptime J = Self(UInt8(11) if Self.mode == HandMode.First else 1)
     comptime T = Self(10)
 
-    fn __init__(out self, v: UInt8):
+    def __init__(out self, v: UInt8):
         self.value = v
 
-    fn __init__(out self, v: StringSlice[mut=False, _]):
+    def __init__(out self, v: StringSlice[mut=False, _]):
         if v == "A":
             self = Self.A
         elif v == "K":
@@ -127,7 +127,7 @@ struct Card[mode: HandMode](TrivialRegisterPassable):
             self.value = UInt8(parse_int(v))
 
 
-fn parse_int(string: StringSlice) -> Int:
+def parse_int(string: StringSlice) -> Int:
     try:
         return Int(string)
     except:
@@ -142,7 +142,7 @@ struct Solution(AdventSolution):
     comptime Hand2 = Hand[HandMode.Second]
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         cards = List[Self.Hand1](capacity=1000)
         for line in lines:
@@ -157,7 +157,7 @@ struct Solution(AdventSolution):
         return total
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         cards = List[Self.Hand2](capacity=1000)
         for line in lines:

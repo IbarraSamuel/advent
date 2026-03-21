@@ -5,7 +5,7 @@ struct Solution(AdventSolution):
     comptime T = Int
 
     @staticmethod
-    fn part_1(data: StringSlice) -> Int:
+    def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
@@ -36,7 +36,7 @@ struct Solution(AdventSolution):
         return m
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int:
+    def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         # get `seeds: a b c d e`
         var seeds_str = lines[0]
@@ -75,11 +75,11 @@ struct MapRange(ImplicitlyCopyable):
     var dest_start: Int
     var length: Int
 
-    fn __init__(out self, range: MapRangeTp):
+    def __init__(out self, range: MapRangeTp):
         self.dest_start, self.src_start, self.length = range
 
     @implicit
-    fn __init__(out self, var range: List[Int]):
+    def __init__(out self, var range: List[Int]):
         self.dest_start, self.src_start, self.length = (
             range[0],
             range[1],
@@ -93,21 +93,21 @@ struct NumRange(TrivialRegisterPassable):
     var end: Int
 
 
-fn calc_num_ranges(ranges: List[Int]) -> List[NumRange]:
+def calc_num_ranges(ranges: List[Int]) -> List[NumRange]:
     var numranges = List[NumRange]()
     for i in range(0, len(ranges), 2):
         numranges.append(NumRange(ranges[i], ranges[i] + ranges[i + 1]))
     return numranges^
 
 
-fn map_number(range: MapRange, n: Int) -> Tuple[Int, Bool]:
+def map_number(range: MapRange, n: Int) -> Tuple[Int, Bool]:
     if range.src_start <= n < range.src_start + range.length:
         return range.dest_start + (n - range.src_start), True
     else:
         return n, False
 
 
-fn map_numbers(ranges: List[MapRange], mut numbers: List[Int]):
+def map_numbers(ranges: List[MapRange], mut numbers: List[Int]):
     for ref num in numbers:
         for map in ranges:
             num, mapped = map_number(map, num)
@@ -116,7 +116,7 @@ fn map_numbers(ranges: List[MapRange], mut numbers: List[Int]):
                 break
 
 
-fn calc_ranges(
+def calc_ranges(
     map: MapRange, var num: NumRange
 ) -> Tuple[List[NumRange], List[Bool]]:
     """Returns the list of new ranges, and a mask to tell if those were mapped or not.
@@ -159,7 +159,7 @@ fn calc_ranges(
         ], [False, True]
 
 
-fn map_ranges(
+def map_ranges(
     ranges: List[MapRange], var numbers: List[NumRange]
 ) -> List[NumRange]:
     """We should produce a new list of ranges out of the ranges we receive.
@@ -205,7 +205,7 @@ fn map_ranges(
     return used_ranges^
 
 
-fn atol_uint(c: StringSlice) -> Int:
+def atol_uint(c: StringSlice) -> Int:
     try:
         return atol(c)
     except:
@@ -213,7 +213,7 @@ fn atol_uint(c: StringSlice) -> Int:
         return 0
 
 
-fn atol_uint[o: Origin](var l: List[StringSlice[o]]) -> List[Int]:
+def atol_uint[o: Origin](var l: List[StringSlice[o]]) -> List[Int]:
     var uint_l = List[Int](capacity=len(l))
     for i in range(len(l)):
         uint_l.append(atol_uint(l[i]))

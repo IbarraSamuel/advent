@@ -47,12 +47,12 @@ comptime MapList = {
 
 struct Solution(AdventSolution):
     @staticmethod
-    fn part_1(data: StringSlice) -> Int32:
+    def part_1(data: StringSlice) -> Int32:
         var lines = data.splitlines()
         var total = SIMD[DType.int32, 1024](0)
 
         @parameter
-        fn calc_line(idx: Int):
+        def calc_line(idx: Int):
             # for idx in range(lines.size):
             f, l = first_numeric(lines[idx])
             total[idx] = Int32(f * 10 + l)
@@ -61,12 +61,12 @@ struct Solution(AdventSolution):
         return total.reduce_add()
 
     @staticmethod
-    fn part_2(data: StringSlice) -> Int32:
+    def part_2(data: StringSlice) -> Int32:
         var lines = data.splitlines()
         var total = SIMD[DType.int32, 1024](0)
 
         @parameter
-        fn calc_line(idx: Int):
+        def calc_line(idx: Int):
             total[idx] = Int32(line_value(lines[idx]))
 
         parallelize[calc_line](len(lines))
@@ -74,14 +74,14 @@ struct Solution(AdventSolution):
 
 
 @always_inline("nodebug")
-fn to_int(v: StringSlice, mut o: Int):
+def to_int(v: StringSlice, mut o: Int):
     try:
         o = Int(v)
     except:
         pass
 
 
-fn first_numeric(line: StringSlice) -> Tuple[Int, Int]:
+def first_numeric(line: StringSlice) -> Tuple[Int, Int]:
     pos, end = 0, len(line) - 1
     fval, lval = 0, 0
 
@@ -99,7 +99,7 @@ fn first_numeric(line: StringSlice) -> Tuple[Int, Int]:
     return fval, lval
 
 
-fn line_value(line: StringSlice) -> Int:
+def line_value(line: StringSlice) -> Int:
     var first_v = 0
     var first_idx: Int = -1
     var last_v = 0
