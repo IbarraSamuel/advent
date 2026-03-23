@@ -3,10 +3,6 @@
 from __future__ import annotations
 
 import operator
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 IM = {
     "one": 1,
@@ -38,7 +34,7 @@ class Solution:
     """Solution for the first day."""
 
     @staticmethod
-    def part_1(lines: Sequence[str]) -> int:
+    def part_1(data: str) -> int:
         """
         Solution for part 1.
 
@@ -47,11 +43,11 @@ class Solution:
         the result of part 1.
 
         """
-        only_numbers = [_filter_digit_chars(line) for line in lines]
+        only_numbers = [_filter_digit_chars(line) for line in data.splitlines()]
         return sum(int(n[0] + n[-1]) for n in only_numbers)
 
     @staticmethod
-    def part_2(lines: Sequence[str]) -> int:
+    def part_2(data: str) -> int:
         """
         Solution for part 2.
 
@@ -61,7 +57,7 @@ class Solution:
 
         """
         total = 0
-        for line in lines:
+        for line in data.splitlines():
             first, _ = min(
                 ((a, line.find(a)) for a in IM if a in line), key=operator.itemgetter(1)
             )

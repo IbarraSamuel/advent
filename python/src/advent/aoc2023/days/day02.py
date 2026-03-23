@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Self
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
+from typing import Self
 
 
 @dataclass
@@ -107,7 +104,7 @@ class Solution:
     """Solution for the second day."""
 
     @staticmethod
-    def part_1(lines: Sequence[str]) -> int:
+    def part_1(data: str) -> int:
         """
         Return the solution for day 1.
 
@@ -118,12 +115,12 @@ class Solution:
         """
         return sum(
             idx + 1
-            for idx, line in enumerate(lines)
+            for idx, line in enumerate(data.splitlines())
             if Game.max_from_cards(line.split(": ")[1]) in MAX_GAME
         )
 
     @staticmethod
-    def part_2(lines: Sequence[str]) -> int:
+    def part_2(data: str) -> int:
         """
         Return the solution for day 2.
 
@@ -132,4 +129,7 @@ class Solution:
         The part 2 solution.
 
         """
-        return sum(Game.max_from_cards(line.split(": ")[1]).product() for line in lines)
+        return sum(
+            Game.max_from_cards(line.split(": ")[1]).product()
+            for line in data.splitlines()
+        )
