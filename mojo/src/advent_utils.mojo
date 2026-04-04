@@ -72,7 +72,7 @@ trait AdventSolution:
 def run[
     *solutions: AdventSolution
 ](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
-    comptime n_sols = Variadic.size(solutions)
+    comptime n_sols = Variadic.size_types[solutions]
 
     comptime for i in range(n_sols):
         if day and day.unsafe_value() != i + 1:
@@ -100,7 +100,7 @@ def bench[
     time_unit: TimeUnit,
     *solutions: AdventSolution,
 ](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
-    comptime n_sols = Variadic.size(solutions)
+    comptime n_sols = Variadic.size_types[solutions]
 
     comptime for i in range(n_sols):
         if day and day.unsafe_value() != i + 1:

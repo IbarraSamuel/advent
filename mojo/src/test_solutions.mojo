@@ -105,7 +105,7 @@ def run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
 
     var ts = TestSuite()
 
-    comptime for i in range(Variadic.size(S)):
+    comptime for i in range(Variadic.size_types[S]):
         comptime day = i + 1
 
         ref parts_data = day_data.unsafe_value().find(day)
