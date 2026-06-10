@@ -4,8 +4,6 @@ from std.pathlib import _dir_of_current_file
 from std.testing import assert_equal
 from std.sys import argv
 
-from solutions import Solutions
-
 
 struct Part[value: __mlir_type.`!pop.int_literal`](
     Equatable, TrivialRegisterPassable
@@ -57,8 +55,30 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`](TrivialRegisterPassable):
         pass
 
 
+# @fieldwise_init
+# struct AdventSolution[
+#     o: ImmutOrigin,
+#     //,
+#     part_1: def(StringSlice[o]) thin -> Int,
+#     part_2: def(StringSlice[o]) thin -> Int,
+# ]:
+#     pass
+
+
+# def part_a[o: ImmutOrigin](v: StringSlice[o]) -> Int:
+#     return 1
+
+
+# def part_b[o: ImmutOrigin](v: StringSlice[o]) -> Int:
+#     return 2
+
+
+# def generate_sol[o: ImmutOrigin]() -> AdventSolution[o=o, part_a[o], part_b[o]]:
+#     return {}
+
+
 trait AdventSolution:
-    comptime T: Intable = Int32
+    comptime T: Intable & ImplicitlyDestructible = Int32
 
     @staticmethod
     def part_1(data: StringSlice) -> Self.T:
@@ -69,12 +89,23 @@ trait AdventSolution:
         ...
 
 
+# # TODO: Change when Generic Traits are available.
+# trait AdventSolution2023(Defaultable):
+#     comptime Year = 2023
+
+
+# trait AdventSolution2024(Defaultable):
+#     comptime Year = 2024
+
+
+# trait AdventSolution2025(Defaultable):
+#     comptime Year = 2025
+
+
 def run[
     *solutions: AdventSolution
 ](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
-    comptime n_sols = Variadic.size_types[solutions]
-
-    comptime for i in range(n_sols):
+    comptime for i in range(solutions.size):
         if day and day.unsafe_value() != i + 1:
             continue
 
@@ -100,9 +131,7 @@ def bench[
     time_unit: TimeUnit,
     *solutions: AdventSolution,
 ](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
-    comptime n_sols = Variadic.size_types[solutions]
-
-    comptime for i in range(n_sols):
+    comptime for i in range(solutions.size):
         if day and day.unsafe_value() != i + 1:
             continue
 

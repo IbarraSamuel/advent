@@ -57,7 +57,7 @@ struct Solution(AdventSolution):
         var input = data.splitlines()
         var total = Int32(0)
 
-        def calc_line[v: Int](idx: Int) unified {read input, mut total}:
+        def calc_line[v: Int](idx: Int) {read input, mut total}:
             cards = input[idx][byte = input[idx].find(": ") + 2 :].split("; ")
 
             for card in cards:
@@ -75,7 +75,7 @@ struct Solution(AdventSolution):
         var input = data.splitlines()
         var simd = SIMD[DType.int32, 128]()
 
-        def set_result[v: Int](idx: Int) unified {mut simd, read input}:
+        def set_result[v: Int](idx: Int) {mut simd, read input}:
             var max_card = 0, 0, 0
             var first_space = input[idx].find(": ") + 2
             cards = input[idx][byte=first_space:].split("; ")

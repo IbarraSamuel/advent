@@ -314,11 +314,11 @@ struct Solution(AdventSolution):
 
         return calc_energized(
             map,
-            read_map.as_bytes_mut(),
+            read_map.unsafe_as_bytes_mut(),
             bounds,
             pos,
             dir,
-            used_map.as_bytes_mut(),
+            used_map.unsafe_as_bytes_mut(),
         )
 
     @staticmethod
@@ -348,11 +348,11 @@ struct Solution(AdventSolution):
             results[idx] = Int32(
                 calc_energized(
                     map,
-                    read_map.as_bytes_mut(),
+                    read_map.unsafe_as_bytes_mut(),
                     bounds,
                     pos,
                     dir,
-                    used_map.as_bytes_mut(),
+                    used_map.unsafe_as_bytes_mut(),
                 )
             )
 

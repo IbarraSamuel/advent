@@ -1,9 +1,11 @@
 import aoc2023, aoc2024, aoc2025
 from advent_utils import AdventSolution
-from std.builtin import Variadic
+from std.builtin.rebind import downcast
 
-comptime Solutions2023 = Variadic.types[
-    T=AdventSolution,
+comptime Years = ParameterList.of[2023, 2024, 2025]()
+
+comptime Solutions2023 = TypeList.of[
+    Trait=AdventSolution,
     aoc2023.day01.Solution,
     aoc2023.day02.Solution,
     aoc2023.day03.Solution,
@@ -21,21 +23,41 @@ comptime Solutions2023 = Variadic.types[
     aoc2023.day15.Solution,
     aoc2023.day16.Solution,
 ]
-comptime Solutions2024 = Variadic.types[
-    T=AdventSolution,
+comptime Solutions2024 = TypeList.of[
+    Trait=AdventSolution,
     aoc2024.day01.Solution,
     aoc2024.day02.Solution,
     aoc2024.day03.Solution,
     aoc2024.day04.Solution,
     aoc2024.day05.Solution,
 ]
-comptime Solutions2025 = Variadic.types[
-    T=AdventSolution,
+comptime Solutions2025 = TypeList.of[
+    Trait=AdventSolution,
     aoc2025.day01.Solution,
 ]
 
-comptime Solutions = [
-    (2023, Solutions2023),
-    (2024, Solutions2024),
-    (2025, Solutions2025),
+
+trait ASolution:
+    comptime Year: Int
+    comptime Solution: AdventSolution
+
+
+struct YearSolution[Y: Int, S: AdventSolution](ASolution):
+    comptime Year = Self.Y
+    comptime Solution = Self.S
+
+
+comptime WithYear[Y: Int, Sol: AdventSolution]: ASolution = YearSolution[Y, Sol]
+
+comptime Solutions = TypeList._concat[
+    Solutions2023.map[WithYear[2023, _]].values,
+    Solutions2024.map[WithYear[2024, _]].values,
+    Solutions2025.map[WithYear[2025, _]].values,
+]
+
+comptime ForYear[Y: Int, AS: ASolution, _Idx: Int]: Bool = AS.Year == Y
+comptime GetSolution[AS: ASolution]: AdventSolution = AS.Solution
+
+comptime SolutionsForYear[Y: Int] = Solutions.filter_idx[ForYear[Y, ...]].map[
+    GetSolution
 ]

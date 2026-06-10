@@ -1,11 +1,9 @@
-from std.builtin.variadics import Variadic
 from std.reflection import (
     get_function_name,
-    get_type_name,
     call_location,
     SourceLocation,
 )
-from std.builtin.rebind import trait_downcast
+from std.builtin.rebind import trait_downcast, downcast
 from std.testing.suite import (
     TestReport,
     TestResult,
@@ -27,29 +25,31 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
         self.tests = {}
         self.location = location.or_else(call_location())
 
-    def test(
-        deinit self, var other: Some[def() raises unified]
-    ) -> UnifiedTestSuite[
-        *Variadic.concat_types[Self.ts, Variadic.types[type_of(other)]]
+    def test[
+        func: def() raises
+    ](deinit self, var f: func) -> UnifiedTestSuite[
+        *TypeList._concat[
+            Self.ts.values, TypeList.of[Trait=Movable, func].values
+        ]()
     ]:
-        return {self.tests^.concat((other^,)), self.location}
+        return {self.tests^.concat((f^,)), self.location}
 
     @always_inline("nodebug")
     def abandon(deinit self):
         pass
 
     def run(deinit self) raises:
-        comptime size = Variadic.size(Self.ts)
+        comptime size = Self.ts.size
         var reports = List[TestReport](capacity=size)
 
         comptime for i in range(size):
-            comptime full_nm = get_type_name[Self.ts[i]]()
+            comptime full_nm = reflect[Self.ts[i]].name()
             var name = full_nm[
                 byte = full_nm.find("().") + 3 : full_nm.find(", {}")
             ]
             var error: Optional[Error] = None
             ref test = self.tests[i]
-            ref test_fn = trait_downcast[def() raises unified](test)
+            ref test_fn = trait_downcast[def() raises](test)
             var start = perf_counter_ns()
             try:
                 test_fn()
@@ -76,7 +76,7 @@ struct UnifiedTestSuite[*ts: Movable](Movable):
 @fieldwise_init
 @explicit_destroy("run() or abandon() the TestSuite")
 struct TestSuite(Movable):
-    var tests: List[Tuple[StaticString, def() raises]]
+    var tests: List[Tuple[StaticString, def() raises thin]]
     var location: SourceLocation
 
     @always_inline
@@ -86,7 +86,9 @@ struct TestSuite(Movable):
         self.tests = {}
         self.location = location.or_else(call_location())
 
-    def test[func: def() raises](mut self, name: Optional[StaticString] = None):
+    def test[
+        func: def() raises thin
+    ](mut self, name: Optional[StaticString] = None):
         self.tests.append((name.or_else(get_function_name[func]()), func))
 
     def abandon(deinit self):

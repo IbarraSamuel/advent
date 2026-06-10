@@ -24,26 +24,6 @@ comptime MapList = {
     "9": 9,
 }
 
-# comptime NUM_MAP: List[(StaticString, Int)] = [
-#     (StaticString("two"), 2),
-#     (StaticString("three"), 3),
-#     (StaticString("four"), 4),
-#     (StaticString("five"), 5),
-#     (StaticString("six"), 6),
-#     (StaticString("seven"), 7),
-#     (StaticString("eight"), 8),
-#     (StaticString("nine"), 9),
-#     (StaticString("1"), 1),
-#     (StaticString("2"), 2),
-#     (StaticString("3"), 3),
-#     (StaticString("4"), 4),
-#     (StaticString("5"), 5),
-#     (StaticString("6"), 6),
-#     (StaticString("7"), 7),
-#     (StaticString("8"), 8),
-#     (StaticString("9"), 9),
-# ]
-
 
 struct Solution(AdventSolution):
     @staticmethod
@@ -73,6 +53,32 @@ struct Solution(AdventSolution):
         return total.reduce_add()
 
 
+def part_1(data: StringSlice) -> Int32:
+    var lines = data.splitlines()
+    var total = SIMD[DType.int32, 1024](0)
+
+    @parameter
+    def calc_line(idx: Int):
+        # for idx in range(lines.size):
+        f, l = first_numeric(lines[idx])
+        total[idx] = Int32(f * 10 + l)
+
+    parallelize[calc_line](len(lines))
+    return total.reduce_add()
+
+
+def part_2(data: StringSlice) -> Int32:
+    var lines = data.splitlines()
+    var total = SIMD[DType.int32, 1024](0)
+
+    @parameter
+    def calc_line(idx: Int):
+        total[idx] = Int32(line_value(lines[idx]))
+
+    parallelize[calc_line](len(lines))
+    return total.reduce_add()
+
+
 @always_inline("nodebug")
 def to_int(v: StringSlice, mut o: Int):
     try:
@@ -82,7 +88,7 @@ def to_int(v: StringSlice, mut o: Int):
 
 
 def first_numeric(line: StringSlice) -> Tuple[Int, Int]:
-    pos, end = 0, len(line) - 1
+    pos, end = 0, line.byte_length() - 1
     fval, lval = 0, 0
 
     while pos <= end:

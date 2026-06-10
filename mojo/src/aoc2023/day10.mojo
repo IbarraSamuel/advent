@@ -260,17 +260,17 @@ struct Solution(AdventSolution):
 
         var idx = data.find("S")
         var start = idx % (len(lines[0]) + 1), idx // (len(lines[0]) + 1)
-        pipes_mask[start[1]].as_bytes_mut()[start[0]] = Byte(ord("#"))
+        pipes_mask[start[1]].unsafe_as_bytes_mut()[start[0]] = Byte(ord("#"))
 
         var prev = start
         var curr = check_connect_near(
             lines, prev, set_pipe=infer_start(start[0], start[1], lines)
         )
-        pipes_mask[curr[1]].as_bytes_mut()[curr[0]] = Byte(ord("#"))
+        pipes_mask[curr[1]].unsafe_as_bytes_mut()[curr[0]] = Byte(ord("#"))
 
         while curr != start:
             next = check_connect_near(lines, curr, ignore=prev)
-            pipes_mask[next[1]].as_bytes_mut()[next[0]] = Byte(ord("#"))
+            pipes_mask[next[1]].unsafe_as_bytes_mut()[next[0]] = Byte(ord("#"))
             prev, curr = curr, next
 
         var tot = 0

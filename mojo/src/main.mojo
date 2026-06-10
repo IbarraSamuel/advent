@@ -3,7 +3,7 @@ from std.sys.intrinsics import _type_is_eq
 
 from advent_utils import run, bench, Args, HELP_STRING, Help
 from test_solutions import run_tests, parse_config
-from solutions import Solutions
+from solutions import SolutionsForYear, Years
 
 
 def main() raises:
@@ -12,13 +12,13 @@ def main() raises:
     var args = Args()
     var project_dir = _dir_of_current_file() / "../.."
 
-    comptime for Solution in Solutions:
-        comptime Y, S = Solution
+    comptime for Y in Years:
+        comptime S = SolutionsForYear[Y]()
         if args.year and args.year[] != Y:
             continue
 
         var input_path = project_dir / "inputs/{}".format(Y)
-        print("<==", Y, "==>")
+        print(t"<=={Y}==>")
         if args.mode == "run":
             run[*S](input_path, args.day, args.part)
         elif args.mode == "bench":

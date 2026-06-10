@@ -1,6 +1,5 @@
 from std.testing import assert_equal
 from std.pathlib import _dir_of_current_file, Path
-from std.builtin import Variadic
 
 from motoml.parser import parse_toml_raises
 from motoml.reflection import toml_to_type
@@ -105,7 +104,7 @@ def run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
 
     var ts = TestSuite()
 
-    comptime for i in range(Variadic.size_types[S]):
+    comptime for i in range(S.size):
         comptime day = i + 1
 
         ref parts_data = day_data.unsafe_value().find(day)
