@@ -1,1 +1,40 @@
 """Solution for each day on advent of code 2023."""
+from advent_utils import AdventSolution
+from . import (
+    day01,
+    day02,
+    day03,
+    day04,
+    day05,
+    day06,
+    day07,
+    day08,
+    day09,
+    day10,
+    day11,
+    day12,
+    day13,
+    day14,
+    day15,
+    day16,
+)
+
+comptime Solutions2023 = TypeList.of[
+    Trait=AdventSolution,
+    day01.Solution,
+    day02.Solution,
+    day03.Solution,
+    day04.Solution,
+    day05.Solution,
+    day06.Solution,
+    day07.Solution,
+    day08.Solution,
+    day09.Solution,
+    day10.Solution,
+    day11.Solution,
+    day12.Solution,
+    day13.Solution,
+    day14.Solution,
+    day15.Solution,
+    day16.Solution,
+]

@@ -78,7 +78,7 @@ struct TimeUnit[value: __mlir_type.`!kgen.string`](TrivialRegisterPassable):
 
 
 trait AdventSolution:
-    comptime T: Intable & ImplicitlyDestructible = Int32
+    comptime T: Intable & Deinitable = Int32
 
     @staticmethod
     def part_1(data: StringSlice) -> Self.T:
@@ -105,7 +105,7 @@ trait AdventSolution:
 def run[
     *solutions: AdventSolution
 ](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
-    comptime for i in range(solutions.size):
+    comptime for i in range(solutions.length):
         if day and day.unsafe_value() != i + 1:
             continue
 
@@ -131,7 +131,7 @@ def bench[
     time_unit: TimeUnit,
     *solutions: AdventSolution,
 ](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
-    comptime for i in range(solutions.size):
+    comptime for i in range(solutions.length):
         if day and day.unsafe_value() != i + 1:
             continue
 
@@ -141,22 +141,20 @@ def bench[
         var file = input_dir / "day{}.txt".format(day)
         var data = file.read_text()
 
-        @parameter
-        def part_1():
+        def part_1() {imm}:
             _ = Sol.part_1(data)
 
-        @parameter
-        def part_2():
+        def part_2() {imm}:
             _ = Sol.part_2(data)
 
         print("Day", day, "=>")
         if not part or part.unsafe_value() == 1:
-            var report = benchmark.run[part_1](max_iters=iters)
+            var report = benchmark.run(part_1, max_iters=iters)
             var time = round(report.mean(time_unit.unit) * 1e6) / 1e6
             print("\tPart 1:", time, time_unit.unit)
 
         if not part or part.unsafe_value() == 2:
-            var report = benchmark.run[part_2](max_iters=iters)
+            var report = benchmark.run(part_2, max_iters=iters)
             var time = round(report.mean(time_unit.unit) * 1e6) / 1e6
             print("\tPart 2:", time, time_unit.unit)
 

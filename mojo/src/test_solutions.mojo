@@ -1,6 +1,7 @@
 from std.testing import assert_equal
 from std.pathlib import _dir_of_current_file, Path
 
+from motoml.types.toml import Toml
 from motoml.parser import parse_toml_raises
 from motoml.reflection import toml_to_type
 
@@ -11,42 +12,6 @@ comptime Years = Dict[Int, Days]
 comptime Days = Dict[Int, Parts]
 comptime Parts = Dict[Int, TestCases]
 comptime TestCases = List[Case]
-
-# struct Years(Movable):
-#     var `2023`: Days
-#     var `2024`: Days
-#     var `2025`: Days
-
-# struct Days(Movable):
-#     var `1`: Optional[Parts]
-#     var `2`: Optional[Parts]
-#     var `3`: Optional[Parts]
-#     var `4`: Optional[Parts]
-#     var `5`: Optional[Parts]
-#     var `6`: Optional[Parts]
-#     var `7`: Optional[Parts]
-#     var `8`: Optional[Parts]
-#     var `9`: Optional[Parts]
-#     var `10`: Optional[Parts]
-#     var `11`: Optional[Parts]
-#     var `12`: Optional[Parts]
-#     var `13`: Optional[Parts]
-#     var `14`: Optional[Parts]
-#     var `15`: Optional[Parts]
-#     var `16`: Optional[Parts]
-#     var `17`: Optional[Parts]
-#     var `18`: Optional[Parts]
-#     var `19`: Optional[Parts]
-#     var `20`: Optional[Parts]
-#     var `21`: Optional[Parts]
-#     var `22`: Optional[Parts]
-#     var `23`: Optional[Parts]
-#     var `24`: Optional[Parts]
-#     var `25`: Optional[Parts]
-
-# struct Parts(Movable):
-#     var `1`: Optional[List[Case]]
-#     var `2`: Optional[List[Case]]
 
 
 @fieldwise_init
@@ -61,23 +26,28 @@ def parse_config() raises -> Years:
     var data = config_loc.read_text()
 
     var toml = parse_toml_raises(data)
-    ref all_years = toml["tests"]["year"]
+    ref all_years = toml[Toml.Table]["tests"][Toml.Table]["year"]
 
     return {
-        Int(year): {
-            Int(day): {
-                Int(part): [
+        Int(year_kv.key): {
+            Int(day_kv.key): {
+                Int(part_kv.key): [
                     Case(
-                        loc / "tests" / year / test["file"].string(),
-                        test["expected"].integer(),
+                        loc
+                        / "tests"
+                        / year_kv.key
+                        / test[Toml.Table]["file"][Toml.String],
+                        test[Toml.Table]["expected"][Toml.Integer],
                     )
-                    for test in part_tests
+                    for test in part_kv.value[Toml.Array]
                 ]
-                for part, part_tests in day_data["part"].items()
+                for part_kv in day_kv.value[Toml.Table]["part"][
+                    Toml.Table
+                ].items()
             }
-            for day, day_data in year_data["day"].items()
+            for day_kv in year_kv.value[Toml.Table]["day"][Toml.Table].items()
         }
-        for year, year_data in all_years.items()
+        for year_kv in all_years[Toml.Table].items()
     }
 
 
@@ -104,7 +74,7 @@ def run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
 
     var ts = TestSuite()
 
-    comptime for i in range(S.size):
+    comptime for i in range(S.length):
         comptime day = i + 1
 
         ref parts_data = day_data.unsafe_value().find(day)
