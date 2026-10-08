@@ -110,7 +110,8 @@ def map_number(range: MapRange, n: Int) -> Tuple[Int, Bool]:
 def map_numbers(ranges: List[MapRange], mut numbers: List[Int]):
     for ref num in numbers:
         for map in ranges:
-            num, mapped = map_number(map, num)
+            var new_num, mapped = map_number(map, num)
+            num = new_num
 
             if mapped:
                 break

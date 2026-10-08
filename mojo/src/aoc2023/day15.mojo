@@ -1,5 +1,4 @@
 from std.collections import Dict
-from std.memory import Span
 
 from advent_utils import AdventSolution
 
@@ -9,32 +8,33 @@ comptime COMMA = Byte(ord(","))
 
 @always_inline("nodebug")
 def hash(v: Span[Byte, _]) -> Int:
-    acc = 0
+    var acc = 0
     for i in v:
         acc = ((acc + Int(i)) * 17) % 256
     return acc
 
 
 def add_elems[
-    o: ImmutOrigin
+    o: Origin
 ](
-    mut elems: Dict[Int, List[Tuple[StringSlice[o], Int]]],
+    mut elems: Dict[Int, List[Tuple[String, Int]]],
     data: StringSlice[o],
     mut init: Int,
     end: Int,
 ):
-    elem, init = data[byte=init:end], end + 1
-    is_add = "=" in elem
-    sep = "=" if is_add else "-"
-    idx = elem.find(sep)
-    chr = elem[byte=:idx]
-    h = hash(chr.as_bytes())
+    var elem = data[byte=init:end]
+    init = end + 1
+    var is_add = "=" in elem
+    var sep = "=" if is_add else "-"
+    var idx = elem.find(sep)
+    var chr = elem[byte=:idx]
+    var h = hash(chr.as_bytes())
     try:
-        n = Int(elem[byte = idx + 1 :]) if is_add else -1
+        var n = Int(elem[byte = idx + 1 :]) if is_add else -1
         for ref it in elems.items():
             if it.key == h:
                 for idx in range(len(it.value)):
-                    if it.value[idx][0] == chr:
+                    if it.value[idx][0] == String(chr):
                         if not is_add:
                             if len(it.value) == 1:
                                 _ = elems.pop(h)
@@ -45,12 +45,12 @@ def add_elems[
                         return
                 if not is_add:
                     return
-                it.value.append((chr, n))
+                it.value.append((String(chr), n))
                 return
         if not is_add:
             return
-        l = List[Tuple[StringSlice[o], Int]](capacity=10)
-        l.append((chr, n))
+        var l = List[Tuple[String, Int]](capacity=10)
+        l.append((String(chr), n))
         elems[h] = l^
 
     except:
@@ -63,8 +63,8 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
-        t = 0
-        acc = 0
+        var t = 0
+        var acc = 0
         for v in lines[0].as_bytes():
             if v == COMMA:
                 t += Int(acc)
@@ -77,18 +77,20 @@ struct Solution(AdventSolution):
     def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         var d = lines[0]
-        elems = Dict[Int, List[Tuple[StringSlice[data.origin].Immutable, Int]]](
+        var elems = Dict[Int, List[Tuple[String, Int]]](
             capacity=256
         )
 
-        l = 0
-        while (v := d.find(",", l + 1)) != -1:
+        var l = 0
+        var v = d.find(",", l + 1)
+        while v != -1:
             add_elems(elems, d, l, v)
-        add_elems(elems, d, l, len(d))
+            v = d.find(",", l + 1)
+        add_elems(elems, d, l, d.byte_length())
 
-        tot = 0
+        var tot = 0
         for it in elems.items():
-            tt = 0
+            var tt = 0
             for i in range(len(it.value)):
                 tt += (i + 1) * it.value[i][1]
             tot += (it.key + 1) * tt

@@ -1,4 +1,4 @@
-from std.algorithm import parallelize
+from std.algorithm.functional import vectorize
 from std.collections import Set
 from std.os import abort
 from std.math import log2
@@ -49,17 +49,18 @@ struct Solution(AdventSolution):
             )
             prev_idx = lnr + 1
 
-        lines = rest.splitlines()
+        var lines = rest.splitlines()
 
-        @parameter
-        def calc(idx: Int):
+        def calc[v: Int](idx: Int) {
+            imm lines, imm next_dct, imm prev_dct, mut tot
+        }:
             var line = lines[idx]
             var readed_idx = 3
             while True:
-                if line.as_bytes()[readed_idx - 1] == newline:
+                if readed_idx >= line.byte_length():
                     # We finalize the line
-                    bts = line.as_bytes()[
-                        len(line) // 2 - 1 : len(line) // 2 + 1
+                    var bts = line.as_bytes()[
+                        line.byte_length() // 2 - 1 : line.byte_length() // 2 + 1
                     ]
                     tot[idx] = (
                         10 * bts[0].cast[DType.int32]()
@@ -68,12 +69,12 @@ struct Solution(AdventSolution):
                     )
                     break
 
-                val = line[byte = readed_idx : readed_idx + 2]
-                prev_values = line[byte=:readed_idx]
+                var val = line[byte = readed_idx : readed_idx + 2]
+                var prev_values = line[byte=:readed_idx]
 
                 # if val in prev_dct:
-                res = prev_dct.get(val)
-                found = False
+                var res = prev_dct.get(val)
+                var found = False
                 if res:
                     for v in res.unsafe_value():
                         if v in prev_values:
@@ -97,7 +98,7 @@ struct Solution(AdventSolution):
 
                 readed_idx += 3
 
-        parallelize[calc](len(lines))
+        vectorize[1](len(lines), calc)
         return tot.reduce_add()
 
     @staticmethod
@@ -114,8 +115,9 @@ struct Solution(AdventSolution):
         ]
         var manuals = data[byte = split_idx + 2 :].splitlines()
 
-        @parameter
-        def calc_line(idx: Int):
+        def calc_line[v: Int](idx: Int) {
+            imm manuals, imm rules, mut tot
+        }:
             ref page = manuals[idx]
             for f, l in rules:
                 var fi = page.find(f)
@@ -125,12 +127,12 @@ struct Solution(AdventSolution):
                     # order_manual(page, rules)
                     # var _nbr = page[len(page) // 2]
                     var _idxs = order_manual[indexes](page, rules)
-                    var middle = len(page) // 2
+                    var middle = page.byte_length() // 2
                     var _mididx = _idxs[(middle - 1) // 3]
                     var _middle = Int(_mididx * 3) + 1
                     var _nbr = page[byte = _middle - 1 : _middle + 1]
 
-                    bts = _nbr.as_bytes()
+                    var bts = _nbr.as_bytes()
                     tot[idx] = (
                         10 * bts[0].cast[DType.int32]()
                         - 11 * Int32(zord)
@@ -138,31 +140,32 @@ struct Solution(AdventSolution):
                     )
                     break
 
-        parallelize[calc_line](len(manuals))
+        vectorize[1](len(manuals), calc_line)
         return tot.reduce_add()
 
 
 def order_manual[
-    o: ImmutOrigin,
+    o: Origin,
     //,
     indexes: SIMD[DType.uint8, 32],
     zeroidx: SIMD[DType.uint8, 32] = SIMD[DType.uint8, 32](0),
 ](
-    page: StringSlice[o].Immutable,
-    rules: List[Tuple[StringSlice[o].Immutable, StringSlice[o].Immutable]],
+    page: StringSlice[o],
+    rules: List[Tuple[StringSlice[o], StringSlice[o]]],
 ) -> SIMD[DType.uint8, 32]:
+    var owned_page = String(page)
     var done = False
     var idx = indexes.copy()
     var used_rules = List[Tuple[Int, Int]]()
     for first, last in rules:
-        of = page.find(first)
-        ol = page.find(last)
+        var of = owned_page.find(first)
+        var ol = owned_page.find(last)
         if of > -1 and ol > -1:
             used_rules.append((of, ol))
-            fi = Int(
+            var fi = Int(
                 idx.eq(UInt8(of // 3)).select(indexes, zeroidx).reduce_max()
             )
-            li = Int(
+            var li = Int(
                 idx.eq(UInt8(ol // 3)).select(indexes, zeroidx).reduce_max()
             )
             if fi > li:
@@ -171,10 +174,10 @@ def order_manual[
     while not done:
         done = True
         for of, ol in used_rules:
-            fi = Int(
+            var fi = Int(
                 idx.eq(UInt8(of // 3)).select(indexes, zeroidx).reduce_max()
             )
-            li = Int(
+            var li = Int(
                 idx.eq(UInt8(ol // 3)).select(indexes, zeroidx).reduce_max()
             )
             if fi > li:

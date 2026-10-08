@@ -29,14 +29,14 @@ struct Solution(AdventSolution):
         var tot = 0
 
         for y, line in enumerate(input):
-            var max_x = len(line) - 1
-            x = 0
+            var max_x = line.byte_length() - 1
+            var x = 0
             while x < max_x:
                 if not line[byte=x].is_ascii_digit():
                     x += 1
                     continue
 
-                has_asterisc = False
+                var has_asterisc = False
 
                 var min_y = max(0, y - 1)
                 var max_y = min(len(input) - 1, y + 1)
@@ -61,7 +61,8 @@ struct Solution(AdventSolution):
                     has_asterisc = True
 
                 while (
-                    x + 1 < len(line) and input[y][byte=x + 1].is_ascii_digit()
+                    x + 1 < line.byte_length()
+                    and input[y][byte=x + 1].is_ascii_digit()
                 ):
                     x += 1
                     try:
@@ -83,7 +84,7 @@ struct Solution(AdventSolution):
                     ):
                         has_asterisc = True
 
-                if not has_asterisc and x + 1 < len(line):
+                if not has_asterisc and x + 1 < line.byte_length():
                     for yi in range(min_y, max_y + 1):
                         if input[yi][byte=x + 1] != StringSlice("."):
                             has_asterisc = True
@@ -103,8 +104,8 @@ struct Solution(AdventSolution):
         var tot = 0
 
         for y, line in enumerate(input):
-            var max_x = len(line) - 1
-            x = 0
+            var max_x = line.byte_length() - 1
+            var x = 0
             while x < max_x:
                 if not line[byte=x].is_ascii_digit():
                     x += 1
@@ -135,7 +136,8 @@ struct Solution(AdventSolution):
                     asterisc = AstrInfo(x, max_y)
 
                 while (
-                    x + 1 < len(line) and input[y][byte=x + 1].is_ascii_digit()
+                    x + 1 < line.byte_length()
+                    and input[y][byte=x + 1].is_ascii_digit()
                 ):
                     x += 1
                     try:
@@ -159,7 +161,7 @@ struct Solution(AdventSolution):
                     ):
                         asterisc = AstrInfo(x, max_y)
 
-                if not asterisc and x + 1 < len(line):
+                if not asterisc and x + 1 < line.byte_length():
                     for yi in range(min_y, max_y + 1):
                         if input[yi][byte=x + 1] == "*":
                             asterisc = AstrInfo(x + 1, yi)

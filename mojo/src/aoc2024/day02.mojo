@@ -1,4 +1,3 @@
-from std.algorithm import parallelize
 from std.memory import pack_bits, bitcast
 from std.bit import prev_power_of_two
 from std.math import log2
@@ -11,11 +10,11 @@ def calc_simd(
 ) -> Tuple[SIMD[DType.bool, 8], SIMD[DType.bool, 8]]:
     """This could be improved to precisely show the place where the problem is.
     """
-    l = f.shift_left[1]()
-    zero_msk = l.eq(0)
-    diff = l - f
-    is_positive_in_bounds = zero_msk | ~((diff.lt(1)) | (diff.gt(3)))
-    is_negative_in_bounds = zero_msk | ~((diff.gt(-1)) | (diff.lt(-3)))
+    var l = f.shift_left[1]()
+    var zero_msk = l.eq(0)
+    var diff = l - f
+    var is_positive_in_bounds = zero_msk | ~((diff.lt(1)) | (diff.gt(3)))
+    var is_negative_in_bounds = zero_msk | ~((diff.gt(-1)) | (diff.lt(-3)))
     return is_positive_in_bounds, is_negative_in_bounds
 
 
@@ -34,7 +33,7 @@ struct Solution(AdventSolution):
 
     @staticmethod
     def part_1(data: StringSlice) -> Self.T:
-        result = 0
+        var result = 0
         ref lines = data.splitlines()
         for lidx in range(len(lines)):
             ref line = lines.unsafe_get(lidx)
@@ -57,58 +56,58 @@ struct Solution(AdventSolution):
 
     @staticmethod
     def part_2(data: StringSlice) -> Self.T:
-        lines = data.splitlines()
-        results = SIMD[DType.int32, 1024](0)
+        var lines = data.splitlines()
+        var results = SIMD[DType.int32, 1024](0)
 
         for idx in range(len(lines)):
             ref nums = lines.unsafe_get(idx).split()
-            f = SIMD[DType.int8, 8](0)
+            var f = SIMD[DType.int8, 8](0)
             try:
                 for i in range(len(nums)):
                     f[i] = Int8(Int(nums[i]))
             except:
                 pass
-            pos, neg = calc_simd(f)
+            var pos, neg = calc_simd(f)
             if all(pos) or all(neg):
                 results[idx] = 1
                 continue
 
-            s_pos = Int(log2(Float64(prev_power_of_two(pack_bits(~pos)))))
-            s_neg = Int(log2(Float64(prev_power_of_two(pack_bits(~neg)))))
+            var s_pos = Int(log2(Float64(prev_power_of_two(pack_bits(~pos)))))
+            var s_neg = Int(log2(Float64(prev_power_of_two(pack_bits(~neg)))))
 
             # TODO: Make it nicer, now it's kind of good but brute forced on two options.
 
             # calc for positive
-            fpos_msk = SIMD[DType.bool, f.size](fill=False)
-            for i in range(s_pos, f.size):
+            var fpos_msk = SIMD[DType.bool, 8](fill=False)
+            for i in range(s_pos, 8):
                 fpos_msk[i] = True
 
-            fpos = fpos_msk.select(f.shift_left[1](), f)
-            fpos2 = fpos
+            var fpos = fpos_msk.select(f.shift_left[1](), f)
+            var fpos2 = fpos
             fpos2[s_pos] = f[s_pos]
-            p, n = calc_simd(fpos)
-            if all(p) or all(n):
+            var p_pos, n_pos = calc_simd(fpos)
+            if all(p_pos) or all(n_pos):
                 results[idx] = 1
                 continue
-            p, n = calc_simd(fpos2)
-            if all(p) or all(n):
+            var p_pos2, n_pos2 = calc_simd(fpos2)
+            if all(p_pos2) or all(n_pos2):
                 results[idx] = 1
                 continue
 
             # Calc for negative
-            fneg_msk = SIMD[DType.bool, f.size](fill=False)
-            for i in range(s_neg, f.size):
+            var fneg_msk = SIMD[DType.bool, 8](fill=False)
+            for i in range(s_neg, 8):
                 fneg_msk[i] = True
 
-            fneg = fneg_msk.select(f.shift_left[1](), f)
-            fneg2 = fneg
+            var fneg = fneg_msk.select(f.shift_left[1](), f)
+            var fneg2 = fneg
             fneg2[s_neg] = f[s_neg]
-            p, n = calc_simd(fneg)
-            if all(p) or all(n):
+            var p_neg, n_neg = calc_simd(fneg)
+            if all(p_neg) or all(n_neg):
                 results[idx] = 1
                 continue
-            p, n = calc_simd(fneg2)
-            if all(p) or all(n):
+            var p_neg2, n_neg2 = calc_simd(fneg2)
+            if all(p_neg2) or all(n_neg2):
                 results[idx] = 1
                 continue
 

@@ -1,7 +1,7 @@
 from std.utils import IndexList, Index
 from std.hashlib.hasher import Hasher
 from std.collections.set import Set
-from std.algorithm import parallelize
+from std.algorithm.functional import vectorize
 from std.time import sleep
 import std.os as os
 
@@ -123,7 +123,7 @@ def next_mirror[
 ) -> Tuple[Int32, Bool, Pos]:
     """Need to validate if it stopped because you are in oob or it's a mirror.
     """
-    var bounds = len(map[0]), len(map)
+    var bounds = map[0].byte_length(), len(map)
     var steps = Int32(0)
     var npos = pos + delta(dir)
 
@@ -241,7 +241,10 @@ def calc_energized[
     var pos = p
 
     if ord(index(pos, map)) not in MIRRORS:
-        nsteps, is_mirror, pos = next_mirror(dir, pos, map, map_used)
+        var nsteps, is_mirror, next_pos = next_mirror(
+            dir, pos, map, map_used
+        )
+        pos = next_pos
         steps += nsteps
         if not is_mirror:
             return steps
@@ -304,13 +307,13 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_1(data: StringSlice) -> Int32:
         # Mask for each mirror, but shifted by the direction received
-        var read_map = " " * len(data) * 4
-        var used_map = String(data)
+        var read_map = " " * data.byte_length() * 4
+        var used_map = " " * data.byte_length()
         var map = data.splitlines()
 
         var pos = Index(0, 0)
         var dir = RIGHT
-        var bounds = len(map[0]), len(map)
+        var bounds = map[0].byte_length(), len(map)
 
         return calc_energized(
             map,
@@ -325,8 +328,8 @@ struct Solution(AdventSolution):
     def part_2(data: StringSlice) -> Int32:
         # 51 .. 7438
         var map = data.splitlines()
-        var bounds = len(map[0]), len(map)
-        var possibilities = 2 * (len(map[0]) + len(map))
+        var bounds = map[0].byte_length(), len(map)
+        var possibilities = 2 * (map[0].byte_length() + len(map))
         var indexes = List[Tuple[Pos, Dir]](capacity=possibilities)
 
         for y in range(bounds[1]):
@@ -337,13 +340,15 @@ struct Solution(AdventSolution):
             indexes.append((Index(x, 0), DOWN))
             indexes.append((Index(x, bounds[1] - 1), UP))
 
-        results = SIMD[DType.int32, 512](0)
+        var results = SIMD[DType.int32, 512](0)
 
-        @parameter
-        def calc_length(idx: Int):
+        var data_len = data.byte_length()
+        def calc_length[v: Int](idx: Int) {
+            imm map, imm indexes, imm bounds, imm data_len, mut results
+        }:
             var pos, dir = indexes[idx]
-            var read_map = " " * len(data) * 4
-            var used_map = String(data)
+            var read_map = " " * data_len * 4
+            var used_map = " " * data_len
 
             results[idx] = Int32(
                 calc_energized(
@@ -356,6 +361,6 @@ struct Solution(AdventSolution):
                 )
             )
 
-        parallelize[calc_length](len(indexes))
+        vectorize[1](len(indexes), calc_length)
 
         return results.reduce_max()

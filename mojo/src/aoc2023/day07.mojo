@@ -25,7 +25,7 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
     var bid: UInt32
 
     def __init__(out self, s: StringSlice):
-        space_pos = s.find(" ")
+        var space_pos = s.find(" ")
         self.bid = UInt32(parse_int(s[byte = space_pos + 1 :]))
         self.value = Self.type()
 
@@ -37,20 +37,20 @@ struct Hand[mode: HandMode](Comparable, TrivialRegisterPassable):
 
     @always_inline("nodebug")
     def _calc_level(mut self, s: StringSlice):
-        var chars = Dict[String, UInt8](capacity=Self.type.size)
+        var chars = Dict[String, UInt8](capacity=5)
 
         comptime for i in range(5):
             ref k = String(s[byte = i : i + 1])
             chars[k] = chars.get(k, 0) + 1
 
         comptime if Self.mode == HandMode.Second:
-            j_val = chars.pop("J", 0)
-            max_v, max_c = UInt8(0), String("")
+            var j_val = chars.pop("J", 0)
+            var max_v, max_c = UInt8(0), String("")
 
             comptime for i in range(5):
                 ref si = String(s[byte = i : i + 1])
                 if si != "J":
-                    cv = chars.get(si, 0)
+                    var cv = chars.get(si, 0)
                     if cv > max_v:
                         max_v = cv
                         max_c = si
@@ -144,11 +144,11 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
-        cards = List[Self.Hand1](capacity=1000)
+        var cards = List[Self.Hand1](capacity=1000)
         for line in lines:
             cards.append(Self.Hand1(line))
 
-        total = 0
+        var total = 0
 
         sort(cards)
         for idx in range(len(cards)):
@@ -159,11 +159,11 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
-        cards = List[Self.Hand2](capacity=1000)
+        var cards = List[Self.Hand2](capacity=1000)
         for line in lines:
             cards.append(Self.Hand2(line))
 
-        total = 0
+        var total = 0
 
         sort(cards)
         for idx in range(len(cards)):

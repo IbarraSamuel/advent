@@ -16,15 +16,15 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
-        nums = List[IndexList[2]]()
-        empty_l = List[Int](capacity=len(lines))
-        empty_c = List[Int](capacity=lines[0].byte_length())
-        empty_c_flg = List[Bool](capacity=len(lines))
+        var nums = List[IndexList[2]]()
+        var empty_l = List[Int](capacity=len(lines))
+        var empty_c = List[Int](capacity=lines[0].byte_length())
+        var empty_c_flg = List[Bool](capacity=lines[0].byte_length())
         for _ in range(len(lines)):
             empty_c_flg.append(True)
 
         for i in range(len(lines)):
-            empty_line = True
+            var empty_line = True
             for j in range(lines[0].byte_length()):
                 if lines[i][byte = j : j + 1] == "#":
                     nums.append((i, j))
@@ -41,15 +41,15 @@ struct Solution(AdventSolution):
             if empty_c_flg[i]:
                 empty_c.append(i)
 
-        total = 0
+        var total = 0
         for i in range(len(nums)):
             for j in range(i + 1, len(nums)):
-                a, b = nums[i], nums[j]
+                var a, b = nums[i], nums[j]
                 # Equals will be zero at the end
-                x_space = 0
-                y_space = 0
-                xmin, xmax = min(a[0], b[0]), max(a[0], b[0])
-                ymin, ymax = min(a[1], b[1]), max(a[1], b[1])
+                var x_space = 0
+                var y_space = 0
+                var xmin, xmax = min(a[0], b[0]), max(a[0], b[0])
+                var ymin, ymax = min(a[1], b[1]), max(a[1], b[1])
                 for x in empty_l:
                     x_space += 1 if xmin <= x <= xmax else 0
 
@@ -63,15 +63,15 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
-        nums = List[IndexList[2]]()
-        empty_l = List[Int](capacity=len(lines))
-        empty_c = List[Int](capacity=lines[0].byte_length())
-        empty_c_flg = List[Bool](capacity=len(lines))
+        var nums = List[IndexList[2]]()
+        var empty_l = List[Int](capacity=len(lines))
+        var empty_c = List[Int](capacity=lines[0].byte_length())
+        var empty_c_flg = List[Bool](capacity=lines[0].byte_length())
         for _ in range(len(lines)):
             empty_c_flg.append(True)
 
         for i in range(len(lines)):
-            empty_line = True
+            var empty_line = True
             for j in range(lines[0].byte_length()):
                 if lines[i][byte = j : j + 1] == "#":
                     nums.append((i, j))
@@ -88,15 +88,15 @@ struct Solution(AdventSolution):
             if empty_c_flg[i]:
                 empty_c.append(i)
 
-        total = 0
+        var total = 0
         for i in range(len(nums)):
             for j in range(i + 1, len(nums)):
-                a, b = nums[i], nums[j]
+                var a, b = nums[i], nums[j]
                 # Equals will be zero at the end
-                x_space = 0
-                y_space = 0
-                xmin, xmax = min(a[0], b[0]), max(a[0], b[0])
-                ymin, ymax = min(a[1], b[1]), max(a[1], b[1])
+                var x_space = 0
+                var y_space = 0
+                var xmin, xmax = min(a[0], b[0]), max(a[0], b[0])
+                var ymin, ymax = min(a[1], b[1]), max(a[1], b[1])
                 for x in empty_l:
                     x_space += 999999 if xmin <= x <= xmax else 0
 

@@ -34,7 +34,7 @@ struct Solution(AdventSolution):
             except:
                 n = 0
             pwd += n // 100
-            locp = (loc + sign * n) % 100
+            var locp = (loc + sign * n) % 100
             if locp == 0 or (locp > 1) ^ (loc > 1) or (locp < 1) ^ (loc < 1):
                 pwd += 1
 

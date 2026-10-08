@@ -15,16 +15,16 @@ struct Solution(AdventSolution):
         test_solution[2024, 1, Solution, 1]()
         ```
         """
-        lines = data.splitlines()
-        lines_size = len(lines)
+        var lines = data.splitlines()
+        var lines_size = len(lines)
 
-        l1 = List[Int](capacity=lines_size)
-        l2 = List[Int](capacity=lines_size)
+        var l1 = List[Int](capacity=lines_size)
+        var l2 = List[Int](capacity=lines_size)
 
         for line in lines:
-            v1, v2 = 0, 0
-            no1 = line.find(" ")
-            no2 = line.rfind(" ") + 1
+            var v1, v2 = 0, 0
+            var no1 = line.find(" ")
+            var no2 = line.rfind(" ") + 1
             try:
                 v1, v2 = Int(line[byte=:no1]), Int(line[byte=no2:])
             except:
@@ -36,23 +36,23 @@ struct Solution(AdventSolution):
         sort(l1)
         sort(l2)
 
-        t = 0
+        var t = 0
         for i in range(lines_size):
             t += abs(l2[i] - l1[i])
         return t
 
     @staticmethod
     def part_2(data: StringSlice) -> Self.T:
-        lines = data.splitlines()
-        vals = [line.split(maxsplit=1)[1] for line in lines]
-        dct = Dict[StringSlice[data.origin].Immutable, Int]()
+        var lines = data.splitlines()
+        var vals = [line.split(maxsplit=1)[1] for line in lines]
+        var dct = Dict[StringSlice[data.origin].Immutable, Int]()
 
         for val in vals:
             dct[val] = dct.get(val, 0) + 1
 
-        tot = 0
+        var tot = 0
         for line in lines:
-            k = line.split(maxsplit=1)[0]
+            var k = line.split(maxsplit=1)[0]
             try:
                 tot += Int(k) * dct.get(k, 0)
             except:

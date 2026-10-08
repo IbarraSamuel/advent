@@ -1,6 +1,5 @@
 from advent_utils import AdventSolution
 from std.collections import Dict, Optional
-from std.algorithm.functional import parallelize
 from std.builtin.globals import global_constant
 
 comptime MapList = {
@@ -29,54 +28,40 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_1(data: StringSlice) -> Int32:
         var lines = data.splitlines()
-        var total = SIMD[DType.int32, 1024](0)
-
-        @parameter
-        def calc_line(idx: Int):
+        var total = Int32(0)
+        for idx in range(len(lines)):
             # for idx in range(lines.size):
-            f, l = first_numeric(lines[idx])
-            total[idx] = Int32(f * 10 + l)
+            var f, l = first_numeric(lines[idx])
+            total += Int32(f * 10 + l)
 
-        parallelize[calc_line](len(lines))
-        return total.reduce_add()
+        return total
 
     @staticmethod
     def part_2(data: StringSlice) -> Int32:
         var lines = data.splitlines()
-        var total = SIMD[DType.int32, 1024](0)
-
-        @parameter
-        def calc_line(idx: Int):
-            total[idx] = Int32(line_value(lines[idx]))
-
-        parallelize[calc_line](len(lines))
-        return total.reduce_add()
+        var total = Int32(0)
+        for idx in range(len(lines)):
+            total += Int32(line_value(lines[idx]))
+        return total
 
 
 def part_1(data: StringSlice) -> Int32:
     var lines = data.splitlines()
-    var total = SIMD[DType.int32, 1024](0)
-
-    @parameter
-    def calc_line(idx: Int):
+    var total = Int32(0)
+    for idx in range(len(lines)):
         # for idx in range(lines.size):
-        f, l = first_numeric(lines[idx])
-        total[idx] = Int32(f * 10 + l)
+        var f, l = first_numeric(lines[idx])
+        total += Int32(f * 10 + l)
 
-    parallelize[calc_line](len(lines))
-    return total.reduce_add()
+    return total
 
 
 def part_2(data: StringSlice) -> Int32:
     var lines = data.splitlines()
-    var total = SIMD[DType.int32, 1024](0)
-
-    @parameter
-    def calc_line(idx: Int):
-        total[idx] = Int32(line_value(lines[idx]))
-
-    parallelize[calc_line](len(lines))
-    return total.reduce_add()
+    var total = Int32(0)
+    for idx in range(len(lines)):
+        total += Int32(line_value(lines[idx]))
+    return total
 
 
 @always_inline("nodebug")
@@ -88,8 +73,8 @@ def to_int(v: StringSlice, mut o: Int):
 
 
 def first_numeric(line: StringSlice) -> Tuple[Int, Int]:
-    pos, end = 0, line.byte_length() - 1
-    fval, lval = 0, 0
+    var pos, end = 0, line.byte_length() - 1
+    var fval, lval = 0, 0
 
     while pos <= end:
         if fval == 0:

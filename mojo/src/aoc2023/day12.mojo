@@ -1,27 +1,13 @@
-from std.algorithm import parallelize
 from std.collections import Dict
 import std.os as os
-from std.hashlib.hasher import Hasher
 
 from advent_utils import AdventSolution
-
-
-@fieldwise_init
-struct CacheKey[o: ImmutOrigin](KeyElement):
-    var cfg: String
-    var nums: Span[Int, Self.o]
-
-    def __hash__[H: Hasher](self, mut hasher: H):
-        hasher.update(self.cfg)
-
-    def __eq__(self, other: Self) -> Bool:
-        return self.cfg == other.cfg and self.nums == other.nums
 
 
 def count(
     cfg: StringSlice,
     nums: Span[mut=False, Int, _],
-    mut cache: Dict[CacheKey[nums.origin], Int],
+    mut cache: Dict[String, Int],
 ) -> Int:
     if (not cfg and not nums) or (not nums and "#" not in cfg):
         return 1
@@ -29,22 +15,29 @@ def count(
     if (not cfg and nums) or (not nums and "#" in cfg):
         return 0
 
-    k = CacheKey(String(cfg), nums.copy())
-    vl = cache.get(k)
+    var k = String(cfg)
+    k.write("|")
+    for num in nums:
+        k.write(String(num), ",")
+    var vl = cache.get(k)
     if vl:
         return vl.value()
 
-    result = 0
+    var result = 0
 
     if cfg[byte=:1] in ".?":
         result += count(cfg[byte=1:], nums, cache)
 
     if cfg[byte=:1] in "#?" and (
-        nums[0] <= len(cfg)
+        nums[0] <= cfg.byte_length()
         and "." not in cfg[byte = : nums[0]]
-        and (nums[0] == len(cfg) or cfg[byte=nums[0]] != StringSlice("#"))
+        and (
+            nums[0] == cfg.byte_length()
+            or cfg[byte=nums[0]] != StringSlice("#")
+        )
     ):
-        result += count(cfg[byte = nums[0] + 1 :], nums[1:], cache)
+        var next_cfg_start = min(nums[0] + 1, cfg.byte_length())
+        result += count(cfg[byte = next_cfg_start :], nums[1:], cache)
 
     cache[k^] = result
     return result
@@ -56,41 +49,34 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_1(data: StringSlice) -> Int32:
         var lines = data.splitlines()
-        total = SIMD[DType.uint32, 1024](0)
-
-        @parameter
-        def calc_line(idx: Int):
-            # for idx in range(len(lines)):
-            splitted = lines[idx].split()
-            cfg, nums_chr = splitted[0], splitted[1]
-            nums = List[Int]()
+        var total = Int32(0)
+        for idx in range(len(lines)):
+            var splitted = lines[idx].split()
+            var cfg, nums_chr = splitted[0], splitted[1]
+            var nums = List[Int]()
             try:
-                splitted_nums = nums_chr.split(",")
+                var splitted_nums = nums_chr.split(",")
                 for num in splitted_nums:
                     nums.append(Int(num))
             except:
                 os.abort("This should never happen")
 
-            cache = Dict[CacheKey[ImmutOrigin(origin_of(nums))], Int]()
-            total[idx] = UInt32(count(cfg, nums^, cache))
-            # total[idx] = count(cfg, nums)
+            var cache = Dict[String, Int]()
+            total += Int32(count(cfg, nums^, cache))
 
-        parallelize[calc_line](len(lines))
-        return total.reduce_add().cast[DType.int32]()
+        return total
 
     @staticmethod
     def part_2(data: StringSlice) -> Int32:
         var lines = data.splitlines()
-        total = SIMD[DType.uint64, 1024](0)
-
-        @parameter
-        def calc_line(idx: Int):
-            splitted = lines[idx].split()
-            cfg = String(splitted[0])
-            nums_chr = splitted[1]
-            nums = List[Int]()
+        var total = Int32(0)
+        for idx in range(len(lines)):
+            var splitted = lines[idx].split()
+            var cfg = String(splitted[0])
+            var nums_chr = splitted[1]
+            var nums = List[Int]()
             try:
-                splitted_nums = nums_chr.split(",")
+                var splitted_nums = nums_chr.split(",")
                 for num in splitted_nums:
                     nums.append(Int(num))
             except:
@@ -98,10 +84,7 @@ struct Solution(AdventSolution):
 
             cfg = String((("?" + cfg) * 5)[byte=1:])
             nums *= 5
-            # span = nums[:]
-            cache = Dict[CacheKey[ImmutOrigin(origin_of(nums))], Int]()
-            total[idx] = UInt64(count(cfg, nums^, cache))
-            # total[idx] = count(cfg, nums)
+            var cache = Dict[String, Int]()
+            total += Int32(count(cfg, nums^, cache))
 
-        parallelize[calc_line](len(lines))
-        return total.reduce_add().cast[DType.int32]()
+        return total

@@ -15,7 +15,7 @@ struct Solution(AdventSolution):
         var xmax = data.find('\n')
         var ymax = len(bytes) // (xmax + 1)
 
-        @parameter
+        @__parameter
         @always_inline
         def idx(x: Int, y: Int) -> Int:
             return x + y * (xmax + 1)
@@ -71,24 +71,24 @@ struct Solution(AdventSolution):
 
     @staticmethod
     def part_2(data: StringSlice) -> Self.T:
-        tot = 0
-        xmax = data.find("\n")
-        bts = data.as_bytes()
-        ymax = len(data) // (xmax + 1)
+        var tot = 0
+        var xmax = data.find("\n")
+        var bts = data.as_bytes()
+        var ymax = data.byte_length() // (xmax + 1)
 
         @always_inline
-        @parameter
+        @__parameter
         def idx(x: Int, y: Int) -> Int:
             return x + y * (xmax + 1)
 
-        last = xmax + 3
+        var last = xmax + 3
         while True:
-            lnr = data.find("A", last)
+            var lnr = data.find("A", last)
             if lnr == -1 or lnr // (xmax + 1) == ymax - 1:
                 break
             last = lnr + 1
 
-            x, y = lnr % (xmax + 1), lnr // (xmax + 1)
+            var x, y = lnr % (xmax + 1), lnr // (xmax + 1)
             tot += Int(x > 0 and x < xmax - 1 and (
                 bts[idx(x - 1, y - 1)] == `M`
                 and bts[idx(x + 1, y + 1)] == `S`

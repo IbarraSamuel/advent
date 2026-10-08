@@ -1,4 +1,4 @@
-from std.algorithm.functional import parallelize
+from std.algorithm.functional import vectorize
 from advent_utils import AdventSolution
 
 
@@ -10,8 +10,7 @@ struct Solution(AdventSolution):
         var input = data.splitlines()
         var total = 0
 
-        @parameter
-        def calc_line(idx: Int):
+        def calc_line[v: Int](idx: Int) {imm input, mut total}:
             var winners = List[String]()
             var line = input[idx]
             var inp = line.find(": ") + 2
@@ -23,7 +22,7 @@ struct Solution(AdventSolution):
 
             var accm: String = ""
             for nm in win_str.codepoint_slices():
-                if nm.isspace() and len(accm) > 0:
+                if nm.isspace() and accm.byte_length() > 0:
                     winners.append(accm)
                     accm = ""
                     continue
@@ -33,7 +32,7 @@ struct Solution(AdventSolution):
             accm = ""
 
             for nm in num_str.codepoint_slices():
-                if nm.isspace() and len(accm) > 0:
+                if nm.isspace() and accm.byte_length() > 0:
                     if accm in winners:
                         winner_amnt += 1
                     accm = ""
@@ -46,7 +45,7 @@ struct Solution(AdventSolution):
                 winner_amnt += 1
             total += 2 ** (winner_amnt - 1) if winner_amnt > 0 else 0
 
-        parallelize[calc_line](len(input))
+        vectorize[1](len(input), calc_line)
         return total
 
     @staticmethod
@@ -68,7 +67,7 @@ struct Solution(AdventSolution):
 
             var accm: String = ""
             for nm in win_str.codepoint_slices():
-                if nm.isspace() and len(accm) > 0:
+                if nm.isspace() and accm.byte_length() > 0:
                     winners.append(accm)
                     accm = ""
                     continue
@@ -78,7 +77,7 @@ struct Solution(AdventSolution):
             accm = ""
 
             for nm in num_str.codepoint_slices():
-                if nm.isspace() and len(accm) > 0:
+                if nm.isspace() and accm.byte_length() > 0:
                     if accm in winners:
                         winner_amnt += 1
                     accm = ""

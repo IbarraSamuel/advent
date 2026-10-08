@@ -2,7 +2,6 @@ import std.sys
 from std.collections import Dict, Optional
 from std.utils import IndexList
 from std.math import log, ceil
-from std.algorithm import parallelize
 from advent_utils import AdventSolution
 
 comptime LEFT = "L"
@@ -13,7 +12,7 @@ comptime default_lpv = List[IndexList[2]]()
 
 
 def lcm[tp: DType, //](first: Scalar[tp], second: Scalar[tp]) -> Scalar[tp]:
-    mn, mx = (first, second) if first < second else (second, first)
+    var mn, mx = (first, second) if first < second else (second, first)
     while mx % mn != 0:
         mn, mx = mx % mn, mn
     return first * second // mn
@@ -39,8 +38,8 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
-        data_len = len(lines) - 2
-        dct = Indexer[data.Immutable.origin](capacity=data_len)
+        var data_len = len(lines) - 2
+        var dct = Indexer[data.Immutable.origin](capacity=data_len)
         var key: data.Immutable
         for l in lines:
             if l.startswith("AAA"):
@@ -48,17 +47,17 @@ struct Solution(AdventSolution):
                 break
         else:
             key = data.Immutable()
-        iterations = 0
+        var iterations = 0
 
         for idx in range(2, len(lines)):
             dct[lines[idx][byte=:3]] = idx
 
-        loop_on = True
+        var loop_on = True
         while loop_on:
             for chr in lines[0].codepoint_slices():
                 iterations += 1
-                low, up = (7, 10) if chr == LEFT else (12, 15)
-                line = lines[dct.get(key, 0)]
+                var low, up = (7, 10) if chr == LEFT else (12, 15)
+                var line = lines[dct.get(key, 0)]
                 key = line[byte=low:up]
 
                 if key == "ZZZ":
@@ -70,25 +69,23 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
-        data_len = len(lines)
-        iter_len = lines[0].byte_length()
-        dct = Indexer[data.Immutable.origin](capacity=data_len - 2)
-        init_nodes = List[Int](capacity=8)
+        var data_len = len(lines)
+        var iter_len = lines[0].byte_length()
+        var dct = Indexer[data.Immutable.origin](capacity=data_len - 2)
+        var init_nodes = List[Int](capacity=8)
 
         for idx in range(2, len(lines)):
             dct[lines[idx][byte=:3]] = idx
             if lines[idx][byte=2:3] == "A":
                 init_nodes.append(idx)
 
-        results = SIMD[DType.uint32, 8](0)
+        var results = SIMD[DType.uint32, 8](0)
 
-        @parameter
-        def calc_cycles(idx: Int):
-            pos = lines[init_nodes[idx]][byte=:3]
-            done = False
-            loop_no = 0
-            readed = Dict[data.Immutable, Int](capacity=128)
-            while not done:
+        for idx in range(len(init_nodes)):
+            var pos = lines[init_nodes[idx]][byte=:3]
+            var loop_no = 0
+            var readed = Dict[data.Immutable, Int](capacity=128)
+            while True:
                 for i in range(iter_len):
                     if pos in readed:
                         results[idx] = UInt32(
@@ -108,9 +105,7 @@ struct Solution(AdventSolution):
                     break
                 loop_no += 1
 
-        parallelize[calc_cycles](len(init_nodes))
-
-        first = results[0]
+        var first = results[0]
         for v in range(len(init_nodes) - 1):
             first = lcm(first, results[v + 1])
         return Int(first)

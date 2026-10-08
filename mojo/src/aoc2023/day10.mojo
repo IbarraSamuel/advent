@@ -1,6 +1,5 @@
 from std.utils import IndexList, StaticTuple
 from std.collections import Dict, OptionalReg, OptionalReg
-from std.algorithm import parallelize
 from std.testing import assert_equal, assert_true, assert_false
 from std.builtin.globals import global_constant
 from std.sys.intrinsics import unlikely
@@ -70,25 +69,25 @@ def get_pipe_and_mov(char: Byte) -> Tuple[Byte, Movement]:
 def next_position(
     previous: Position, curr_pos: Position, movement: Movement
 ) -> Position:
-    dpos = previous - curr_pos
-    mov_prev, mov_next = movement[0], movement[1]
-    next = mov_next if dpos == mov_prev else mov_prev
-    return curr_pos + next
+    var dpos = previous - curr_pos
+    var mov_prev, mov_next = movement[0], movement[1]
+    var next_direction = mov_next if dpos == mov_prev else mov_prev
+    return curr_pos + next_direction
 
 
 def find_connected_pipe[
     o: Origin
 ](pos: Position, map: List[StringSlice[o]]) -> Position:
-    xr, yr = len(map[0]), len(map)
-    xi, yi = pos[0], pos[1]
-    xmin, xmax = max(0, xi - 1), min(xr - 1, xi + 1)
-    ymin, ymax = max(0, yi - 1), min(yr - 1, yi + 1)
+    var xr, yr = map[0].byte_length(), len(map)
+    var xi, yi = pos[0], pos[1]
+    var xmin, xmax = max(0, xi - 1), min(xr - 1, xi + 1)
+    var ymin, ymax = max(0, yi - 1), min(yr - 1, yi + 1)
 
     for x in range(xmin, xmax + 1):
         for y in range(ymin, ymax + 1):
-            ch, mov = get_pipe_and_mov(map[y].as_bytes()[x])
+            var ch, mov = get_pipe_and_mov(map[y].as_bytes()[x])
             if ch in materialize[VALID_PIPES]():
-                diff = pos - (x, y)
+                var diff = pos - (x, y)
                 if diff == mov[0] or diff == mov[1]:
                     return (x, y)
 
@@ -112,7 +111,7 @@ def infer_start[
         in_x = True
         before = True
 
-    if x + 1 < len(line) and line.as_bytes()[x + 1] in (
+    if x + 1 < line.byte_length() and line.as_bytes()[x + 1] in (
         UpLeft,
         DownLeft,
         Horizontal,
@@ -183,7 +182,7 @@ def check_connect_near[
     ignore: Optional[Tuple[Int, Int]] = None,
     set_pipe: Optional[Codepoint] = None,
 ) -> Tuple[Int, Int]:
-    x, y = position
+    var x, y = position
 
     var pipe = Codepoint(map[y].as_bytes()[x])
     if unlikely(Bool(set_pipe)):
@@ -230,7 +229,7 @@ struct Solution(AdventSolution):
     @staticmethod
     def part_1(data: StringSlice) -> Int:
         var lines = data.splitlines()
-        prev = EMPTY_POS
+        var prev = EMPTY_POS
         for y, line in enumerate(lines):
             for x, c in enumerate(line.codepoints()):
                 if c == Codepoint(Start):
@@ -239,13 +238,17 @@ struct Solution(AdventSolution):
             if prev != EMPTY_POS:
                 break
 
-        next = find_connected_pipe(prev, lines)
-        total = 1
+        var current = find_connected_pipe(prev, lines)
+        var total = 1
         while True:
             total += 1
-            ch, mov = get_pipe_and_mov(lines[next[1]].as_bytes()[next[0]])
-            npos = next_position(previous=prev, curr_pos=next, movement=mov)
-            prev, next = next, npos
+            var ch, mov = get_pipe_and_mov(
+                lines[current[1]].as_bytes()[current[0]]
+            )
+            var npos = next_position(
+                previous=prev, curr_pos=current, movement=mov
+            )
+            prev, current = current, npos
             if ch == Start:
                 break
 
@@ -255,11 +258,14 @@ struct Solution(AdventSolution):
     def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         var pipes_mask = List[String](
-            fill="." * len(lines[0]), length=len(lines)
+            fill="." * lines[0].byte_length(), length=len(lines)
         )
 
         var idx = data.find("S")
-        var start = idx % (len(lines[0]) + 1), idx // (len(lines[0]) + 1)
+        var start = (
+            idx % (lines[0].byte_length() + 1),
+            idx // (lines[0].byte_length() + 1),
+        )
         pipes_mask[start[1]].unsafe_as_bytes_mut()[start[0]] = Byte(ord("#"))
 
         var prev = start
@@ -269,9 +275,11 @@ struct Solution(AdventSolution):
         pipes_mask[curr[1]].unsafe_as_bytes_mut()[curr[0]] = Byte(ord("#"))
 
         while curr != start:
-            next = check_connect_near(lines, curr, ignore=prev)
-            pipes_mask[next[1]].unsafe_as_bytes_mut()[next[0]] = Byte(ord("#"))
-            prev, curr = curr, next
+            var next_pos = check_connect_near(lines, curr, ignore=prev)
+            pipes_mask[next_pos[1]].unsafe_as_bytes_mut()[next_pos[0]] = Byte(
+                ord("#")
+            )
+            prev, curr = curr, next_pos
 
         var tot = 0
         for y, line in enumerate(lines):
