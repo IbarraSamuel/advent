@@ -5,54 +5,77 @@ from std.testing import assert_equal
 from std.sys import argv
 
 
-struct Part[value: __mlir_type.`!pop.int_literal`](
-    Equatable, TrivialRegisterPassable
-):
-    comptime one = Part(1)
-    comptime two = Part(2)
+__enum Part:
+    case one
+    case two
 
-    comptime number = IntLiteral[Self.value]()
+    # struct Part(EnumLike, TrivialRegisterPassable):
+    #     comptime one = Part(1)
+    #     comptime two = Part(2)
 
-    @implicit
-    @always_inline("builtin")
-    def __init__(out self: Part[v.value], v: type_of(1)):
-        pass
+    #     var number: Int
 
-    @implicit
-    @always_inline("builtin")
-    def __init__(out self: Part[v.value], v: type_of(2)):
-        pass
+    #     comptime _enum_case_names = ParameterList.of[
+    #         "one".value, "two".value
+    #     ].values
+    #     comptime _enum_case_types = TypeList.splat[count=2, type=Self].values
 
-    @always_inline("builtin")
-    def __eq__(self, other: Self) -> Bool:
-        return True
+    #     def _get_enum_discriminant(self) -> Int:
+    #         return self.number - 1
 
-    @always_inline("builtin")
-    def __eq__(self, other: Part) -> Bool:
-        return self.number == other.number
+    #     def _unsafe_get_enum_payload[
+    #         id: Int
+    #     ](ref self) -> ref[self] TypeList[Trait=AnyType, Self._enum_case_types]()[
+    #         id
+    #     ]:
+    #         while True:
+    #             pass
+
+    # @implicit
+    # @always_inline("builtin")
+    # def __init__(out self, v: type_of(1)):
+    #     self.number = v
+
+    # @implicit
+    # @always_inline("builtin")
+    # def __init__(out self, v: type_of(2)):
+    #     self.number = v
 
 
-struct TimeUnit[value: __mlir_type.`!kgen.string`](TrivialRegisterPassable):
+struct TimeUnit(EnumLike, TrivialRegisterPassable):
     comptime ms = TimeUnit("ms")
     comptime ns = TimeUnit("ns")
     comptime s = TimeUnit("s")
 
-    comptime unit = StringLiteral[Self.value]()
+    var unit: StaticString
+
+    comptime _enum_case_names = ParameterList.of[
+        "ms".value, "ns".value, "s".value
+    ].values
+    comptime _enum_case_types = TypeList.splat[count=2, type=Self].values
+
+    def _get_enum_discriminant(self) -> Int:
+        return 0 if self.unit == "ms" else 1 if self.unit == "ns" else 2
+
+    def _unsafe_get_enum_payload[
+        id: Int
+    ](ref self) -> ref[self] TypeList[Trait=AnyType, Self._enum_case_types]()[
+        id
+    ]:
+        while True:
+            pass
 
     @implicit
-    @always_inline("builtin")
-    def __init__(out self: TimeUnit[v.value], v: type_of("ms")):
-        pass
+    def __init__(out self, v: type_of("ms")):
+        self.unit = v
 
     @implicit
-    @always_inline("builtin")
-    def __init__(out self: TimeUnit[v.value], v: type_of("ns")):
-        pass
+    def __init__(out self, v: type_of("ns")):
+        self.unit = v
 
     @implicit
-    @always_inline("builtin")
-    def __init__(out self: TimeUnit[v.value], v: type_of("s")):
-        pass
+    def __init__(out self, v: type_of("s")):
+        self.unit = v
 
 
 # @fieldwise_init

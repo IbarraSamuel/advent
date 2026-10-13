@@ -26,4 +26,4 @@ def main() raises:
             try:
                 run_tests[Y, *S](args, config)
             except e:
-                print(e^)
+                print(e)
