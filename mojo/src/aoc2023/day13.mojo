@@ -4,7 +4,9 @@ from std.algorithm.functional import vectorize
 from advent_utils import AdventSolution
 
 
-def is_mirror[o: Origin](values: Span[StringSlice[o], _]) -> OptionalReg[Int]:
+def is_mirror[
+    o: ImmOrigin
+](values: Span[StringSlice[o], _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         # the span of the comparisson
         var sp = min(i, len(values) - i)
@@ -39,7 +41,7 @@ def is_mirror(values: Span[String, _]) -> OptionalReg[Int]:
 
 
 def almost_a_mirror[
-    o: Origin
+    o: ImmOrigin
 ](values: Span[StringSlice[o], _]) -> OptionalReg[Int]:
     for i in range(1, len(values)):
         var mn = min(i, len(values) - i)
@@ -49,7 +51,10 @@ def almost_a_mirror[
         for ii in range(mn):
             if p1[ii] != p2[len(p2) - ii - 1]:
                 for j in range(p1[ii].byte_length()):
-                    if p1[ii].as_bytes()[j] != p2[len(p2) - ii - 1].as_bytes()[j]:
+                    if (
+                        p1[ii].as_bytes()[j]
+                        != p2[len(p2) - ii - 1].as_bytes()[j]
+                    ):
                         dif += 1
         if dif == 1:
             return i
@@ -65,7 +70,10 @@ def almost_a_mirror(values: Span[String, _]) -> OptionalReg[Int]:
         for ii in range(mn):
             if p1[ii] != p2[len(p2) - ii - 1]:
                 for j in range(p1[ii].byte_length()):
-                    if p1[ii].as_bytes()[j] != p2[len(p2) - ii - 1].as_bytes()[j]:
+                    if (
+                        p1[ii].as_bytes()[j]
+                        != p2[len(p2) - ii - 1].as_bytes()[j]
+                    ):
                         dif += 1
         if dif == 1:
             return i

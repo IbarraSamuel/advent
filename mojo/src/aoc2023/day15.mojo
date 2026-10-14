@@ -15,7 +15,7 @@ def hash(v: Span[Byte, _]) -> Int:
 
 
 def add_elems[
-    o: Origin
+    o: ImmOrigin
 ](
     mut elems: Dict[Int, List[Tuple[String, Int]]],
     data: StringSlice[o],
@@ -77,9 +77,7 @@ struct Solution(AdventSolution):
     def part_2(data: StringSlice) -> Int:
         var lines = data.splitlines()
         var d = lines[0]
-        var elems = Dict[Int, List[Tuple[String, Int]]](
-            capacity=256
-        )
+        var elems = Dict[Int, List[Tuple[String, Int]]](capacity=256)
 
         var l = 0
         var v = d.find(",", l + 1)

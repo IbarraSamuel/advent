@@ -22,7 +22,7 @@ struct Solution(AdventSolution):
 
             var accm: String = ""
             for nm in win_str.codepoint_slices():
-                if nm.isspace() and accm.byte_length() > 0:
+                if nm.is_ascii_whitespace() and accm.byte_length() > 0:
                     winners.append(accm)
                     accm = ""
                     continue
@@ -32,7 +32,7 @@ struct Solution(AdventSolution):
             accm = ""
 
             for nm in num_str.codepoint_slices():
-                if nm.isspace() and accm.byte_length() > 0:
+                if nm.is_ascii_whitespace() and accm.byte_length() > 0:
                     if accm in winners:
                         winner_amnt += 1
                     accm = ""
@@ -67,7 +67,7 @@ struct Solution(AdventSolution):
 
             var accm: String = ""
             for nm in win_str.codepoint_slices():
-                if nm.isspace() and accm.byte_length() > 0:
+                if nm.is_ascii_whitespace() and accm.byte_length() > 0:
                     winners.append(accm)
                     accm = ""
                     continue
@@ -77,7 +77,7 @@ struct Solution(AdventSolution):
             accm = ""
 
             for nm in num_str.codepoint_slices():
-                if nm.isspace() and accm.byte_length() > 0:
+                if nm.is_ascii_whitespace() and accm.byte_length() > 0:
                     if accm in winners:
                         winner_amnt += 1
                     accm = ""

@@ -37,7 +37,7 @@ def count(
         )
     ):
         var next_cfg_start = min(nums[0] + 1, cfg.byte_length())
-        result += count(cfg[byte = next_cfg_start :], nums[1:], cache)
+        result += count(cfg[byte=next_cfg_start:], nums[1:], cache)
 
     cache[k^] = result
     return result
@@ -62,7 +62,7 @@ struct Solution(AdventSolution):
                 os.abort("This should never happen")
 
             var cache = Dict[String, Int]()
-            total += Int32(count(cfg, nums^, cache))
+            total += Int32(count(cfg, nums, cache))
 
         return total
 
@@ -85,6 +85,6 @@ struct Solution(AdventSolution):
             cfg = String((("?" + cfg) * 5)[byte=1:])
             nums *= 5
             var cache = Dict[String, Int]()
-            total += Int32(count(cfg, nums^, cache))
+            total += Int32(count(cfg, nums, cache))
 
         return total

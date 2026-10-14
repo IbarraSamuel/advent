@@ -1,74 +1,17 @@
 from std.pathlib import Path
-import std.benchmark as benchmark
-from std.pathlib import _dir_of_current_file
-from std.testing import assert_equal
+from std.benchmark import run as bench_run
 from std.sys import argv
-from std.builtin.globals import global_constant
 
 
 __enum Part(ImplicitlyCopyable):
     case one
     case two
 
-    # struct Part(EnumLike, TrivialRegisterPassable):
-    #     comptime one = Part(1)
-    #     comptime two = Part(2)
-
-    #     var number: Int
-
-    #     comptime _enum_case_names = ParameterList.of[
-    #         "one".value, "two".value
-    #     ].values
-    #     comptime _enum_case_types = TypeList.splat[count=2, type=Self].values
-
-    #     def _get_enum_discriminant(self) -> Int:
-    #         return self.number - 1
-
-    #     def _unsafe_get_enum_payload[
-    #         id: Int
-    #     ](ref self) -> ref[self] TypeList[Trait=AnyType, Self._enum_case_types]()[
-    #         id
-    #     ]:
-    #         while True:
-    #             pass
-
-    # @implicit
-    # @always_inline("builtin")
-    # def __init__(out self, v: type_of(1)):
-    #     self.number = v
-
-    # @implicit
-    # @always_inline("builtin")
-    # def __init__(out self, v: type_of(2)):
-    #     self.number = v
-
 
 __enum TimeUnit(ImplicitlyCopyable):
     case ms
     case ns
     case s
-
-
-# @fieldwise_init
-# struct AdventSolution[
-#     o: ImmutOrigin,
-#     //,
-#     part_1: def(StringSlice[o]) thin -> Int,
-#     part_2: def(StringSlice[o]) thin -> Int,
-# ]:
-#     pass
-
-
-# def part_a[o: ImmutOrigin](v: StringSlice[o]) -> Int:
-#     return 1
-
-
-# def part_b[o: ImmutOrigin](v: StringSlice[o]) -> Int:
-#     return 2
-
-
-# def generate_sol[o: ImmutOrigin]() -> AdventSolution[o=o, part_a[o], part_b[o]]:
-#     return {}
 
 
 trait AdventSolution:
@@ -81,19 +24,6 @@ trait AdventSolution:
     @staticmethod
     def part_2(data: StringSlice) -> Self.T:
         ...
-
-
-# # TODO: Change when Generic Traits are available.
-# trait AdventSolution2023(Defaultable):
-#     comptime Year = 2023
-
-
-# trait AdventSolution2024(Defaultable):
-#     comptime Year = 2024
-
-
-# trait AdventSolution2025(Defaultable):
-#     comptime Year = 2025
 
 
 def run[
@@ -158,12 +88,12 @@ def bench[
 
         print("Day", day, "=>")
         if case .None | .Some(.one) = part:
-            var report = benchmark.run(part_1, max_iters=iters)
+            var report = bench_run(part_1, max_iters=iters)
             var time = round(report.mean(unit) * 1e6) / 1e6
             print("\tPart 1:", time, unit)
 
         if case .None | .Some(.two) = part:
-            var report = benchmark.run(part_2, max_iters=iters)
+            var report = bench_run(part_2, max_iters=iters)
             var time = round(report.mean(unit) * 1e6) / 1e6
             print("\tPart 2:", time, unit)
 

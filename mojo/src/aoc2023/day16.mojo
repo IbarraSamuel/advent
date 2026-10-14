@@ -112,12 +112,12 @@ def out_of_bounds(pos: Pos, shape: Tuple[Int, Int]) -> Bool:
 
 
 @always_inline("nodebug")
-def index[o: Origin](pos: Pos, map: List[StringSlice[o]]) -> StringSlice[o]:
+def index[o: ImmOrigin](pos: Pos, map: List[StringSlice[o]]) -> StringSlice[o]:
     return map[pos[1]][byte = pos[0] : pos[0] + 1]
 
 
 def next_mirror[
-    o: Origin, oo: MutOrigin
+    o: ImmOrigin, oo: MutOrigin
 ](
     dir: Dir, pos: Pos, map: List[StringSlice[o]], used_map: Span[Byte, oo]
 ) -> Tuple[Int32, Bool, Pos]:
@@ -141,7 +141,7 @@ def next_mirror[
 
 
 def reflect_and_find[
-    o: Origin, oo: MutOrigin
+    o: ImmOrigin, oo: MutOrigin
 ](
     coming_from: Dir,
     pos: Pos,
@@ -222,7 +222,7 @@ def dir_to_str(dir: Dir) -> StaticString:
 
 
 def calc_energized[
-    o: Origin,
+    o: ImmOrigin,
     oo: MutOrigin,
     ooo: MutOrigin,
 ](
@@ -241,9 +241,7 @@ def calc_energized[
     var pos = p
 
     if ord(index(pos, map)) not in MIRRORS:
-        var nsteps, is_mirror, next_pos = next_mirror(
-            dir, pos, map, map_used
-        )
+        var nsteps, is_mirror, next_pos = next_mirror(dir, pos, map, map_used)
         pos = next_pos
         steps += nsteps
         if not is_mirror:
@@ -343,7 +341,10 @@ struct Solution(AdventSolution):
         var results = SIMD[DType.int32, 512](0)
 
         var data_len = data.byte_length()
-        def calc_length[v: Int](idx: Int) {
+
+        def calc_length[
+            v: Int
+        ](idx: Int) {
             imm map, imm indexes, imm bounds, imm data_len, mut results
         }:
             var pos, dir = indexes[idx]

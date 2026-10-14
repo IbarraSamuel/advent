@@ -1,5 +1,4 @@
 from std.collections import Dict
-from std.memory import Span
 import std.sys as sys
 from advent_utils import AdventSolution
 
@@ -112,7 +111,7 @@ struct Card[mode: HandMode](TrivialRegisterPassable):
     def __init__(out self, v: UInt8):
         self.value = v
 
-    def __init__(out self, v: StringSlice[mut=False, _]):
+    def __init__(out self, v: StringSlice[_]):
         if v == "A":
             self = Self.A
         elif v == "K":

@@ -76,7 +76,7 @@ def next_position(
 
 
 def find_connected_pipe[
-    o: Origin
+    o: ImmOrigin
 ](pos: Position, map: List[StringSlice[o]]) -> Position:
     var xr, yr = map[0].byte_length(), len(map)
     var xi, yi = pos[0], pos[1]
@@ -95,7 +95,7 @@ def find_connected_pipe[
 
 
 def infer_start[
-    o: Origin
+    o: ImmOrigin
 ](x: Int, y: Int, map: List[StringSlice[o]]) -> Codepoint:
     ref line = map[y]
     var new_c = Optional[Codepoint](None)
@@ -174,7 +174,7 @@ def check_line(
 
 
 def check_connect_near[
-    o: Origin
+    o: ImmOrigin
 ](
     map: List[StringSlice[o]],
     position: Tuple[Int, Int],

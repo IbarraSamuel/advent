@@ -62,7 +62,6 @@ def tilt[times: Int = 1](mut maze: String):
         newlines.append(String())
 
     comptime for _ in range(times):
-
         for x in range(x_max):
             var line = String()
             var count = 0
@@ -84,7 +83,7 @@ def tilt[times: Int = 1](mut maze: String):
                 "\n",
             )
             newlines[x] = line^
-        maze = StringSlice("").join(newlines^)
+        maze = StringSlice("").join(newlines)
 
 
 struct Solution(AdventSolution):
@@ -118,9 +117,9 @@ struct Solution(AdventSolution):
             mazes[maze] = idx
             idx += 1
 
-        var valid_idx = (
-            1_000_000_000 - iteration - 1
-        ) % cycles + (iteration - cycles)
+        var valid_idx = (1_000_000_000 - iteration - 1) % cycles + (
+            iteration - cycles
+        )
         for it in mazes.items():
             if it.value == valid_idx:
                 maze = it.key

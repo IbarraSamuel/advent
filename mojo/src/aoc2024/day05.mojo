@@ -51,16 +51,18 @@ struct Solution(AdventSolution):
 
         var lines = rest.splitlines()
 
-        def calc[v: Int](idx: Int) {
-            imm lines, imm next_dct, imm prev_dct, mut tot
-        }:
+        def calc[
+            v: Int
+        ](idx: Int) {imm lines, imm next_dct, imm prev_dct, mut tot}:
             var line = lines[idx]
             var readed_idx = 3
             while True:
                 if readed_idx >= line.byte_length():
                     # We finalize the line
                     var bts = line.as_bytes()[
-                        line.byte_length() // 2 - 1 : line.byte_length() // 2 + 1
+                        line.byte_length() // 2
+                        - 1 : line.byte_length() // 2
+                        + 1
                     ]
                     tot[idx] = (
                         10 * bts[0].cast[DType.int32]()
@@ -115,9 +117,7 @@ struct Solution(AdventSolution):
         ]
         var manuals = data[byte = split_idx + 2 :].splitlines()
 
-        def calc_line[v: Int](idx: Int) {
-            imm manuals, imm rules, mut tot
-        }:
+        def calc_line[v: Int](idx: Int) {imm manuals, imm rules, mut tot}:
             ref page = manuals[idx]
             for f, l in rules:
                 var fi = page.find(f)
@@ -145,7 +145,7 @@ struct Solution(AdventSolution):
 
 
 def order_manual[
-    o: Origin,
+    o: ImmOrigin,
     //,
     indexes: SIMD[DType.uint8, 32],
     zeroidx: SIMD[DType.uint8, 32] = SIMD[DType.uint8, 32](0),

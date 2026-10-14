@@ -206,7 +206,7 @@ def map_ranges(
     return used_ranges^
 
 
-def atol_uint(c: StringSlice) -> Int:
+def atol_uint_(c: StringSlice) -> Int:
     try:
         return atol(c)
     except:
@@ -214,9 +214,9 @@ def atol_uint(c: StringSlice) -> Int:
         return 0
 
 
-def atol_uint[o: Origin](var l: List[StringSlice[o]]) -> List[Int]:
+def atol_uint[o: ImmOrigin](var l: List[StringSlice[o]]) -> List[Int]:
     var uint_l = List[Int](capacity=len(l))
     for i in range(len(l)):
-        uint_l.append(atol_uint(l[i]))
+        uint_l.append(atol_uint_(l[i]))
 
     return uint_l^
