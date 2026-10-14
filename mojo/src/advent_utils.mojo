@@ -48,7 +48,7 @@ def run[
             var p1: Sol.T = Sol.part_1(data)
             print("\tPart 1:", Int(p1))
 
-        if case .None | .Some(.one) = part:
+        if case .None | .Some(.two) = part:
             var p2: Sol.T = Sol.part_2(data)
             print("\tPart 2:", Int(p2), end="\n\n")
 

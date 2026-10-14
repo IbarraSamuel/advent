@@ -10,6 +10,7 @@ def main() raises:
     var config = parse_config()
     var args = Args()
     var project_dir = _dir_of_current_file() / "../.."
+    var tests_failed = False
 
     comptime for Y in Years:
         comptime S = SolutionsForYear[Y]()
@@ -27,3 +28,7 @@ def main() raises:
                 run_tests[Y, *S](args, config)
             except e:
                 print(e)
+                tests_failed = True
+
+    if tests_failed:
+        raise "One or more test suites failed."

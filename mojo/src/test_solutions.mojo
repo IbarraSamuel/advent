@@ -62,7 +62,7 @@ def test_solution[year: Int, day: Int, S: AdventSolution, part: Part]() raises:
                 assert_equal(Int(res), test_case.expected)
         case .two:
             comptime runner = S.part_2
-            for test_case in config[year][day][1]:
+            for test_case in config[year][day][2]:
                 var res = runner(test_case.file.read_text())
                 assert_equal(Int(res), test_case.expected)
 
@@ -88,7 +88,7 @@ def run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
             continue
 
         match args.day:
-            case .Some(d) if d == day:
+            case .Some(d) if d != day:
                 continue
             case _:
                 pass
@@ -101,9 +101,9 @@ def run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
                 continue
 
             match (args.part, compt_part):
-                case (.Some(.one), .one):
+                case (.Some(.one), .two):
                     continue
-                case (.Some(.two), .two):
+                case (.Some(.two), .one):
                     continue
                 case _:
                     pass
