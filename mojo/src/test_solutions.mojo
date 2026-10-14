@@ -6,7 +6,7 @@ from motoml.parser import parse_toml_raises
 from motoml.reflection import toml_to_type
 
 from test_suite import TestSuite
-from advent_utils import AdventSolution, Args
+from advent_utils import AdventSolution, Args, Part
 
 comptime Years = Dict[Int, Days]
 comptime Days = Dict[Int, Parts]
@@ -51,50 +51,66 @@ def parse_config() raises -> Years:
     }
 
 
-def test_solution[year: Int, day: Int, S: AdventSolution, part: Int]() raises:
+def test_solution[year: Int, day: Int, S: AdventSolution, part: Part]() raises:
     var config = parse_config()
 
-    ref test_cases = config[year][day][part]
-
-    for test_case in test_cases:
-        comptime runner = S.part_1 if part == 1 else S.part_2
-        var content = test_case.file.read_text()
-        var res = runner(content)
-        assert_equal(Int(res), test_case.expected)
+    comptime match part:
+        case .one:
+            comptime runner = S.part_1
+            for test_case in config[year][day][1]:
+                var res = runner(test_case.file.read_text())
+                assert_equal(Int(res), test_case.expected)
+        case .two:
+            comptime runner = S.part_2
+            for test_case in config[year][day][1]:
+                var res = runner(test_case.file.read_text())
+                assert_equal(Int(res), test_case.expected)
 
 
 def run_tests[Y: Int, *S: AdventSolution](args: Args, config: Years) raises:
     if not (Y in config and (not args.year or args.year.unsafe_value() == Y)):
         return
 
-    ref day_data = config.find(Y)
-    if not day_data:
+    ref opt_day_data = config.find(Y)
+
+    if case .None = opt_day_data:
         print("No value found for key:", Y, "on config:", config)
         return
 
+    ref day_data = opt_day_data.unsafe_value()
     var ts = TestSuite()
 
     comptime for i in range(S.length):
         comptime day = i + 1
 
-        ref parts_data = day_data.unsafe_value().find(day)
-        if not parts_data:
+        ref parts_data_opt = day_data.find(day)
+        if case .None = parts_data_opt:
             continue
 
-        if args.day and args.day.unsafe_value() != day:
-            continue
+        match args.day:
+            case .Some(d) if d == day:
+                continue
+            case _:
+                pass
+
+        ref parts_data = parts_data_opt.unsafe_value()
 
         comptime for part in range(1, 3):
-            ref part_list = parts_data.unsafe_value().find(part)
-            if not part_list:
+            comptime compt_part = Part.one if part == 1 else Part.two
+            if case .None = parts_data.find(part):
                 continue
 
-            if args.part and args.part.unsafe_value() != part:
-                continue
+            match (args.part, compt_part):
+                case (.Some(.one), .one):
+                    continue
+                case (.Some(.two), .two):
+                    continue
+                case _:
+                    pass
 
             comptime tname: StaticString = String(
                 "Year ", Y, " Day ", day, " Part ", part
             )
-            ts.test[test_solution[Y, day, S[i], part]](tname)
+            ts.test[test_solution[Y, day, S[i], compt_part], tname]()
 
     ts^.run()

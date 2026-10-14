@@ -9,7 +9,9 @@ from std.time import perf_counter_ns
 
 
 @fieldwise_init
-struct UnifiedTestSuite(Deinitable where False, Movable):
+struct UnifiedTestSuite(
+    not Deinitable else "You must abandon or run the test suite.", Movable
+):
     var tests: List[Tuple[def() thin raises, StaticString]]
     var location: SourceLocation
 
@@ -49,13 +51,15 @@ struct UnifiedTestSuite(Deinitable where False, Movable):
         var report = TestSuiteReport(reports=reports^, location=self.location)
 
         if report.failures > 0:
-            raise Error(report^)
+            raise Error(report)
 
         print(report)
 
 
 @fieldwise_init
-struct TestSuite(Deinitable where False, Movable):
+struct TestSuite(
+    not Deinitable else "You must abandon or run the test suite.", Movable
+):
     var tests: List[Tuple[StaticString, def() raises thin]]
     var location: SourceLocation
 
@@ -66,10 +70,8 @@ struct TestSuite(Deinitable where False, Movable):
         self.tests = {}
         self.location = location.or_else(call_location())
 
-    def test[
-        func: def() raises thin
-    ](mut self, name: Optional[StaticString] = None):
-        self.tests.append((name.or_else(get_function_name[func]()), func))
+    def test[func: def() raises thin, name: StaticString](mut self):
+        self.tests.append((name, func))
 
     def abandon(deinit self):
         pass
@@ -98,6 +100,6 @@ struct TestSuite(Deinitable where False, Movable):
         var report = TestSuiteReport(reports=reports^, location=self.location)
 
         if report.failures > 0:
-            raise Error(report^)
+            raise Error(report)
 
         print(report)

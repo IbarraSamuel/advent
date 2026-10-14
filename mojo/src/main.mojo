@@ -1,6 +1,6 @@
 from std.pathlib import _dir_of_current_file
 
-from advent_utils import run, bench, Args
+from advent_utils import run, bench, Args, TimeUnit
 from test_solutions import run_tests, parse_config
 from solutions import SolutionsForYear, Years
 
@@ -21,7 +21,7 @@ def main() raises:
         if args.mode == "run":
             run[*S](input_path, args.day, args.part)
         elif args.mode == "bench":
-            bench[1000, "ms", *S](input_path, args.day, args.part)
+            bench[1000, .ms, *S](input_path, args.day, args.part)
         elif args.mode == "test":
             try:
                 run_tests[Y, *S](args, config)

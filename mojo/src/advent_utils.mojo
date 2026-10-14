@@ -3,9 +3,10 @@ import std.benchmark as benchmark
 from std.pathlib import _dir_of_current_file
 from std.testing import assert_equal
 from std.sys import argv
+from std.builtin.globals import global_constant
 
 
-__enum Part:
+__enum Part(ImplicitlyCopyable):
     case one
     case two
 
@@ -42,40 +43,10 @@ __enum Part:
     #     self.number = v
 
 
-struct TimeUnit(EnumLike, TrivialRegisterPassable):
-    comptime ms = TimeUnit("ms")
-    comptime ns = TimeUnit("ns")
-    comptime s = TimeUnit("s")
-
-    var unit: StaticString
-
-    comptime _enum_case_names = ParameterList.of[
-        "ms".value, "ns".value, "s".value
-    ].values
-    comptime _enum_case_types = TypeList.splat[count=2, type=Self].values
-
-    def _get_enum_discriminant(self) -> Int:
-        return 0 if self.unit == "ms" else 1 if self.unit == "ns" else 2
-
-    def _unsafe_get_enum_payload[
-        id: Int
-    ](ref self) -> ref[self] TypeList[Trait=AnyType, Self._enum_case_types]()[
-        id
-    ]:
-        while True:
-            pass
-
-    @implicit
-    def __init__(out self, v: type_of("ms")):
-        self.unit = v
-
-    @implicit
-    def __init__(out self, v: type_of("ns")):
-        self.unit = v
-
-    @implicit
-    def __init__(out self, v: type_of("s")):
-        self.unit = v
+__enum TimeUnit(ImplicitlyCopyable):
+    case ms
+    case ns
+    case s
 
 
 # @fieldwise_init
@@ -127,10 +98,13 @@ trait AdventSolution:
 
 def run[
     *solutions: AdventSolution
-](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
+](input_dir: Path, day: Optional[Int], part: Optional[Part]) raises:
     comptime for i in range(solutions.length):
-        if day and day.unsafe_value() != i + 1:
-            continue
+        match day:
+            case .Some(d) if d != i + 1:
+                continue
+            case _:
+                pass
 
         comptime Sol = solutions[i]
 
@@ -140,11 +114,11 @@ def run[
 
         print("Day", day, "=>")
 
-        if not part or part.unsafe_value() == 1:
+        if case .None | .Some(.one) = part:
             var p1: Sol.T = Sol.part_1(data)
             print("\tPart 1:", Int(p1))
 
-        if not part or part.unsafe_value() == 2:
+        if case .None | .Some(.one) = part:
             var p2: Sol.T = Sol.part_2(data)
             print("\tPart 2:", Int(p2), end="\n\n")
 
@@ -153,10 +127,22 @@ def bench[
     iters: Int,
     time_unit: TimeUnit,
     *solutions: AdventSolution,
-](input_dir: Path, day: Optional[Int], part: Optional[Int]) raises:
+](input_dir: Path, day: Optional[Int], part: Optional[Part]) raises:
+    var unit: StaticString
+    comptime match time_unit:
+        case .ms:
+            unit = "ms"
+        case .ns:
+            unit = "ns"
+        case .s:
+            unit = "s"
+
     comptime for i in range(solutions.length):
-        if day and day.unsafe_value() != i + 1:
-            continue
+        match day:
+            case .Some(v) if v != i + 1:
+                continue
+            case _:
+                pass
 
         comptime Sol = solutions[i]
 
@@ -171,15 +157,15 @@ def bench[
             _ = Sol.part_2(data)
 
         print("Day", day, "=>")
-        if not part or part.unsafe_value() == 1:
+        if case .None | .Some(.one) = part:
             var report = benchmark.run(part_1, max_iters=iters)
-            var time = round(report.mean(time_unit.unit) * 1e6) / 1e6
-            print("\tPart 1:", time, time_unit.unit)
+            var time = round(report.mean(unit) * 1e6) / 1e6
+            print("\tPart 1:", time, unit)
 
-        if not part or part.unsafe_value() == 2:
+        if case .None | .Some(.two) = part:
             var report = benchmark.run(part_2, max_iters=iters)
-            var time = round(report.mean(time_unit.unit) * 1e6) / 1e6
-            print("\tPart 2:", time, time_unit.unit)
+            var time = round(report.mean(unit) * 1e6) / 1e6
+            print("\tPart 2:", time, unit)
 
 
 comptime HELP_STRING = """
@@ -210,7 +196,7 @@ struct Args(Writable):
     var mode: String
     var year: Optional[Int]
     var day: Optional[Int]
-    var part: Optional[Int]
+    var part: Optional[Part]
 
     def __init__(out self) raises:
         self = Self.parse_args()
@@ -222,7 +208,7 @@ struct Args(Writable):
         var mode: StaticString = "run"
         var year: Optional[Int] = None
         var day: Optional[Int] = None
-        var part: Optional[Int] = None
+        var part: Optional[Part] = None
 
         for i, arg in enumerate(args):
             if String(arg) in ("-h", "--help"):
@@ -254,6 +240,11 @@ struct Args(Writable):
                 var value = args[i + 1]
                 if not value.is_ascii_digit():
                     raise "Part should be an ascii digit."
-                part = Int(value)
+
+                match Int(value):
+                    case 1:
+                        part = Part.one
+                    case 2:
+                        part = Part.two
 
         return Args(mode=mode, year=year, day=day, part=part)
