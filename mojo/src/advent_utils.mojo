@@ -1,6 +1,7 @@
 from std.pathlib import Path
 from std.benchmark import run as bench_run
 from std.sys import argv
+from motoml.mmap_file import MappedFile
 
 
 __enum Part(ImplicitlyCopyable):
@@ -40,7 +41,7 @@ def run[
 
         var day = String("0" if i < 9 else "", i + 1)
         var file = input_dir / "day{}.txt".format(day)
-        var data = file.read_text()
+        var data = MappedFile(file).unsafe_view()
 
         print("Day", day, "=>")
 

@@ -4,6 +4,7 @@ from std.pathlib import _dir_of_current_file, Path
 from motoml.types.toml import Toml
 from motoml.parser import parse_toml_raises
 from motoml.reflection import toml_to_type
+from motoml.mmap_file import MappedFile
 
 from test_suite import TestSuite
 from advent_utils import AdventSolution, Args, Part
@@ -23,7 +24,7 @@ struct Case(Copyable, Writable):
 def parse_config() raises -> Years:
     var loc = _dir_of_current_file() / "../.."
     var config_loc = loc / "advent_config.toml"
-    var data = config_loc.read_text()
+    var data = MappedFile(config_loc).unsafe_view()
 
     var toml = parse_toml_raises(data)
     ref all_years = toml[Toml.Table]["tests"][Toml.Table]["year"]
@@ -53,17 +54,19 @@ def parse_config() raises -> Years:
 
 def test_solution[year: Int, day: Int, S: AdventSolution, part: Part]() raises:
     var config = parse_config()
-
+    ref day_tests = config[year][day]
     comptime match part:
         case .one:
             comptime runner = S.part_1
-            for test_case in config[year][day][1]:
-                var res = runner(test_case.file.read_text())
+            for test_case in day_tests[1]:
+                var content = MappedFile(test_case.file).unsafe_view()
+                var res = runner(content)
                 assert_equal(Int(res), test_case.expected)
         case .two:
             comptime runner = S.part_2
-            for test_case in config[year][day][2]:
-                var res = runner(test_case.file.read_text())
+            for test_case in day_tests[2]:
+                var content = MappedFile(test_case.file).unsafe_view()
+                var res = runner(content)
                 assert_equal(Int(res), test_case.expected)
 
 
